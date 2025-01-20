@@ -42,6 +42,28 @@ async def get_person(name: str, email: str, age: int):
         return query_result.get("hobbies", [])
     else:
         return []
+    
+@app.post("/insert/timing")
+async def insert_memory(
+    name: str,
+    student_id: int,
+    timing: str,
+    purpose: str,
+):
+    history = {
+        'timing': timing,
+        'purpose': purpose
+    }
+
+    result = collection.update_one(
+        {'name': name, 'student_id': student_id},
+        {'$push': {'history': history}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    return {"status": "history data inserted successfully"}
 
 if __name__ == "__main__":
     import uvicorn
