@@ -32,16 +32,10 @@ collection = db["first"]  # Replace with your collection name
 
 app= FastAPI()
 
-@app.get("/get/name")
-async def get_person(name: str, email: str, age: int):
-    query_result = collection.find_one(
-        {"name": name, "email": email, "age": age},
-        {"hobbies": 1, "_id": 0}
-    )
-    if query_result:
-        return query_result.get("hobbies", [])
-    else:
-        return []
+
+    
+
+    
 
 if __name__ == "__main__":
     import uvicorn
