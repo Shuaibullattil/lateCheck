@@ -32,14 +32,14 @@ collection = db["first"]  # Replace with your collection name
 
 app= FastAPI()
 
-@app.get("/get/name")
-async def get_person(name: str, email: str, age: int):
+@app.get("/get/history")
+async def get_person(name: str, student_id: int):
     query_result = collection.find_one(
-        {"name": name, "email": email, "age": age},
-        {"hobbies": 1, "_id": 0}
+        {"name": name, "student_id": student_id},
+        {"history": 1, "_id": 0}
     )
     if query_result:
-        return query_result.get("hobbies", [])
+        return query_result.get("history", [])
     else:
         return []
     
