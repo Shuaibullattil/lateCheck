@@ -16,7 +16,7 @@ from pymongo.server_api import ServerApi
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
 
-# Create a new client and connect to the server
+# Create a new client and connect to the servers
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 # Send a ping to confirm a successful connection
