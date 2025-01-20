@@ -27,7 +27,7 @@ except Exception as e:
     print(e)
 
 
-db = client["sample"]  # Replace with your database name
+db = client["sample"]  # Replace with your database names
 collection = db["first"]  # Replace with your collection name
 
 app= FastAPI()
