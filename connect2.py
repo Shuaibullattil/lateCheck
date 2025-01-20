@@ -43,6 +43,17 @@ async def get_person(name: str, student_id: int):
     else:
         return []
     
+@app.get("/get/student")
+async def get_student_details(name: str, student_id: int):
+    query_result = collection.find_one(
+        {"name": name, "student_id": student_id},
+        {"name": 1, "student_id": 1, "details": 1, "_id": 0}  
+    )
+    if query_result:
+        return query_result
+    else:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
 @app.post("/insert/timing")
 async def insert_memory(
     name: str,
