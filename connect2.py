@@ -56,7 +56,7 @@ async def get_student_details(name: str, student_id: int):
         raise HTTPException(status_code=404, detail="Student not found")
     
 
-def insert_memory(
+async def insert_memory(
     name: str,
     student_id: int,
     timing: str,
@@ -78,8 +78,8 @@ def insert_memory(
     print("History data inserted successfully")
 
 @app.get("/stream/qr-detection")
-async def stream_qr_detection(background_tasks: BackgroundTasks):
-    def generate_frames():
+async def stream_qr_detection():
+    async def generate_frames():
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             raise HTTPException(status_code=500, detail="Webcam could not be opened")
@@ -105,8 +105,10 @@ async def stream_qr_detection(background_tasks: BackgroundTasks):
                             name = "Jane Doe"
                             student_id = 22021740
                             timing = "2025-01-21 12:00:00"
-                            purpose = "Exam"
-                            background_tasks.add_task(insert_memory, name, student_id, timing, purpose)
+                            purpose = "Trial 2"
+                            await insert_memory(name, student_id, timing, purpose)
+                        else:
+                            print("Illegal entry is not allowed!")
                     cv2.putText(frame, f"{data}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
@@ -118,6 +120,7 @@ async def stream_qr_detection(background_tasks: BackgroundTasks):
         cap.release()
 
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+
 
 if __name__ == "__main__":
     import uvicorn
