@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+import cv2
+from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form
 from pymongo import MongoClient
 
 import json
@@ -7,7 +8,7 @@ from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo.server_api import ServerApi
 import base64
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import requests
 from typing import Optional
 from pydantic import BaseModel
@@ -54,8 +55,8 @@ async def get_student_details(name: str, student_id: int):
     else:
         raise HTTPException(status_code=404, detail="Student not found")
     
-@app.post("/insert/timing")
-async def insert_memory(
+
+def insert_memory(
     name: str,
     student_id: int,
     timing: str,
@@ -72,9 +73,51 @@ async def insert_memory(
     )
 
     if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
+        print("User not found")
+        return
+    print("History data inserted successfully")
 
-    return {"status": "history data inserted successfully"}
+@app.get("/stream/qr-detection")
+async def stream_qr_detection(background_tasks: BackgroundTasks):
+    def generate_frames():
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            raise HTTPException(status_code=500, detail="Webcam could not be opened")
+        qr_detector = cv2.QRCodeDetector()
+        detected_qr_data = set()
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            data, points, _ = qr_detector.detectAndDecode(frame)
+            if points is not None:
+                points = points[0]
+                for i in range(len(points)):
+                    pt1 = tuple(map(int, points[i]))
+                    pt2 = tuple(map(int, points[(i + 1) % len(points)]))
+                    cv2.line(frame, pt1, pt2, (0, 255, 0), 2)
+
+                if data:
+                    if data not in detected_qr_data:
+                        print(f"{data}")
+                        detected_qr_data.add(data)
+                        if data == "sahara":
+                            name = "Jane Doe"
+                            student_id = 22021740
+                            timing = "2025-01-21 12:00:00"
+                            purpose = "Exam"
+                            background_tasks.add_task(insert_memory, name, student_id, timing, purpose)
+                    cv2.putText(frame, f"{data}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                                0.7, (0, 255, 0), 2, cv2.LINE_AA)
+
+            _, buffer = cv2.imencode('.jpg', frame)
+            frame_bytes = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+        cap.release()
+
+    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
 
 if __name__ == "__main__":
     import uvicorn
