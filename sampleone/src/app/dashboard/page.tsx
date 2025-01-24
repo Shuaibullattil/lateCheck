@@ -1,6 +1,8 @@
 // pages/dashboard.tsx
 import React from 'react';
 import SideBar from '../components/sidebar';
+import LateEntryTable from '../components/LateEntryTable';
+import PendingTable from '../components/PendingTable';
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const today = new Date();
@@ -23,14 +25,27 @@ const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString()
 
 export default function Dashboard() {
     return (
-        <div className='flex'>
-            <div className='flex-none w-80'>
-                <SideBar />
-            </div >
-            <div className='flex-1 bg-neutral h-28'>
-                <div className='prose p-5'>
-                    <h1 className='m-0 text-white'>{weekDay}</h1>
-                    <h3 className='m-0 text-white'>{formattedTime}</h3>
+        <div>
+            <div className='grid grid-cols-12 bg-slate-400' >
+                <div className=' prose items-center col-span-12 ml-8 mt-4 mb-4'>
+                    <h1 className='m-0 text-white'>DashBoard</h1>
+                    <h5 className='m-0 text-white'>{weekDay} | {formattedTime}</h5>
+                </div>
+            </div>
+            <div className='grid grid-cols-12 '>
+                <div className='sm:col-span-2 hidden md:block bg-base-300'>
+                    <SideBar />
+                </div >
+                <div className='sm:col-span-10 col-span-12 bg-white ml-10 mt-4'>
+                    <div className='grid grid-cols-9 gap-4 justify-start'>
+                        <div className='col-span-9 sm:col-span-4 border shadow-xl'>
+                            <LateEntryTable />
+                        </div>
+                        
+                        <div className='col-span-9 sm:col-span-4 border shadow-xl'>
+                            <PendingTable />
+                        </div>
+                    </div>   
                 </div>
             </div>
         </div>
