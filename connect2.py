@@ -2,8 +2,6 @@ import os
 import cv2
 from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form
 from pymongo import MongoClient
-
-import json
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo.server_api import ServerApi
