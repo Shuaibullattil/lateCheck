@@ -1,0 +1,103 @@
+[
+    {
+      "id": 1,
+      "hostel_id": "22021774",
+      "name": "Aarav Sharma",
+      "branch": "CS",
+      "sem": "S6",
+      "room_no": "101",
+      "phone_no": "9876543210",
+      "email": "aarav.sharma@example.com"
+    },
+    {
+      "id": 2,
+      "hostel_id": "22021775",
+      "name": "Vikram Singh",
+      "branch": "EC",
+      "sem": "S5",
+      "room_no": "102",
+      "phone_no": "9887654321",
+      "email": "vikram.singh@example.com"
+    },
+    {
+      "id": 3,
+      "hostel_id": "22021776",
+      "name": "Raghav Patel",
+      "branch": "EE",
+      "sem": "S7",
+      "room_no": "103",
+      "phone_no": "9933445566",
+      "email": "raghav.patel@example.com"
+    },
+    {
+      "id": 4,
+      "hostel_id": "22021777",
+      "name": "Kunal Joshi",
+      "branch": "CS",
+      "sem": "S8",
+      "room_no": "104",
+      "phone_no": "9876543211",
+      "email": "kunal.joshi@example.com"
+    },
+    {
+      "id": 5,
+      "hostel_id": "22021778",
+      "name": "Manish Kumar",
+      "branch": "CE",
+      "sem": "S4",
+      "room_no": "105",
+      "phone_no": "9865321000",
+      "email": "manish.kumar@example.com"
+    },
+    {
+      "id": 6,
+      "hostel_id": "22021779",
+      "name": "Harsh Yadav",
+      "branch": "EC",
+      "sem": "S3",
+      "room_no": "106",
+      "phone_no": "9872341000",
+      "email": "harsh.yadav@example.com"
+    },
+    {
+      "id": 7,
+      "hostel_id": "22021780",
+      "name": "Anshul Gupta",
+      "branch": "FS",
+      "sem": "S2",
+      "room_no": "107",
+      "phone_no": "9876540123",
+      "email": "anshul.gupta@example.com"
+    },
+    {
+      "id": 8,
+      "hostel_id": "22021781",
+      "name": "Ravi Mehta",
+      "branch": "EE",
+      "sem": "S1",
+      "room_no": "108",
+      "phone_no": "9873216540",
+      "email": "ravi.mehta@example.com"
+    },
+    {
+      "id": 9,
+      "hostel_id": "22021782",
+      "name": "Sahil Agarwal",
+      "branch": "CS",
+      "sem": "S5",
+      "room_no": "109",
+      "phone_no": "9881234567",
+      "email": "sahil.agarwal@example.com"
+    },
+    {
+      "id": 10,
+      "hostel_id": "22021783",
+      "name": "Aryan Verma",
+      "branch": "CE",
+      "sem": "S8",
+      "room_no": "110",
+      "phone_no": "9998765432",
+      "email": "aryan.verma@example.com"
+    }
+  ]
+  

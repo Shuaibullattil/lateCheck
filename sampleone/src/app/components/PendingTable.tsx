@@ -1,6 +1,25 @@
 import React from 'react'
+import TableEntry from './Tablecomponent/TableEntry';
+
+const lateEntryResponses = [
+  {
+    reason: "I was delayed due to a project meeting that ran longer than expected. We were discussing some critical aspects, and I couldn’t leave until everything was sorted out. I apologize for the delay."
+  },
+  {
+    reason: "I had to attend a sudden extra class arranged by the department to cover some missed lessons. It went longer than planned, and I lost track of time. I’ll ensure to manage my schedule better going forward."
+  },
+  {
+    reason: "I missed the earlier bus and had to wait for the next one. Unfortunately, there was heavy traffic on the way back, which further delayed my arrival. I’ll plan my travels more carefully in the future."
+  }
+];
+
+
+
 
 const PendingTable = () => {
+
+  const Reason = lateEntryResponses;
+
   return (
     <div>
         <div className="overflow-x-auto">
@@ -39,9 +58,10 @@ const PendingTable = () => {
                 </div>
               </td>
               <td>
-                <div><img className="w-12 h-12"
-                        src="https://imgs.search.brave.com/OqS44ol5szQnorKC9mW0vdMjsPlTdS_h3VxRcVztwRw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/dmVjdG9yc3RvY2su/Y29tL2kvcHJldmll/dy0xeC8xNC85Mi9j/aGF0LWJ1YmJsZS1t/ZXNzYWdlLWljb24t/dmVjdG9yLTIyNjkx/NDkyLmpwZw" />
-                </div>
+                  <div className="tooltip" data-tip={Reason[0].reason}>
+                    <button className=""><img className="w-12 h-12"
+                        src="message-bubble.svg" /></button>
+                  </div>
             </td>
               <td>
                 <div className='flex gap-2'>
@@ -68,10 +88,11 @@ const PendingTable = () => {
                   </div>
                 </div>
               </td>
-              <td>
-                <div><img className="w-12 h-12"
-                        src="https://imgs.search.brave.com/OqS44ol5szQnorKC9mW0vdMjsPlTdS_h3VxRcVztwRw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/dmVjdG9yc3RvY2su/Y29tL2kvcHJldmll/dy0xeC8xNC85Mi9j/aGF0LWJ1YmJsZS1t/ZXNzYWdlLWljb24t/dmVjdG9yLTIyNjkx/NDkyLmpwZw" />
-                </div>
+              <td >
+                  <div className="tooltip" data-tip={Reason[1].reason}>
+                    <button className=""><img className="w-12 h-12"
+                        src="message-bubble.svg" /></button>
+                  </div>
             </td>
               <td>
                 <div className='flex gap-2'>
@@ -87,7 +108,7 @@ const PendingTable = () => {
                   <div className="avatar">
                     <div className="mask mask-squircle h-12 w-12">
                       <img
-                        src="https://i.pinimg.com/736x/03/eb/d6/03ebd625cc0b9d636256ecc44c0ea324.jpg"
+                        src="https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg"
                         alt="Avatar Tailwind CSS Component"
                       />
                     </div>
@@ -99,8 +120,11 @@ const PendingTable = () => {
                 </div>
               </td>
               <td>
-                <div><img className="w-12 h-12"
-                        src="https://imgs.search.brave.com/OqS44ol5szQnorKC9mW0vdMjsPlTdS_h3VxRcVztwRw/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/dmVjdG9yc3RvY2su/Y29tL2kvcHJldmll/dy0xeC8xNC85Mi9j/aGF0LWJ1YmJsZS1t/ZXNzYWdlLWljb24t/dmVjdG9yLTIyNjkx/NDkyLmpwZw" />
+                <div>
+                  <div className="tooltip" data-tip={Reason[2].reason}>
+                    <button className=""><img className="w-12 h-12"
+                        src="message-bubble.svg" /></button>
+                  </div>
                 </div>
             </td>
               <td>

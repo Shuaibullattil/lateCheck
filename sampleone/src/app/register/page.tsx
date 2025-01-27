@@ -20,7 +20,7 @@ export default function Home() {
 
       <div>
       <label  className="block text-gray-800 font-semibold text-sm"
-        >Mess ID:</label >
+        >Hostel ID:</label >
       <div className="mt-2">
         <input
           type="text"

@@ -37,14 +37,17 @@ export default function Dashboard() {
                     <SideBar />
                 </div >
                 <div className='sm:col-span-10 col-span-12 bg-white ml-10 mt-4'>
-                    <div className='grid grid-cols-9 gap-4 justify-start'>
-                        <div className='col-span-9 sm:col-span-4 border shadow-xl'>
+                    <div className='grid grid-cols-9 gap-4 justify-start pr-8'>
+                        <div className='col-span-9 sm:col-span-4 border shadow-xl '>
                             <LateEntryTable />
                         </div>
                         
                         <div className='col-span-9 sm:col-span-4 border shadow-xl'>
                             <PendingTable />
                         </div>
+                    </div>
+                    <div className='h-64'>
+                        
                     </div>   
                 </div>
             </div>
