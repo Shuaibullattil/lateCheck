@@ -1,4 +1,6 @@
+
 export default function profile(){
+    
     return(
         <div className="mx-auto mt-10 w-64">
 
@@ -10,6 +12,8 @@ export default function profile(){
                 <h3>Sheethal Joshi</h3>
             </div>
             </div>
+
+            
 
 
 

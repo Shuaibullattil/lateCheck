@@ -15,13 +15,13 @@ const StudentDetailTableEntry = ({student}:{student:Student}) => {
   return (
     <>
         <tr className='text-left font-bold'>
-                <td>{student.hostel_id}</td>
+                <td className='w-32'>{student.hostel_id}</td>
                 <td>{student.name}</td>
-                <td>{student.branch}</td>
-                <td>{student.sem}</td>
-                <td>{student.room_no}</td>
-                <td>{student.phone_no}</td>
-                <td>{student.email}</td>
+                <td className='hidden sm:table-cell w-16'>{student.branch}</td>
+                <td className='hidden sm:table-cell w-16'>{student.sem}</td>
+                <td className='hidden sm:table-cell w-16'>{student.room_no}</td>
+                <td className='hidden sm:table-cell w-32'>{student.phone_no}</td>
+                <td className='hidden sm:table-cell'>{student.email}</td>
         </tr>
     </>
   )

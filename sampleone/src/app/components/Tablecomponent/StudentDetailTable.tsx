@@ -4,17 +4,17 @@ import students from '../../components/data/hostelstudents.json'
 
 const StudentDetailTable = () => {
   return (
-    <div>
-        <table className="table w-full table-zebra">
+    <div className='overflow-x-auto border shadow-xl'>
+        <table className="table table-zebra">
             <thead>
-            <tr className="bg-gray-800 text-white">
+            <tr className="bg-blue-950 text-white">
                 <th className="px-4 py-2">Hostel ID</th>
                 <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Branch</th>
-                <th className="px-4 py-2">Sem</th>
-                <th className="px-4 py-2">Room No</th>
-                <th className="px-4 py-2">Phone no</th>
-                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Branch</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Sem</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Room no</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Phone no</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Email</th>
             </tr>
             </thead>
             <tbody>

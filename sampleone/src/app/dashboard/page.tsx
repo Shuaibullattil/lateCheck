@@ -26,17 +26,17 @@ const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString()
 export default function Dashboard() {
     return (
         <div>
-            <div className='grid grid-cols-12 bg-slate-400' >
+            <div className='grid grid-cols-12 bg-slate-400 '>
                 <div className=' prose items-center col-span-12 ml-8 mt-4 mb-4'>
                     <h1 className='m-0 text-white'>DashBoard</h1>
                     <h5 className='m-0 text-white'>{weekDay} | {formattedTime}</h5>
                 </div>
             </div>
-            <div className='grid grid-cols-12 '>
-                <div className='sm:col-span-2 hidden md:block bg-base-300'>
+            <div className='grid grid-cols-12'>
+                <div className='sm:col-span-2 hidden md:block bg-base-300 h-100vw'>
                     <SideBar />
-                </div >
-                <div className='sm:col-span-10 col-span-12 bg-white ml-10 mt-4'>
+                </div>
+                <div className='sm:col-span-10 col-span-12 bg-white mt-16 ml-10'>
                     <div className='grid grid-cols-9 gap-4 justify-start pr-8'>
                         <div className='col-span-9 sm:col-span-4 border shadow-xl '>
                             <LateEntryTable />
@@ -45,10 +45,7 @@ export default function Dashboard() {
                         <div className='col-span-9 sm:col-span-4 border shadow-xl'>
                             <PendingTable />
                         </div>
-                    </div>
-                    <div className='h-64'>
-                        
-                    </div>   
+                    </div>  
                 </div>
             </div>
         </div>
