@@ -27,7 +27,7 @@ const MenuButton = () => {
           </a>
         </li>
         <li>
-          <a>
+          <a href='/notify'>
             <img src="/notification.svg" alt="" className='h-6 w-6' />
           </a>
         </li>
