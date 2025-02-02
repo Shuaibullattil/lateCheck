@@ -34,7 +34,7 @@ const Timer = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-6 prose">
+    <div className="grid grid-cols-6 px-12">
       <div className=" flex col-span-2 justify-center items-center">
         <h2 className="bg-neutral text-white p-3 rounded-md m-0 pl-2">{timeLeft.hours} <span className="text-xs">Hour</span></h2>
       </div>

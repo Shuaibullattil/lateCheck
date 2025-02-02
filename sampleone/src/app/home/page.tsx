@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import MenuButton from "../components/user/menubutton";
 import Timer from "../components/user/timer";

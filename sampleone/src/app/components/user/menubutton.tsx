@@ -6,7 +6,7 @@ const MenuButton = () => {
     <div className="flex justify-center items-center w-full">
       <ul className="menu menu-horizontal bg-base-200 rounded-box">
         <li>
-          <a>
+          <a href='/home'>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
@@ -22,7 +22,7 @@ const MenuButton = () => {
           </a>
         </li>
         <li>
-          <a>
+          <a href='/qrscanner'>
             <img src="/scan.svg" alt="" className='h-6 w-6' />
           </a>
         </li>
@@ -32,7 +32,7 @@ const MenuButton = () => {
           </a>
         </li>
         <li>
-          <a>
+          <a href='/profile'>
             <img src="/profile.svg" alt="" className='h-6 w-6' />
           </a>
         </li>
