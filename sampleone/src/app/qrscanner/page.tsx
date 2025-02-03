@@ -1,5 +1,5 @@
-import QrScanner from "../components/QrScanner";
 import MenuButton from "../components/user/menubutton";
+import QrReader from "../components/Qrreader";
 
 export default function myscanner(){
     return(
@@ -12,7 +12,9 @@ export default function myscanner(){
             {/* Main Content (Scrollable) */}
             <main className="grid grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 {/* Page content goes here */}
-                <div className="flex col-span-6 bg-gray-800 h-72 w-full my-4 justify-center items-center text-white">QR SCANNER</div>
+                <div className="flex py-10 col-span-6 justify-center items-center">
+                    <QrReader />
+                </div>
             </main>
 
             {/* Fixed Footer Navigation */}
