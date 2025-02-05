@@ -42,7 +42,7 @@ async def get_person(name: str, student_id: int):
     if query_result:
         return query_result.get("history", [])
     else:
-        return []
+        return []   
     
 @app.get("/get/student")
 async def get_student_details(name: str, student_id: int):
