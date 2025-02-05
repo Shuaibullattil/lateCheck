@@ -2,8 +2,6 @@ import os
 import cv2
 from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form
 from pymongo import MongoClient
-
-import json
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo.server_api import ServerApi
@@ -105,7 +103,7 @@ async def stream_qr_detection():
                             name = "Jane Doe"
                             student_id = 22021740
                             timing = "2025-01-21 12:00:00"
-                            purpose = "Trial 2"
+                            purpose = "Rayan house demolish"
                             await insert_memory(name, student_id, timing, purpose)
                         else:
                             print("Illegal entry is not allowed!")
