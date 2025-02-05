@@ -10,7 +10,8 @@ const SideBar = () => {
                 <div className=''>
                     <div className='flex h-screen'>
                         <ul className="menu p-4  bg-base-300 text-base-content text-lg ">
-                            <li><a>Student Detail</a></li>
+                            <li><a href='/dashboard'>Dashboard</a></li>
+                            <li><a href='/studentdetail'>Student Detail</a></li>
                             <li><a>Attendance</a></li>
                             <li><a>Late Entries Detail</a></li>
                             <li><a>Responses</a></li>
