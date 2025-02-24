@@ -1,4 +1,5 @@
 import os
+import random
 import cv2
 from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form
 from pymongo import MongoClient
@@ -30,6 +31,58 @@ db = client["sample"]  # Replace with your database names
 collection = db["first"]  # Replace with your collection name
 
 app= FastAPI()
+
+HOSTEL_IDS = {
+    "sarover": "111111",
+    "sahara": "222222",
+    "swaraj": "333333",
+    "sagar": "444444"
+}
+
+def get_available_room():
+    while True:
+        room_no = random.randint(201, 301)
+        if not collection.find_one({"details.room_no": room_no}):
+            return room_no
+
+@app.post("/add/user")
+async def add_user(
+    name: str,
+    address: str,
+    email: str,
+    hostel: str,
+    sem: int,
+    branch: str,
+    phone_no: str,
+    student_id: str
+):
+    if hostel.lower() not in HOSTEL_IDS:
+        raise HTTPException(status_code=400, detail="Invalid hostel name")
+
+    hostel_id = HOSTEL_IDS[hostel.lower()]
+    room_no = get_available_room()
+
+    if collection.find_one({"name": name, "id": student_id}):
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    user_data = {
+        "name": name,
+        "details": {
+            "address": address,
+            "email": email,
+            "hostel": hostel,
+            "sem": sem,
+            "branch": branch,
+            "hostel_id": hostel_id,
+            "phone_no": phone_no,
+            "room_no": room_no,
+            "id": student_id
+        },
+        "history": [],
+    }
+
+    collection.insert_one(user_data)
+    return {"message": "User added successfully"}
 
 @app.get("/get/history")
 async def get_person(name: str, student_id: int):
