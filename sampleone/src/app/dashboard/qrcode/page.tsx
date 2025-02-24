@@ -2,7 +2,7 @@
 import { QRCodeCanvas } from "qrcode.react";
 
 const QrGenerator = () => {
-  const formUrl = "https://192.168.1.8:3000/late-entry-form"; // Change to your actual URL
+  const formUrl = "https://192.168.255.209:3000/late-entry-form"; // Change to your actual URL
 
   return <QRCodeCanvas value={formUrl} size={200} />;
 };
