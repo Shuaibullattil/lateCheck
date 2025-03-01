@@ -99,7 +99,7 @@ async def get_person(name: str, student_id: int):
 async def get_student_details(name: str, student_id: int):
     query_result = collection.find_one(
         {"name": name, "student_id": student_id},
-        {"name": 1, "student_id": 1, "details": 1, "_id": 0}  
+        {"name": 1, "id": 1, "details": 1, "_id": 0}  
     )
     if query_result:
         return query_result
