@@ -29,9 +29,20 @@ except Exception as e:
 
 db = client["sample"]  # Replace with your database names
 collection = db["first"]  # Replace with your collection name
+cluster = db["users"]
 
 app= FastAPI()
 
+@app.get("/user/pass")
+async def get_user(
+    username: str
+):
+    u1=cluster.find_one({"username":username},{"_id":0})
+    if u1:
+        return u1
+    else:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
 HOSTEL_IDS = {
     "sarover": "111111",
     "sahara": "222222",
