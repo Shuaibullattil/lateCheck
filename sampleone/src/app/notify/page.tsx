@@ -23,7 +23,7 @@ export default function notify(){
         {/* Fixed Footer Navigation */}
         <footer className="fixed bottom-0 left-0 w-full shadow-md p-2 z-50">
             <nav className="flex justify-around">
-            <MenuButton />
+                <MenuButton />
             </nav>
         </footer>
     </div>

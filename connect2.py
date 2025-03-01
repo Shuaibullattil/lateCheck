@@ -13,6 +13,8 @@ from typing import Optional
 from pydantic import BaseModel
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from passlib.context import CryptContext
+
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
 
@@ -29,8 +31,32 @@ except Exception as e:
 
 db = client["sample"]  # Replace with your database names
 collection = db["first"]  # Replace with your collection name
+users_collection = db["users"]
 
 app= FastAPI()
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (use ["http://localhost:3000"] for security)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
+
+# Password Hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class User(BaseModel):
+    username: str
+    password: str
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
+
+# Function to verify passwords
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 HOSTEL_IDS = {
     "sarover": "111111",
@@ -171,6 +197,20 @@ async def stream_qr_detection():
         cap.release()
 
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+
+@app.post("/login")
+async def login(user: User):
+    user_data = users_collection.find_one({"username": user.username})
+    
+    if not user_data or not verify_password(user.password, user_data["password"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # Convert MongoDB ObjectId to string (optional)
+    user_data["_id"] = str(user_data["_id"])
+    user_detail = collection.find_one({"details.email": user_data["username"]})
+    user_detail["_id"] = str(user_detail["_id"])
+
+    return JSONResponse(content={"message": "Login successful", "user": user_data,"detail" : user_detail})
 
 
 if __name__ == "__main__":

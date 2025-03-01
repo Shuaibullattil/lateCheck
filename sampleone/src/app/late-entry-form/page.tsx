@@ -8,7 +8,7 @@ const LateEntryForm = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.push("https://192.168.1.8:3000/home");
+        router.push("https://192.168.255.209:3000/home");
         alert(`Late Entry Reason: ${reason}`);
         // Send to backend or store in DB
     };
