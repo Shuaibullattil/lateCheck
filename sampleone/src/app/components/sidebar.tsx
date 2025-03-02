@@ -12,12 +12,10 @@ const SideBar = () => {
                         <ul className="menu p-4  bg-base-300 text-base-content text-lg ">
                             <li><a href='/dashboard'>Dashboard</a></li>
                             <li><a href='/studentdetail'>Student Detail</a></li>
-                            <li><a>Attendance</a></li>
                             <li><a>Late Entries Detail</a></li>
                             <li><a>Responses</a></li>
-                            <li><a>Alert</a></li>
-                            <li><a>Complaints<div className="badge bg-blue-950 text-white">8</div></a></li>
-                            <li><a>Notifications<div className="badge bg-blue-950 text-white">3</div></a></li>
+                            <li><a>Student Complaints<div className="badge bg-blue-950 text-white">8</div></a></li>
+                            <li><a>Student Notifications<div className="badge bg-blue-950 text-white">3</div></a></li>
                             <li><a className='bg-red-700 text-white mt-4'>Logout</a></li>
                         </ul>
                     </div>
