@@ -1,7 +1,30 @@
+"use client"
+
+import { useEffect,useState } from "react";
+import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 import QrReader from "../components/Qrreader";
 
 export default function myscanner(){
+
+    const router = useRouter();
+    const [user, setUser] = useState<any>(null); // Initially null to avoid hydration issues
+
+    useEffect(() => {
+        // Ensure localStorage access happens only on the client
+        if (typeof window === "undefined") return;
+
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            router.replace("/"); // ✅ Use `replace` instead of `push` for instant redirection
+        }
+    }, [router]);
+
+    // Prevent rendering until user state is determined
+    if (!user) return null; 
+
     return(
         <div className="h-screen">
             {/* Fixed Header */}
