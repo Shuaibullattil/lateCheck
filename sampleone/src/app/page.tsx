@@ -22,7 +22,7 @@ export default function Home() {
         alert("Invalid login credentials!");
       }
     } catch (error) {
-      alert("Invalid username or password!");
+      alert("Invalid username or password! from front");
     }
   };
 

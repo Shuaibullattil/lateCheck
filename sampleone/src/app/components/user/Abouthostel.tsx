@@ -1,10 +1,12 @@
+"use client"
+
 import React from 'react'
 
-const Abouthostel = () => {
+const Abouthostel = ({hostel} : {hostel:string}) => {
   return (
     <div className='grid grid-cols-6 shadow-lg w-full rounded-md p-2'>
         <div className='col-span-6 prose'>
-            <h1 className='text-gray-500'>Sahara Hostel</h1>
+            <h1 className='text-gray-500'>{hostel}</h1>
         </div>
         <div className='col-span-5 prose'>
             <p className='text-gray-400 tracking-normal leading-tight font-sans py-2'>Near SOE,CUSAT,Kalamassery, Ernakulam,Kochi, Kerala - 682022</p>

@@ -1,23 +1,37 @@
 "use client"
-import React from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 import Timer from "../components/user/timer";
 import Abouthostel from "../components/user/Abouthostel";
 
 export default function home(){
+
+    const [user, setUser] = useState<any>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+        setUser(JSON.parse(storedUser));
+        } else {
+        router.push("/"); // Redirect to login if no user
+        }
+    }, []);
     return(
 
             <div className="h-screen">
                 {/* Fixed Header */}
                 <header className="fixed top-0 left-0 w-full bg-green-600 shadow-xl p-4 z-50">
                     <h1 className="text-left text-xl text-white font-bold">LateCheck</h1>
+                    <h3 className="text-right text-sm text-white font-bold">{user?.name}</h3>
                 </header>
 
                 {/* Main Content (Scrollable) */}
                 <main className="grid grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
                     {/* Page content goes here */}
                     <div className="col-span-6 my-2">
-                        <Abouthostel />
+                        <Abouthostel hostel = {user?.details?.hostel}/>
                     </div>
                     <div className="col-span-6 my-4">
                         <h2 className="pl-1 text-lg text-gray-400 p-4 font-semibold">Hostel closes in</h2>
