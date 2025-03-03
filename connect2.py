@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
+from datetime import datetime
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -151,15 +152,17 @@ async def get_student_details(name: str, student_id: int):
         raise HTTPException(status_code=404, detail="Student not found")
     
     
-
+@app.post("/update/history")
 async def insert_memory(
     name: str,
     student_id: int,
-    timing: str,
     purpose: str,
 ):
+    # Get the current date and time
+    current_time = datetime.now()  
+
     history = {
-        'timing': timing,
+        'timing': current_time,  # Automatically storing the current timestamp
         'purpose': purpose
     }
 
