@@ -71,6 +71,24 @@ def get_available_room():
         if not collection.find_one({"details.room_no": room_no}):
             return room_no
 
+def student_serializer(student):
+    return {
+        "id": str(student["_id"]),
+        "name": student["name"],
+        "hostel_id": student["details"]["hostel_id"],
+        "branch": student["details"]["branch"],
+        "sem": student["details"]["sem"],
+        "hostel": student["details"]["hostel"],
+        "room_no": student["details"]["room_no"],
+        "phone_no": student["details"]["phone_no"],
+        "email": student["details"]["email"],
+    }
+
+@app.get("/students")
+def get_students():
+    students = collection.find()
+    return [student_serializer(student) for student in students]
+
 @app.post("/add/user")
 async def add_user(
     name: str,
@@ -131,6 +149,7 @@ async def get_student_details(name: str, student_id: int):
         return query_result
     else:
         raise HTTPException(status_code=404, detail="Student not found")
+    
     
 
 async def insert_memory(
