@@ -199,9 +199,9 @@ async def stream_qr_detection():
                         detected_qr_data.add(data)
                         if data == "sahara":
                             name = "Jane Doe"
-                            student_id = 22021740
+                            student_id = 12341111
                             timing = "2025-01-21 12:00:00"
-                            purpose = "Rayan house demolish"
+                            purpose = "Going to a friend's room"
                             await insert_memory(name, student_id, timing, purpose)
                         else:
                             print("Illegal entry is not allowed!")
