@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
+from datetime import datetime
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -70,6 +71,24 @@ def get_available_room():
         room_no = random.randint(201, 301)
         if not collection.find_one({"details.room_no": room_no}):
             return room_no
+
+def student_serializer(student):
+    return {
+        "id": str(student["_id"]),
+        "name": student["name"],
+        "hostel_id": student["details"]["hostel_id"],
+        "branch": student["details"]["branch"],
+        "sem": student["details"]["sem"],
+        "hostel": student["details"]["hostel"],
+        "room_no": student["details"]["room_no"],
+        "phone_no": student["details"]["phone_no"],
+        "email": student["details"]["email"],
+    }
+
+@app.get("/students")
+def get_students():
+    students = collection.find()
+    return [student_serializer(student) for student in students]
 
 @app.post("/add/user")
 async def add_user(
@@ -132,15 +151,18 @@ async def get_student_details(name: str, student_id: int):
     else:
         raise HTTPException(status_code=404, detail="Student not found")
     
-
+    
+@app.post("/update/history")
 async def insert_memory(
     name: str,
     student_id: int,
-    timing: str,
     purpose: str,
 ):
+    # Get the current date and time
+    current_time = datetime.now()  
+
     history = {
-        'timing': timing,
+        'timing': current_time,  # Automatically storing the current timestamp
         'purpose': purpose
     }
 
@@ -180,9 +202,9 @@ async def stream_qr_detection():
                         detected_qr_data.add(data)
                         if data == "sahara":
                             name = "Jane Doe"
-                            student_id = 22021740
+                            student_id = 12341111
                             timing = "2025-01-21 12:00:00"
-                            purpose = "Rayan house demolish"
+                            purpose = "Going to a friend's room"
                             await insert_memory(name, student_id, timing, purpose)
                         else:
                             print("Illegal entry is not allowed!")

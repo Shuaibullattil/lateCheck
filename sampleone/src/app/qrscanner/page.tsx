@@ -1,14 +1,13 @@
 "use client"
-
 import { useEffect,useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 import QrReader from "../components/Qrreader";
 
-export default function myscanner(){
+export default function Myscanner(){
 
     const router = useRouter();
-    const [user, setUser] = useState<any>(null); // Initially null to avoid hydration issues
+    const [user, setUser] = useState<unknown>(null); // Initially null to avoid hydration issues
 
     useEffect(() => {
         // Ensure localStorage access happens only on the client
