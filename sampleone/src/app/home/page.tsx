@@ -22,7 +22,7 @@ export default function Home() {
     }, [router]);
 
     // Prevent rendering until user state is determined
-    if (!user) return null; 
+    if (!user) return null;
 
     return (
         <div className="h-screen">
@@ -32,8 +32,8 @@ export default function Home() {
                 <h3 className="text-right text-sm text-white font-bold">{user?.name}</h3>
             </header>
 
-            {/* Main Content (Scrollable) */}
-            <main className="grid grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
+            {/* Main Content (Scrogrid llable) */}
+            <main className="grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 <div className="col-span-6 my-2">
                     <Abouthostel hostel={user?.details?.hostel} />
                 </div>

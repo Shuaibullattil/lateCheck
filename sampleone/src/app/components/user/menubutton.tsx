@@ -22,13 +22,18 @@ const MenuButton = () => {
           </a>
         </li>
         <li>
+          <a href='/notify'>
+            <img src="/notification.svg" alt="" className='h-6 w-6' />
+          </a>
+        </li>
+        <li>
           <a href='/qrscanner'>
             <img src="/scan.svg" alt="" className='h-6 w-6' />
           </a>
         </li>
         <li>
-          <a href='/notify'>
-            <img src="/notification.svg" alt="" className='h-6 w-6' />
+          <a href='/chat'>
+            <img src="/black send-icon.svg" alt="" className='h-6 w-6' />
           </a>
         </li>
         <li>
