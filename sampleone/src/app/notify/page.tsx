@@ -39,9 +39,6 @@ export default function notify(){
             <div className="flex col-span-6 justify-center items-center">
                 <h1 className="text-gray-400 font-black text-3xl py-4">Notifications</h1>
             </div>
-            <div className="col-span-6">
-                <Chatbubble />
-            </div>
         </main>
 
         {/* Fixed Footer Navigation */}

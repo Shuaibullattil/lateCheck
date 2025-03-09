@@ -71,6 +71,16 @@ def get_available_room():
         room_no = random.randint(201, 301)
         if not collection.find_one({"details.room_no": room_no}):
             return room_no
+        
+def convert_datetime(obj):
+    """ Recursively converts datetime fields to string """
+    if isinstance(obj, dict):
+        return {k: convert_datetime(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_datetime(i) for i in obj]
+    elif isinstance(obj, datetime):
+        return obj.isoformat()  # Converts datetime to a JSON-serializable format
+    return obj
 
 def student_serializer(student):
     return {
@@ -155,7 +165,7 @@ async def get_student_details(name: str, student_id: int):
 @app.post("/update/history")
 async def insert_memory(
     name: str,
-    student_id: int,
+    hostel_id: str,
     purpose: str,
 ):
     # Get the current date and time
@@ -167,8 +177,8 @@ async def insert_memory(
     }
 
     result = collection.update_one(
-        {'name': name, 'student_id': student_id},
-        {'$push': {'history': history}}
+        {'name': name, 'details.hostel_id': hostel_id},
+        {'$push': {'history': convert_datetime(history)}}
     )
 
     if result.matched_count == 0:
@@ -220,6 +230,7 @@ async def stream_qr_detection():
 
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
 
+
 @app.post("/login")
 async def login(user: User):
     user_data = users_collection.find_one({"username": user.username})
@@ -227,12 +238,20 @@ async def login(user: User):
     if not user_data or not verify_password(user.password, user_data["password"]):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    # Convert MongoDB ObjectId to string (optional)
+    # Convert ObjectId and datetime fields
     user_data["_id"] = str(user_data["_id"])
-    user_detail = collection.find_one({"details.email": user_data["username"]})
-    user_detail["_id"] = str(user_detail["_id"])
+    user_data = convert_datetime(user_data)
 
-    return JSONResponse(content={"message": "Login successful", "user": user_data,"detail" : user_detail})
+    user_detail = collection.find_one({"details.email": user_data["username"]})
+
+    if user_detail:
+        user_detail["_id"] = str(user_detail["_id"])
+        user_detail = convert_datetime(user_detail)
+    else:
+        user_detail = {}
+
+    return JSONResponse(content={"message": "Login successful", "user": user_data, "detail": user_detail})
+
 
 
 if __name__ == "__main__":
