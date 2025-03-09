@@ -30,8 +30,8 @@ except Exception as e:
     print(e)
 
 
-db = client["sample"]  # Replace with your database names
-collection = db["first"]  # Replace with your collection name
+db = client["sample"]  
+collection = db["first"]  
 users_collection = db["users"]
 
 app= FastAPI()
@@ -185,6 +185,28 @@ async def insert_memory(
         print("User not found")
         return
     print("History data inserted successfully")
+
+@app.get("/students/today")
+async def get_students_with_today_entries():
+    # Get the start and end of the current day
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Query MongoDB for students with at least one history entry for today
+    students = collection.find({
+        "history.timing": {
+            "$gte": today_start,
+            "$lte": today_end
+        }
+    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "_id": 0})
+
+    # Convert the MongoDB cursor to a list of dictionaries
+    result = []
+    for student in students:
+        #student["_id"] = str(student["_id"])  # Convert ObjectId to string
+        result.append(student)
+
+    return {"students": result}
 
 @app.get("/stream/qr-detection")
 async def stream_qr_detection():
