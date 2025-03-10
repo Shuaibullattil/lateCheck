@@ -72,15 +72,10 @@ def get_available_room():
         if not collection.find_one({"details.room_no": room_no}):
             return room_no
         
-def convert_datetime(obj):
-    """ Recursively converts datetime fields to string """
-    if isinstance(obj, dict):
-        return {k: convert_datetime(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [convert_datetime(i) for i in obj]
-    elif isinstance(obj, datetime):
-        return obj.isoformat()  # Converts datetime to a JSON-serializable format
-    return obj
+def convert_datetime(data):
+    if "timing" in data and isinstance(data["timing"], datetime):
+        data["timing"] = data["timing"].isoformat()  # Convert datetime to string
+    return data
 
 def student_serializer(student):
     return {
@@ -162,29 +157,39 @@ async def get_student_details(name: str, student_id: int):
         raise HTTPException(status_code=404, detail="Student not found")
     
     
+
+class HistoryRequest(BaseModel):
+    name: str
+    hostel_id: str
+    purpose: str
+
+def convert_datetime(obj):
+    if isinstance(obj, dict):
+        return {k: convert_datetime(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_datetime(i) for i in obj]
+    elif isinstance(obj, datetime):
+        return obj.isoformat()  # Convert datetime to string
+    return obj
+
 @app.post("/update/history")
-async def insert_memory(
-    name: str,
-    hostel_id: str,
-    purpose: str,
-):
-    # Get the current date and time
-    current_time = datetime.now()  
+async def insert_memory(request: HistoryRequest):
+    current_time = datetime.now()
 
     history = {
-        'timing': current_time,  # Automatically storing the current timestamp
-        'purpose': purpose
+        'timing': current_time,
+        'purpose': request.purpose
     }
 
     result = collection.update_one(
-        {'name': name, 'details.hostel_id': hostel_id},
+        {'name': request.name, 'details.hostel_id': request.hostel_id},
         {'$push': {'history': convert_datetime(history)}}
     )
 
     if result.matched_count == 0:
-        print("User not found")
-        return
-    print("History data inserted successfully")
+        return {"message": "User not found"}
+
+    return {"message": "History data inserted successfully"}
 
 @app.get("/students/today")
 async def get_students_with_today_entries():
