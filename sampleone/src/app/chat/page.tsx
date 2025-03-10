@@ -82,9 +82,11 @@ export default function Chat() {
                             onChange={(e) => setMessage(e.target.value)}
                             className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
                         />
-                        <button type="submit" className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700">
-                            <img src="/send-icon.svg" alt="Send" className="h-6 w-6" />
-                        </button>
+                        <div className="px-2">
+                            <button type="submit" className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700">
+                                <img src="/send-icon.svg" alt="Send" className="h-6 w-6" />
+                            </button>
+                        </div>
                     </form>
                 </div>
             </footer>
