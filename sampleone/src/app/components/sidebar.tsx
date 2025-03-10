@@ -15,7 +15,7 @@ const SideBar = () => {
                             <li><a>Late Entries Detail</a></li>
                             <li><a>Responses</a></li>
                             <li><a>Student Complaints<div className="badge bg-blue-950 text-white">8</div></a></li>
-                            <li><a>Student Notifications<div className="badge bg-blue-950 text-white">3</div></a></li>
+                            <li><a href='/notifications'>Student Notifications<div className="badge bg-blue-950 text-white">3</div></a></li>
                             <li><a className='bg-red-700 text-white mt-4'>Logout</a></li>
                         </ul>
                     </div>

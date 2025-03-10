@@ -29,7 +29,7 @@ export default function Dashboard() {
             {/* Top Bar */}
             <div className='grid grid-cols-12 bg-slate-400 p-4'>
                 <div className='prose items-center col-span-12'>
-                    <h1 className='text-white'>DashBoard</h1>
+                    <h1 className='text-white'>Student Notification</h1>
                     <h5 className='text-white'>{weekDay} | {formattedTime}</h5>
                 </div>
             </div>
