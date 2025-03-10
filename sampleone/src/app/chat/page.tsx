@@ -59,7 +59,7 @@ export default function Chat() {
             {/* Main Content (Scrollable) */}
             <main className="flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 <div className="flex justify-center items-center">
-                    <h1 className="text-gray-400 font-black text-3xl py-4">Complaints</h1>
+                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages</h1>
                 </div>
 
                 {/* Display Messages */}
