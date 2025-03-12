@@ -17,6 +17,7 @@ from passlib.context import CryptContext
 from datetime import datetime
 from typing import Dict
 import asyncio
+from bson import ObjectId
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -291,19 +292,33 @@ print(active_connections)
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
     active_connections[user_id] = websocket
+    print(f"User {user_id} connected")
 
     try:
         while True:
             data = await websocket.receive_json()
             receiver_id = data.get("receiver_id")
             message = data.get("message")
-            print(data)
 
+            current_time = datetime.now()
+            time = convert_datetime(current_time)
+            message_data = {
+                "sender_id": user_id,
+                "receiver_id": receiver_id,
+                "message": message,
+                "timestamp": time,
+            }
+
+            # Store message in the database
+            message_collection.insert_one(message_data)
+
+            # Forward message to receiver if online
             if receiver_id in active_connections:
                 await active_connections[receiver_id].send_json({
                     "sender_id": user_id,
                     "receiver_id": receiver_id,
-                    "message": message
+                    "message": message,
+                    "timestamp":time,
                 })
 
     except WebSocketDisconnect:

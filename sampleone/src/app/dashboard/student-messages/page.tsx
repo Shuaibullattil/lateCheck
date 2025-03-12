@@ -40,7 +40,7 @@ export default function Dashboard() {
                 <div className='col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8'>
                     <div className='grid grid-cols-5 h-20 bg-white my-2 hover:bg-blue-300'>
                         <div className='flex col-span-1  justify-center items-center'>
-                            <div className="avatar">
+                        <div className="avatar">
                                 <div className="w-16 rounded-full">
                                     <img src="https://i.pinimg.com/474x/69/78/19/69781905dd57ba144ab71ca4271ab294.jpg" />
                                 </div>
@@ -49,11 +49,11 @@ export default function Dashboard() {
                         <div className='flex flex-col col-span-3  justify-center items-center px-4'>
                             <div className='flex w-full justify-start items-end'>
                                 <p className='text-lg font-bold'>Shuaib Ullattil</p>
-                            </div>
+                    </div>
                             <div className='flex w-full justify-start items-start'>
                                 <p className='text-xs font-medium text-gray-500'>i was late due to rain</p>
-                            </div>
-                            
+                    </div>
+
                         </div>
                         <div className='flex flex-col col-span-1  justify-center items-center pr-4'>
                             <div className="text-right">

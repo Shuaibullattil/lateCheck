@@ -14,7 +14,7 @@ interface ChatProps {
   receiverId: string;
 }
 
-export default function Chat({ userId, receiverId }: ChatProps) {
+export default function Chat({ userId, receiverId,}: ChatProps) {
   const [message, setMessage] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -74,9 +74,9 @@ export default function Chat({ userId, receiverId }: ChatProps) {
   };
 
   return (
-    <div className="p-4 rounded shadow-md w-full">
+    <div className="p-4 rounded shadow-md w-full bottom-0">
       <h2 className="text-lg font-bold mb-2">Inbox : Shuaib</h2>
-      <div className="h-96 overflow-y-auto border p-2">
+      <div className="h-96 overflow-y-auto border p-2 bottom-0">
         <div className="flex flex-col gap-2">
           {messages.map((msg, index) => (
             <Chatbubble 
@@ -90,7 +90,7 @@ export default function Chat({ userId, receiverId }: ChatProps) {
         </div>
       </div>
       <div className="mt-2 flex">
-      <form onSubmit={handleSubmit} className="flex w-full">
+      <form onSubmit={handleSubmit} className="flex w-full bottom-0">
           <input
               type="text"
               placeholder="Type a message..."

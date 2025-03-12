@@ -71,7 +71,7 @@ export default function Page() {
             </header>
             <main className="flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 <div className="flex justify-center items-center">
-                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages to warden</h1>
+                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages to </h1>
                 </div>
                 <div className="flex flex-col gap-2">
                     {messages.map((msg, index) => (
