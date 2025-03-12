@@ -1,24 +1,26 @@
-import React from 'react'
+import React from "react";
 
-const Chatbubble = ({message,timestamp} : {message:String,timestamp:string}) => {
-  return (
-    <div>
-        <div className="chat chat-end">
-            <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://i.pinimg.com/474x/69/78/19/69781905dd57ba144ab71ca4271ab294.jpg" />
-                </div>
-            </div>
-            <div className="chat-footer pl-2 text-xs font-light text-gray-400">
-                {timestamp}
-            </div>
-            <div className="chat-bubble">{message}</div>
-           
-        </div>
-    </div>
-  )
+interface ChatbubbleProps {
+  message: string;
+  timestamp: string;
+  isSender: boolean;
 }
 
-export default Chatbubble
+const Chatbubble: React.FC<ChatbubbleProps> = ({ message, timestamp, isSender, }) => {
+  return (
+    <div className={`chat ${isSender ? "chat-end" : "chat-start"}`}>
+      <div className="chat-image avatar">
+        <div className="w-10 rounded-full">
+          <img
+            alt="User Avatar"
+            src="https://i.pinimg.com/474x/18/18/be/1818be30919df15146268441cd6a1c3f.jpg"
+          />
+        </div>
+      </div>
+      <div className="chat-footer pl-2 text-xs font-light text-gray-400">{timestamp}</div>
+      <div className="chat-bubble">{message}</div>
+    </div>
+  );
+};
+
+export default Chatbubble;

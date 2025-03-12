@@ -4,22 +4,23 @@ import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 import Chatbubble from "../components/user/Chatbubble";
 
-export default function Chat() {
+export default function Page() {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [message, setMessage] = useState("");
-    
-    // Correct state type: Array of message objects
-    const [messages, setMessages] = useState<{ message: string; timestamp: string }[]>([]);
-    
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const [senderId, setSenderId] = useState("");
+    const [receiverId, setReceiverId] = useState("saharawardenofficial@gmail.com");
+    const [messages, setMessages] = useState<{ message: string; timestamp: string; sender_id: string }[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
-
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+            setSenderId(parsedUser?.details?.email);
         } else {
             router.replace("/");
         }
@@ -29,49 +30,61 @@ export default function Chat() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    useEffect(() => {
+        if (!senderId) return;
+        const ws = new WebSocket(`ws://localhost:8000/ws/${senderId}`);
+        setSocket(ws);
+    
+        ws.onmessage = (event) => {
+            const newMessage = JSON.parse(event.data);
+            if (
+                (newMessage.sender_id === senderId && newMessage.receiver_id === receiverId) ||
+                (newMessage.sender_id === receiverId && newMessage.receiver_id === senderId)
+            ) {
+                setMessages((prev) => [...prev, newMessage]);
+            }
+        };
+    
+        return () => ws.close();
+    }, [senderId, receiverId]);
+
     if (!user) return null;
 
-    // ✅ Corrected handleSubmit function
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!message.trim()) return;
+        if (!message.trim() || !socket) return;
 
-        // Generate timestamp
         const timestamp = new Date().toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
+            day: "2-digit", month: "short", year: "numeric"
         });
 
-        // Add new message
-        setMessages([...messages, { message, timestamp }]);
-
-        setMessage(""); // Clear input
+        const newMessage = { sender_id: senderId, receiver_id: receiverId, message, timestamp };
+        socket.send(JSON.stringify(newMessage));
+        setMessages([...messages, newMessage]);
+        setMessage("");
     };
 
     return (
         <div className="h-screen flex flex-col">
-            {/* Fixed Header */}
             <header className="fixed top-0 left-0 w-full bg-green-600 shadow-xl p-4 z-50">
                 <h1 className="text-left text-xl text-white font-bold">LateCheck</h1>
             </header>
-
-            {/* Main Content (Scrollable) */}
             <main className="flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 <div className="flex justify-center items-center">
-                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages</h1>
+                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages to warden</h1>
                 </div>
-
-                {/* Display Messages */}
                 <div className="flex flex-col gap-2">
                     {messages.map((msg, index) => (
-                        <Chatbubble key={index} message={msg.message} timestamp={msg.timestamp} />
+                        <Chatbubble 
+                            key={index} 
+                            message={msg.message} 
+                            timestamp={msg.timestamp} 
+                            isSender={msg.sender_id === senderId}
+                        />
                     ))}
                     <div ref={messagesEndRef} />
                 </div>
             </main>
-
-            {/* Fixed Footer Navigation */}
             <footer className="fixed bottom-0 left-0 w-full shadow-md p-2 z-50 bg-white">
                 <div className="flex justify-center items-center gap-2 p-2 bg-gray-200 rounded-xl w-full max-w-md mx-auto">
                     <form onSubmit={handleSubmit} className="flex w-full">

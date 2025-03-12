@@ -1,7 +1,7 @@
 import os
 import random
 import cv2
-from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form
+from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect
 from pymongo import MongoClient
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +15,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
 from datetime import datetime
+from typing import Dict
+import asyncio
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -33,6 +35,7 @@ except Exception as e:
 db = client["sample"]  
 collection = db["first"]  
 users_collection = db["users"]
+message_collection = db["messages"]
 
 app= FastAPI()
 
@@ -280,7 +283,43 @@ async def login(user: User):
     return JSONResponse(content={"message": "Login successful", "user": user_data, "detail": user_detail})
 
 
+# Store connected users
+active_connections: Dict[str, WebSocket] = {}
+print(active_connections)
+
+@app.websocket("/ws/{user_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str):
+    await websocket.accept()
+    active_connections[user_id] = websocket
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            receiver_id = data.get("receiver_id")
+            message = data.get("message")
+            print(data)
+
+            if receiver_id in active_connections:
+                await active_connections[receiver_id].send_json({
+                    "sender_id": user_id,
+                    "receiver_id": receiver_id,
+                    "message": message
+                })
+
+    except WebSocketDisconnect:
+        print(f"User {user_id} disconnected")
+        active_connections.pop(user_id, None)
+    except asyncio.CancelledError:
+        print(f"WebSocket for {user_id} was cancelled")  # ✅ Prevent crash on disconnect
+        active_connections.pop(user_id, None)
+    except Exception as e:
+        print(f"Error: {e}")  # ✅ Catch unexpected errors
+    finally:
+        await websocket.close()
+
+
 
 if __name__ == "__main__":
     import uvicorn
+    #uvicorn.run("connect2:app", host="0.0.0.0", port=8000, reload=True)
     uvicorn.run(app, host="127.0.0.1", port=8000)
