@@ -14,7 +14,7 @@ type Student = {
 
 const StudentDetailTableEntry = ({ student }: { student: Student }) => {
   return (
-    <tr className='text-left font-bold'>
+    <tr className='text-left font-normal'>
         <td className='w-32'>{student.hostel_id}</td>
         <td>{student.name}</td>
         <td className='hidden sm:table-cell w-16'>{student.branch}</td>
