@@ -34,25 +34,31 @@ export default function Home() {
 
             {/* Main Content (Scrogrid llable) */}
             <main className="grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
-                <div className="col-span-6 my-2">
-                    <Abouthostel hostel={user?.details?.hostel} />
+                <div className="flex justify-center col-span-6 my-2">
+                    <div className="flex justify-center w-80">
+                        <Abouthostel hostel={user?.details?.hostel} />
+                    </div>
                 </div>
-                <div className="col-span-6 my-4">
-                    <h2 className="pl-1 text-lg text-gray-400 p-4 font-semibold">Hostel closes in</h2>
-                    <Timer />
+                <div className="flex justify-center col-span-6 my-4">
+                    <div className="flex-col justify-center w-80">
+                        <h2 className="pl-1 text-lg text-gray-400 p-4 font-semibold">Hostel closes in</h2>
+                        <Timer />
+                    </div>  
                 </div>
-                <div className="grid grid-cols-6 col-span-6 bg-green-800 h-24 rounded-lg prose shadow-sm my-4">
-                    <div className="col-span-6 text-center">
-                        <h2 className="text-blue-50 mt-2 mb-0">Today's menu</h2>
-                    </div>
-                    <div className="col-span-2 text-white text-center">
-                        <p className="font-thin m-2 leading-tight">Idli Sambar</p>
-                    </div>
-                    <div className="col-span-2 text-white text-center">
-                        <p className="font-thin m-2">Sadya</p>
-                    </div>
-                    <div className="col-span-2 text-white text-center">
-                        <p className="font-thin m-2">Biriyani</p>
+                <div className="flex justify-center">
+                    <div className="grid grid-cols-6 col-span-6 bg-green-800 h-24 rounded-lg prose shadow-sm my-4 w-80">
+                        <div className="col-span-6 text-center">
+                            <h2 className="text-blue-50 mt-2 mb-0">Today's menu</h2>
+                        </div>
+                        <div className="col-span-2 text-white text-center">
+                            <p className="font-thin m-2 leading-tight">Idli Sambar</p>
+                        </div>
+                        <div className="col-span-2 text-white text-center">
+                            <p className="font-thin m-2">Sadya</p>
+                        </div>
+                        <div className="col-span-2 text-white text-center">
+                            <p className="font-thin m-2">Biriyani</p>
+                        </div>
                     </div>
                 </div>
             </main>

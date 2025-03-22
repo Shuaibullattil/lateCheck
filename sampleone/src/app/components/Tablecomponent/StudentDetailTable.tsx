@@ -51,7 +51,7 @@ const StudentDetailTable = () => {
       </div>
 
       {/* Student Table */}
-      <table className="table table-zebra">
+      <table className="table">
         <thead>
           <tr className="bg-blue-950 text-white">
             <th className="px-4 py-2">Hostel ID</th>
