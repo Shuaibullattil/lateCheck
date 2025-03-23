@@ -35,7 +35,7 @@ export default function Home() {
             {/* Main Content (Scrogrid llable) */}
             <main className="grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
                 <div className="flex justify-center col-span-6 my-2">
-                    <div className="flex justify-center w-80">
+                    <div className="flex justify-center w-80 pt-8">
                         <Abouthostel hostel={user?.details?.hostel} />
                     </div>
                 </div>

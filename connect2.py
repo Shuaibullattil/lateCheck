@@ -15,7 +15,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
 from datetime import datetime
-from typing import Dict
+from typing import Dict,List
 import asyncio
 from bson import ObjectId
 
@@ -55,6 +55,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class User(BaseModel):
     username: str
     password: str
+
+class Message(BaseModel):
+    sender_id: str
+    receiver_id: str
+    message: str
+    timestamp: str
+
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -299,10 +306,16 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             data = await websocket.receive_json()
             receiver_id = data.get("receiver_id")
             message = data.get("message")
+            sender_doc = collection.find_one({"details.email": user_id}, {"name": 1, "_id": 0})
+            if sender_doc:
+                sender_name = sender_doc.get("name")
+            else:
+                sender_name = "unknown"  # Default if user not found
 
             current_time = datetime.now()
             time = convert_datetime(current_time)
             message_data = {
+                "sender_name":sender_name,
                 "sender_id": user_id,
                 "receiver_id": receiver_id,
                 "message": message,
@@ -315,6 +328,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             # Forward message to receiver if online
             if receiver_id in active_connections:
                 await active_connections[receiver_id].send_json({
+                    "sender_name":sender_name,
                     "sender_id": user_id,
                     "receiver_id": receiver_id,
                     "message": message,
@@ -325,12 +339,48 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
         print(f"User {user_id} disconnected")
         active_connections.pop(user_id, None)
     except asyncio.CancelledError:
-        print(f"WebSocket for {user_id} was cancelled")  # ✅ Prevent crash on disconnect
+        print(f"WebSocket for {user_id} was cancelled")  #Prevent crash on disconnect
         active_connections.pop(user_id, None)
     except Exception as e:
-        print(f"Error: {e}")  # ✅ Catch unexpected errors
+        print(f"Error: {e}")  #Catch unexpected errors
     finally:
         await websocket.close()
+
+def message_serializer(message):
+    """Convert MongoDB document to JSON serializable format"""
+    message["_id"] = str(message["_id"])  # Convert ObjectId to string
+    return message
+
+@app.get("/inbox/{receiver_id}")
+def get_inbox(receiver_id: str):
+    try:
+        # Get all messages for the receiver
+        all_messages = list(message_collection.find({"receiver_id": receiver_id}))
+        
+        # Create a dictionary to store the latest message from each sender
+        latest_messages = {}
+        
+        # Process each message
+        for message in all_messages:
+            sender_id = message.get("sender_id")
+            timestamp = message.get("timestamp")
+            
+            # If sender not in dictionary or this message is newer
+            if sender_id not in latest_messages or timestamp > latest_messages[sender_id].get("timestamp"):
+                latest_messages[sender_id] = message
+        
+        # Get the list of latest messages and sort by timestamp (newest first)
+        result = list(latest_messages.values())
+        result.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        
+        # Limit to 100 results
+        result = result[:100]
+        
+        # Serialize and return
+        return [message_serializer(message) for message in result]
+    except Exception as e:
+        print(f"Database error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 
