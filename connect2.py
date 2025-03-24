@@ -299,10 +299,12 @@ print(active_connections)
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
     active_connections[user_id] = websocket
+    print(active_connections)
     print(f"User {user_id} connected")
 
     try:
         while True:
+            print("enter while loop")
             data = await websocket.receive_json()
             receiver_id = data.get("receiver_id")
             message = data.get("message")
@@ -334,6 +336,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     "message": message,
                     "timestamp":time,
                 })
+                print("working")
 
     except WebSocketDisconnect:
         print(f"User {user_id} disconnected")

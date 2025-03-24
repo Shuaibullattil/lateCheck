@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import MenuButton from "../components/user/menubutton";
 import Chatbubble from "../components/user/Chatbubble";
 
 export default function Page() {
@@ -10,10 +9,12 @@ export default function Page() {
     const [message, setMessage] = useState("");
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [senderId, setSenderId] = useState("");
-    const [receiverId, setReceiverId] = useState("saharawardenofficial@gmail.com");
     const [messages, setMessages] = useState<{ message: string; timestamp: string; sender_id: string }[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+
+    const receiverId = "saharawardenofficial@gmail.com";
+    
     useEffect(() => {
         if (typeof window === "undefined") return;
         const storedUser = localStorage.getItem("user");
