@@ -330,18 +330,20 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 "timestamp": timestamp,
             }
 
-            # Store message in the database
-            message_collection.insert_one(message_data)
-
-            # Forward message to receiver if online
             if receiver_id in active_connections:
-                await active_connections[receiver_id].send_json({
-                    "sender_name":sender_name,
-                    "sender_id": user_id,
-                    "receiver_id": receiver_id,
-                    "message": message,
-                    "timestamp":time,
-                })
+                receiver_socket = active_connections[receiver_id]
+                
+                print(f"Receiver {receiver_id} is connected: {receiver_socket}")
+                print(f"Sending message: {message_data}")
+                
+                try:
+                    await receiver_socket.send_json(message_data)
+                    message_collection.insert_one(message_data)
+                    print("Message successfully sent over WebSocket")
+                except Exception as e:
+                    print(f"WebSocket send error: {e}")
+            else:
+                print(f"Receiver {receiver_id} is NOT connected.")
 
     except WebSocketDisconnect:
         print(f"User {user_id} disconnected")

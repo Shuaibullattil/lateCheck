@@ -4,11 +4,13 @@ import axios from "axios";
 import Chatbubble from "./user/Chatbubble";
 
 interface Message {
+  sender_name : string;
   message: string;
   timestamp: string;
   sender_id: string;
   receiver_id: string;
 }
+
 
 interface ChatProps {
   userId: string;
@@ -80,14 +82,18 @@ export default function Chat({ userId, receiverId }: ChatProps) {
 
     const timestamp = new Date().toISOString();
 
+
     const newMessage: Message = {
+      sender_name : userId,
       sender_id: userId,
       receiver_id: receiverId,
       message,
       timestamp,
     };
+    
 
     socket.send(JSON.stringify(newMessage));
+    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
   };
 
