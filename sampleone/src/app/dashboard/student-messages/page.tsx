@@ -1,74 +1,95 @@
-// pages/dashboard.tsx
-import React from 'react';
-import SideBar from '../../components/sidebar';
-import Chat from '../../components/Chat'
+"use client";
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import SideBar from "../../components/sidebar";
+import Chat from "../../components/Chat";
+import Inbox from "../../components/Inbox";
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const today = new Date();
 const weekDay = daysOfWeek[today.getDay()];
 
 const now = new Date();
-let hours = now.getHours(); // Get the hour (0-23)
-const minutes = now.getMinutes(); // Get the minutes (0-59)
+let hours = now.getHours();
+const minutes = now.getMinutes();
+const ampm = hours >= 12 ? "PM" : "AM";
+hours = hours % 12 || 12;
+const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${ampm}`;
 
-// Determine AM/PM
-const ampm = hours >= 12 ? 'PM' : 'AM';
-
-// Convert to 12-hour format
-hours = hours % 12;
-hours = hours ? hours : 12; // Handle the case when hours == 0 (midnight)
-
-// Format minutes to always show two digits
-const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
-
+type Message = {
+  sender_name: string;
+  sender_id: string;
+  receiver_id: string;
+  message: string;
+  timestamp: string;
+};
 
 export default function Dashboard() {
-    return (
-        <div>
-            <div className='grid grid-cols-12 bg-slate-400 '>
-                <div className=' prose items-center col-span-12 ml-8 mt-4 mb-4'>
-                    <h1 className='m-0 text-white'>Student Messages</h1>
-                    <h5 className='m-0 text-white'>{weekDay} | {formattedTime}</h5>
-                </div>
-            </div>
-            <div className='grid grid-cols-12'>
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [receiverId, setReceiverId] = useState("");
+  const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
 
-                <div className='sm:col-span-2 hidden md:block bg-base-300 h-100vw'>
-                    <SideBar />
-                </div>
+  // Function to fetch initial messages (only once)
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
 
-                <div className='col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8'>
-                    <div className='grid grid-cols-5 h-20 bg-white my-2 hover:bg-blue-300'>
-                        <div className='flex col-span-1  justify-center items-center'>
-                        <div className="avatar">
-                                <div className="w-16 rounded-full">
-                                    <img src="https://i.pinimg.com/474x/69/78/19/69781905dd57ba144ab71ca4271ab294.jpg" />
-                                </div>
-                            </div>
-                        </div>
-                        <div className='flex flex-col col-span-3  justify-center items-center px-4'>
-                            <div className='flex w-full justify-start items-end'>
-                                <p className='text-lg font-bold'>Shuaib Ullattil</p>
-                    </div>
-                            <div className='flex w-full justify-start items-start'>
-                                <p className='text-xs font-medium text-gray-500'>i was late due to rain</p>
-                    </div>
+  useEffect(() => {
+    fetchMessages(); // Fetch messages only once at the start
 
-                        </div>
-                        <div className='flex flex-col col-span-1  justify-center items-center pr-4'>
-                            <div className="text-right">
-                                <p className="text-xl font-bold">12:00</p>
-                                <p className="text-xs font-semibold uppercase text-gray-600">10 Mar 2025</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className=' flex col-span-6 justify-center items-center bg-white'>
-                <Chat userId="saharawardenofficial@gmail.com" receiverId="shuaibullattil7768@gmail.com" />
-                </div>
+    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-            </div>
+    ws.onmessage = (event) => {
+      const newMessage: Message = JSON.parse(event.data);
+      setMessages((prevMessages) => [...prevMessages, newMessage]); // Append new messages
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket Disconnected");
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [receiverId]);
+
+  const handleMessageClick = (message: Message) => {
+    setReceiverId(message.sender_id);
+  };
+
+  return (
+    <div>
+      <div className="grid grid-cols-12 bg-slate-400">
+        <div className="prose items-center col-span-12 ml-8 mt-4 mb-4">
+          <h1 className="m-0 text-white">Student Messages</h1>
+          <h5 className="m-0 text-white">{weekDay} | {formattedTime}</h5>
         </div>
-        
-    );
+      </div>
+      <div className="grid grid-cols-12">
+        <div className="sm:col-span-2 hidden md:block bg-base-300 h-100vw">
+          <SideBar />
+        </div>
+        <div className="col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8">
+          {messages.map((message, index) => (
+            <button key={index} onClick={() => handleMessageClick(message)}>
+              <Inbox message={message} />
+            </button>
+          ))}
+        </div>
+        <div className="flex col-span-6 justify-center items-start bg-white">
+          <Chat userId={userId} receiverId={receiverId} />
+        </div>
+      </div>
+    </div>
+  );
 }

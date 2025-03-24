@@ -1,4 +1,5 @@
 import React from "react";
+import { formatDateToDdMmYyyy } from "@/utils/formattime";
 
 interface ChatbubbleProps {
   message: string;
@@ -17,7 +18,7 @@ const Chatbubble: React.FC<ChatbubbleProps> = ({ message, timestamp, isSender, }
           />
         </div>
       </div>
-      <div className="chat-footer pl-2 text-xs font-light text-gray-400">{timestamp}</div>
+      <div className="chat-footer pl-2 text-xs font-light text-gray-400">{formatDateToDdMmYyyy(timestamp)}</div>
       <div className="chat-bubble">{message}</div>
     </div>
   );

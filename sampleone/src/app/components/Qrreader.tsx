@@ -16,8 +16,8 @@ const QrReader = () => {
 
     scanner.render(
         (decodedText) => {
-            if (decodedText.includes("late-entry-form")) {
-              router.push(decodedText); // Redirect to form page
+            if (decodedText === "sahara") {
+              router.push("/late-entry-form"); 
             } else {
               alert("Invalid QR Code!");
             }
