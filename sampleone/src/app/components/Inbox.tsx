@@ -24,7 +24,7 @@ const Inbox = ({message} : {message:Message}) => {
             <div className='flex w-full justify-start items-end'>
                 <p className='text-lg font-bold'>{message.sender_name}</p>
     </div>
-            <div className='flex w-full justify-start items-start'>
+            <div className='flex w-full justify-start items-start text-left'>
                 <p className='text-xs font-medium text-gray-500'>{message.message}</p>
     </div>
 
