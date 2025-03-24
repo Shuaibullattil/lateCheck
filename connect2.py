@@ -1,7 +1,7 @@
 import os
 import random
 import cv2
-from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect
+from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect, Header
 from pymongo import MongoClient
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,10 +14,14 @@ from pydantic import BaseModel
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Dict
 import asyncio
 from bson import ObjectId
+import jwt  # For JWT authentication
+import hashlib  # For password hashing
+from dotenv import load_dotenv
+
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -261,7 +265,19 @@ async def stream_qr_detection():
 
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
 
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
+# Function to Create JWT Token
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# ✅ LOGIN Endpoint (Returns JWT Token)
 @app.post("/login")
 async def login(user: User):
     user_data = users_collection.find_one({"username": user.username})
@@ -273,6 +289,9 @@ async def login(user: User):
     user_data["_id"] = str(user_data["_id"])
     user_data = convert_datetime(user_data)
 
+    # Generate JWT Token
+    access_token = create_access_token({"sub": user.username})
+
     user_detail = collection.find_one({"details.email": user_data["username"]})
 
     if user_detail:
@@ -281,7 +300,27 @@ async def login(user: User):
     else:
         user_detail = {}
 
-    return JSONResponse(content={"message": "Login successful", "user": user_data, "detail": user_detail})
+    return JSONResponse(content={"message": "Login successful", "token": access_token, "user": user_data, "detail": user_detail})
+
+# ✅ Protected Route (Example)
+@app.get("/protected")
+async def protected_route(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    token = authorization.split("Bearer ")[-1]  # Extract token
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    return JSONResponse(content={"message": "You have access!", "user": username})
 
 
 # Store connected users

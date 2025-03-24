@@ -9,26 +9,27 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleLogin = async (event : React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent form from reloading the page
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     try {
       const res = await axios.post("http://127.0.0.1:8000/login", { username, password });
 
-      if (res.status === 200 && res.data.detail) {
+      if (res.status === 200 && res.data.token) {
         localStorage.setItem("user", JSON.stringify(res.data.detail));
+        localStorage.setItem("token", res.data.token); // Store JWT token
         router.push("/home"); // Redirect after successful login
       } else {
         alert("Invalid login credentials!");
       }
     } catch (error) {
-      alert("Invalid username or password! from front");
+      alert("Invalid username or password!");
     }
   };
 
   return (
     <div className="mx-auto mt-10 w-64">
-      <form onSubmit={handleLogin}> {/* Use onSubmit for form handling */}
+      <form onSubmit={handleLogin}>
         <div>
           <label className="block text-gray-800 font-semibold text-sm">Email</label>
           <div className="mt-2">
