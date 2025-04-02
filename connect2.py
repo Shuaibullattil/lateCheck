@@ -72,6 +72,17 @@ class Message(BaseModel):
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+class PasswordData(BaseModel):
+    email: str
+    password: str
+
+@app.post("/set-password")
+async def set_password(data: PasswordData):
+    hashed_pwd = hash_password(data.password)
+    return {"message": "Password set successfully"}
+
+
+
 # Function to verify passwords
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)

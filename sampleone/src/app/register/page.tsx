@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function Home() {
+  const router= useRouter();
   const [formData, setFormData] = useState({
     name: "",
     student_id: "",
@@ -40,6 +42,7 @@ export default function Home() {
 
       alert("User registered successfully!");
       console.log(response.data);
+      router.push(`/password-setup?email=${formData.email}`);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Error registering user:", error.response?.data || error);
@@ -123,16 +126,24 @@ export default function Home() {
             Branch:
           </label>
           <div className="mt-2">
-            <input
-              type="text"
+            <select
               name="branch"
               value={formData.branch}
               onChange={handleChange}
               required
               className="block w-56 rounded-md py-1.5 px-2 ring-1 ring-inset ring-gray-400 focus:text-gray-800 mb-3"
-            />
+              >
+              <option value="">Select Branch</option>
+              <option value="CS">CS</option>
+              <option value="IT">IT</option>
+              <option value="EEE">EEE</option>
+              <option value="EC">EC</option>
+              <option value="CE">CE</option>
+              <option value="SE">SE</option>
+            </select>
           </div>
         </div>
+
 
         <div>
           <label className="block text-gray-800 font-semibold text-sm">
