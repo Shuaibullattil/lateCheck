@@ -26,6 +26,7 @@ from dotenv import load_dotenv
 
 
 
+
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
 
 # Create a new client and connect to the servers
@@ -209,7 +210,7 @@ def convert_datetime(obj):
 
 @app.post("/update/history")
 async def insert_memory(request: HistoryRequest):
-    current_time = datetime.now()
+    current_time = datetime.utcnow()
 
     history = {
         'timing': current_time,
@@ -218,7 +219,7 @@ async def insert_memory(request: HistoryRequest):
 
     result = collection.update_one(
         {'name': request.name, 'details.hostel_id': request.hostel_id},
-        {'$push': {'history': convert_datetime(history)}}
+        {'$push': {'history': history}}
     )
 
     if result.matched_count == 0:
@@ -238,7 +239,7 @@ async def get_students_with_today_entries():
             "$gte": today_start,
             "$lte": today_end
         }
-    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "_id": 0})
+    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "history.purpose": 1, "_id": 0})
 
     # Convert the MongoDB cursor to a list of dictionaries
     result = []
