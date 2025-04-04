@@ -4,55 +4,63 @@
     "name": "Aarav Sharma",
     "batch": "S6 | CS",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "11:15 PM"
+    "time": "11:15 PM",
+    "reason":"late"
   },
   {
     "id": 2,
     "name": "Vikram Singh",
     "batch": "S5 | EC",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "11:30 PM"
+    "time": "11:30 PM",
+    "reason":"late"
   },
   {
     "id": 3,
     "name": "Raghav Patel",
     "batch": "S7 | EE",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "11:45 PM"
+    "time": "11:45 PM",
+    "reason":"late"
   },
   {
     "id": 4,
     "name": "Kunal Joshi",
     "batch": "S8 | CS",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "12:00 AM"
+    "time": "12:00 AM",
+    "reason":"late"
   },
   {
     "id": 5,
     "name": "Anshul Gupta",
     "batch": "S4 | FS",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "12:10 AM"
+    "time": "12:10 AM",
+    "reason":"late"
   },
   {
     "id": 6,
     "name": "Manish Kumar",
     "batch": "S3 | CE",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "12:30 AM"
+    "time": "12:30 AM",
+    "reason":"late"
   },
   {
     "id": 7,
     "name": "Harsh Yadav",
     "batch": "S2 | EC",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "12:45 AM"
+    "time": "12:45 AM",
+    "reason":"late"
   },
   {
     "id": 8,
     "name": "Ravi Mehta",
     "batch": "S1 | CS",
     "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
-    "time": "1:00 AM"
+    "time": "1:00 AM",
+    "reason":"late"
   }
 ]

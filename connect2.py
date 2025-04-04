@@ -231,7 +231,7 @@ async def get_students_with_today_entries():
             "$gte": today_start,
             "$lte": today_end
         }
-    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "_id": 0})
+    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "history.purpose": 1, "_id": 0})
 
     # Convert the MongoDB cursor to a list of dictionaries
     result = []
