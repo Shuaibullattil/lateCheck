@@ -16,6 +16,9 @@ const LateEntryTable = () => {
                 <div className="ml-8 text-white text-lg">Today&apos;s Late Entry</div>
               </th>
               <th>
+                <div className="text-white text-lg">Reason</div>
+              </th>
+              <th>
                 <div className="text-white text-lg">Time</div>
               </th>
             </tr>

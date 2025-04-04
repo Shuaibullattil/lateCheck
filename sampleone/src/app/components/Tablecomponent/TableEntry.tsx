@@ -6,7 +6,7 @@ type Student = {
   batch: string;
   time: string;
   avatar?: string;
-  student: string; // Optional field
+  reason: string; // Optional field
 };
 
 const TableEntry = ({ student }: { student: Student }) => {
@@ -30,10 +30,10 @@ const TableEntry = ({ student }: { student: Student }) => {
       </td>
       <td>
         <div className="tooltip" data-tip={student.reason}>
-              <button className=""><img className="w-12 h-12"
+            <button className=""><img className="w-12 h-12"
                   src="message-bubble.svg" /></button>
             </div>
-            </td>
+      </td>
       <td>
         <div className="text-gray-500 text-lg font-bold">{student.time}</div> {/* Dynamic time */}
       </td>
