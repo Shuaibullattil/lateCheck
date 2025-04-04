@@ -79,6 +79,13 @@ class PasswordData(BaseModel):
 @app.post("/set-password")
 async def set_password(data: PasswordData):
     hashed_pwd = hash_password(data.password)
+    new_data={
+        "username": data.email,
+        "password": hashed_pwd,
+        "usertype": "student",
+        "status": "unverified"
+    }
+    users_collection.insert_one(new_data)
     return {"message": "Password set successfully"}
 
 

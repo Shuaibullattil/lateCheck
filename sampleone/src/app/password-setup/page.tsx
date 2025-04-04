@@ -14,7 +14,7 @@ export default function PasswordSetup() {
   useEffect(() => {
     if (!Email) {
       alert("Invalid access. Redirecting...");
-      router.push("/");
+      router.replace("/");
     }
   }, [Email, router]);
 
@@ -33,7 +33,7 @@ export default function PasswordSetup() {
       });
 
       alert("Password set successfully!");
-      router.push("/login"); // Redirect to login page
+      router.push("/"); // Redirect to login page
     } catch (error) {
       console.error("Error setting password:", error);
       alert("Failed to set password!");
