@@ -1,7 +1,7 @@
 import os
 import random
 import cv2
-from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect, Header
+from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect, Header, APIRouter
 from pymongo import MongoClient
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
@@ -229,25 +229,69 @@ async def insert_memory(request: HistoryRequest):
 
 @app.get("/students/today")
 async def get_students_with_today_entries():
-    # Get the start and end of the current day
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    # Use UTC for consistent timing (adjust if your DB uses local time)
+    now_utc = datetime.now(timezone.utc)
+    today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = now_utc.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    # Query MongoDB for students with at least one history entry for today
-    students = collection.find({
-        "history.timing": {
-            "$gte": today_start,
-            "$lte": today_end
+    pipeline = [
+        {
+            "$match": {
+                "history": {
+                    "$elemMatch": {
+                        "timing": {
+                            "$gte": today_start,
+                            "$lte": today_end
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "name": 1,
+                "details.sem": 1,
+                "details.branch": 1,
+                "history": {
+                    "$filter": {
+                        "input": "$history",
+                        "as": "entry",
+                        "cond": {
+                            "$and": [
+                                {"$gte": ["$$entry.timing", today_start]},
+                                {"$lte": ["$$entry.timing", today_end]}
+                            ]
+                        }
+                    }
+                }
+            }
         }
-    }, {"name": 1, "details.sem": 1, "details.branch": 1, "history.timing": 1, "history.purpose": 1, "_id": 0})
+    ]
 
-    # Convert the MongoDB cursor to a list of dictionaries
-    result = []
+    students = list(collection.aggregate(pipeline))
+    count=0
+    # Flatten results
+    flat_result = []
     for student in students:
-        #student["_id"] = str(student["_id"])  # Convert ObjectId to string
-        result.append(student)
+        name = student["name"]
+        sem = student["details"]["sem"]
+        branch = student["details"]["branch"]
+        batch = f"S{sem} | {branch}"
 
-    return {"students": result}
+        for entry in student["history"]:
+            count=count+1
+            formatted_time = entry["timing"].astimezone(timezone.utc).strftime("%I:%M %p")  # e.g., 11:15 PM
+            flat_result.append({
+                "id": count,
+                "name": name,
+                "batch": batch,
+                "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
+                "time": formatted_time,
+                "reason": entry["purpose"]
+            })
+
+    return flat_result
 
 @app.get("/stream/qr-detection")
 async def stream_qr_detection():
