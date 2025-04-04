@@ -5,7 +5,8 @@ type Student = {
   name: string;
   batch: string;
   time: string;
-  avatar?: string; // Optional field
+  avatar?: string;
+  reason: string; // Optional field
 };
 
 const TableEntry = ({ student }: { student: Student }) => {
@@ -26,6 +27,12 @@ const TableEntry = ({ student }: { student: Student }) => {
             <div className="text-sm opacity-50">{student.batch}</div> {/* Dynamic batch */}
           </div>
         </div>
+      </td>
+      <td>
+        <div className="tooltip" data-tip={student.reason}>
+            <button className=""><img className="w-12 h-12"
+                  src="message-bubble.svg" /></button>
+            </div>
       </td>
       <td>
         <div className="text-gray-500 text-lg font-bold">{student.time}</div> {/* Dynamic time */}

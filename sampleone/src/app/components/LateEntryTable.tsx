@@ -3,8 +3,8 @@ import TableEntry from './Tablecomponent/TableEntry';
 import students from '../components/data/students.json';
   // Adjusted path based on your folder structure
 
-
 const LateEntryTable = () => {
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -13,7 +13,10 @@ const LateEntryTable = () => {
           <thead>
             <tr className="bg-neutral-900">
               <th>
-                <div className="ml-8 text-white text-lg">Today's Late Entry</div>
+                <div className="ml-8 text-white text-lg">Today&apos;s Late Entry</div>
+              </th>
+              <th>
+                <div className="text-white text-lg">Reason</div>
               </th>
               <th>
                 <div className="text-white text-lg">Time</div>
