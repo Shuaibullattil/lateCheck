@@ -17,7 +17,12 @@ type Student = {
 
 const StudentDetailTable = () => {
   const [students, setStudents] = useState<Student[]>([]);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+
+  const [nameFilter, setNameFilter] = useState("");
+  const [branchFilter, setBranchFilter] = useState("");
+  const [hostelIdFilter, setHostelIdFilter] = useState("");
+  const [roomFilter, setRoomFilter] = useState("");
+  const [semFilter, setSemFilter] = useState("");
 
   useEffect(() => {
     axios
@@ -30,27 +35,71 @@ const StudentDetailTable = () => {
       });
   }, []);
 
-  // Filter students based on searchQuery (search by Name, ID, Room No, Branch)
   const filteredStudents = students.filter((student) =>
-    [student.name, student.branch, student.hostel_id, student.room_no, student.sem]
-      .some(field => String(field).toLowerCase().includes(searchQuery.toLowerCase()))
+    String(student.name).toLowerCase().includes(nameFilter.toLowerCase()) &&
+    (branchFilter === "" || student.branch === branchFilter) &&
+    String(student.hostel_id).toLowerCase().includes(hostelIdFilter.toLowerCase()) &&
+    String(student.room_no).toLowerCase().includes(roomFilter.toLowerCase()) &&
+    (semFilter === "" || student.sem.toString() === semFilter)
   );
 
   return (
     <div className="overflow-x-auto border shadow-xl p-4">
-      {/* Search Input */}
-      <div className="flex mb-4 justify-center">
-      <h1 className="p-4 bg-blue-800 font-bold text-white rounded-lg mx-2">filter</h1>
+      {/* Filters */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
         <input
           type="text"
-          placeholder="Search by Name, branch, id, room no, sem"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 w-full sm:w-1/2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Search Name"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+          className="border p-2 rounded-md"
         />
+        <select
+          value={branchFilter}
+          onChange={(e) => setBranchFilter(e.target.value)}
+          className="border p-2 rounded-md"
+        >
+          <option value="">All Branches</option>
+          <option value="CS">CS</option>
+          <option value="IT">IT</option>
+          <option value="EC">EC</option>
+          <option value="EE">EE</option>
+          <option value="CE">CE</option>
+          <option value="SF">SF</option>
+          <option value="ME">ME</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Search Hostel ID"
+          value={hostelIdFilter}
+          onChange={(e) => setHostelIdFilter(e.target.value)}
+          className="border p-2 rounded-md"
+        />
+        <input
+          type="text"
+          placeholder="Search Room No"
+          value={roomFilter}
+          onChange={(e) => setRoomFilter(e.target.value)}
+          className="border p-2 rounded-md"
+        />
+        <select
+          value={semFilter}
+          onChange={(e) => setSemFilter(e.target.value)}
+          className="border p-2 rounded-md"
+        >
+          <option value="">All Semesters</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
       </div>
 
-      {/* Student Table */}
+      {/* Table */}
       <table className="table">
         <thead>
           <tr className="bg-blue-950 text-white">
