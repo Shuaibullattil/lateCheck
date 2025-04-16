@@ -23,8 +23,10 @@ from bson import ObjectId
 import jwt  # For JWT authentication
 import hashlib  # For password hashing
 from dotenv import load_dotenv
+from pytz import timezone as tz
 
-
+UTC = timezone.utc
+IST = tz("Asia/Kolkata")
 
 
 uri = "mongodb+srv://vivekofficial619:RE91nMfcWsXM0TDq@miniproject.dmmkl.mongodb.net/?retryWrites=true&w=majority&appName=MiniProject"
@@ -211,7 +213,7 @@ def convert_datetime(obj):
 
 @app.post("/update/history")
 async def insert_memory(request: HistoryRequest):
-    current_time = datetime.utcnow()
+    current_time = datetime.now()
 
     history = {
         'timing': current_time,
@@ -282,7 +284,9 @@ async def get_students_with_today_entries():
 
         for entry in student["history"]:
             count=count+1
-            formatted_time = entry["timing"].astimezone(timezone.utc).strftime("%I:%M %p")  # e.g., 11:15 PM
+            utc_time = entry["timing"]
+            ist_time = utc_time.astimezone(IST)
+            formatted_time = ist_time.strftime("%I:%M %p")
             flat_result.append({
                 "id": count,
                 "name": name,
