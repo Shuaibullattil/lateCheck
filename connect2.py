@@ -44,6 +44,7 @@ db = client["sample"]
 collection = db["first"]  
 users_collection = db["users"]
 message_collection = db["messages"]
+notification_collection = db["notifications"]
 
 app= FastAPI()
 
@@ -513,6 +514,45 @@ async def get_chat_history(user_id: str, receiver_id: str):
 
     return messages
 
+# Model for notification data
+class NotificationCreate(BaseModel):
+    message: str
+    sender_id: str
+    timestamp: str
+
+# API endpoint to create a notification
+@app.post("/notifications/create")
+async def create_notification(notification: NotificationCreate):
+    try:
+        # Create notification document
+        notification_doc = {
+            "message": notification.message,
+            "sender_id": notification.sender_id,
+            "timestamp": notification.timestamp,
+        }
+        
+        # Insert into MongoDB
+        result = notification_collection.insert_one(notification_doc)
+        
+        return {
+            "success": True,
+            "id": str(result.inserted_id),
+            "message": "Notification created successfully"
+        }
+    except Exception as e:
+        print(f"Error creating notification: {e}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    
+@app.get("/notifications/all")
+async def get_all_notifications():
+    try:
+        notifications = list(notification_collection.find().sort("timestamp", -1))  # Sort by newest first
+        for note in notifications:
+            note["_id"] = str(note["_id"])
+        return {"success": True, "data": notifications}
+    except Exception as e:
+        print(f"Error fetching notifications: {e}")
+        return JSONResponse(status_code=500, content={"success": False, "message": str(e)})
 
 
 if __name__ == "__main__":

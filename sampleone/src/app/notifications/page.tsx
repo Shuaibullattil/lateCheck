@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import axios from "axios"; 
+import React, { useState,useEffect } from 'react';
 import SideBar from '../components/sidebar';
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -17,10 +18,45 @@ export default function Dashboard() {
     const [messages, setMessages] = useState<string[]>([]);
     const [input, setInput] = useState('');
 
-    const sendMessage = () => {
-        if (input.trim() !== '') {
-            setMessages([...messages, input]);
-            setInput('');
+    // ✅ Fetch previous messages
+    const fetchNotifications = async () => {
+        try {
+            const res = await axios.get("http://localhost:8000/notifications/all");
+            if (res.data.success) {
+                const fetchedMessages = res.data.data.map((msg: any) =>
+                    `${msg.message} (sent at ${new Date(msg.timestamp).toLocaleString()})`
+                );
+                setMessages(fetchedMessages.reverse()); // Optional: reverse to show oldest first
+            }
+        } catch (err) {
+            console.error("Failed to fetch notifications:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications(); // ✅ Run once on mount
+    }, []);
+
+    const sendMessage = async () => {
+        if (input.trim() === "") return;
+    
+        const timestamp = new Date().toISOString();
+    
+        try {
+            const response = await axios.post("http://localhost:8000/notifications/create", {
+                message: input,
+                sender_id: "saharawardenofficial@gmail.com",
+                timestamp: timestamp,
+            });
+    
+            if (response.data.success) {
+                setMessages([...messages, `${input} (sent at ${new Date(timestamp).toLocaleString()})`]);
+                setInput('');
+            } else {
+                console.error("Failed to send message");
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
         }
     };
 

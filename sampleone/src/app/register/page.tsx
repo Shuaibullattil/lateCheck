@@ -140,6 +140,7 @@ export default function Home() {
               <option value="EC">EC</option>
               <option value="CE">CE</option>
               <option value="SE">SE</option>
+              <option value="ME">ME</option>
             </select>
           </div>
         </div>
