@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import Chatbubble from "./user/Chatbubble";
-import { SERVER_URL, WS_URL } from "../../config";
 
 interface Message {
   sender_name : string;
@@ -16,10 +15,9 @@ interface ChatProps {
   userId: string;
   receiverId: string;
   initialMessages?: Message[];
-  onNewMessage?: (message: Message) => void;
 }
 
-export default function Chat({ userId, receiverId, initialMessages = [], onNewMessage }: ChatProps) {
+export default function Chat({ userId, receiverId, initialMessages = [] }: ChatProps) {
   const [message, setMessage] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -29,7 +27,7 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
   const fetchOldMessages = async () => {
     if (!receiverId) return;
     try {
-      const response = await axios.get<Message[]>(`${SERVER_URL}/messages/${userId}/${receiverId}`);
+      const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
       setMessages(response.data);
     } catch (error) {
       console.error("Error fetching old messages:", error);
@@ -39,15 +37,11 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
   // Handle incoming WebSocket messages
   const handleMessage = useCallback((event: MessageEvent) => {
     const newMessage: Message = JSON.parse(event.data);
-    console.log("New message received:", newMessage);
-    
     setMessages((prev) => {
-      // Check if this message belongs to the current chat
       if (
         (newMessage.sender_id === userId && newMessage.receiver_id === receiverId) ||
         (newMessage.sender_id === receiverId && newMessage.receiver_id === userId)
       ) {
-        console.log("Adding message to chat:", newMessage);
         return [...prev, newMessage];
       }
       return prev;
@@ -60,7 +54,7 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
 
     fetchOldMessages(); // Load previous messages
 
-    const ws = new WebSocket(`${WS_URL}/ws/${userId}`);
+    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
     ws.onopen = () => console.log("Connected to WebSocket"); 
     ws.onmessage = handleMessage;
@@ -73,11 +67,6 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
       ws.close();
     };
   }, [userId, receiverId, handleMessage]);
-
-  // Update messages when initialMessages changes
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages]);
 
   // Auto-scroll to the latest message
   useEffect(() => {
@@ -101,12 +90,8 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
       timestamp,
     };
 
-    console.log("Sending message:", newMessage);
     socket.send(JSON.stringify(newMessage));
     setMessages((prev) => [...prev, newMessage]);
-    if (onNewMessage) {
-      onNewMessage(newMessage);
-    }
     setMessage("");
   };
 

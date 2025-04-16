@@ -561,5 +561,5 @@ async def get_all_notifications():
 
 if __name__ == "__main__":
     import uvicorn
-    # Run on all network interfaces (0.0.0.0) instead of just localhost
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    #uvicorn.run("connect2:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

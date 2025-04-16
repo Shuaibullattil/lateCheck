@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Chatbubble from "../components/user/Chatbubble";
-import { SERVER_URL, WS_URL } from "../../config";
 
 interface User {
     details: {
@@ -37,7 +36,7 @@ export default function Page() {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`${SERVER_URL}/messages/${senderId}/${receiverId}`);
+                const response = await fetch(`http://localhost:8000/messages/${senderId}/${receiverId}`);
                 const data = await response.json();
                 setMessages(data);
             } catch (error) {
@@ -56,7 +55,7 @@ export default function Page() {
 
     useEffect(() => {
         if (!senderId) return;
-        const ws = new WebSocket(`${WS_URL}/ws/${senderId}`);
+        const ws = new WebSocket(`ws://localhost:8000/ws/${senderId}`);
         setSocket(ws);
     
         ws.onmessage = (event) => {
