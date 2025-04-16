@@ -28,6 +28,7 @@ type Message = {
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [receiverId, setReceiverId] = useState("");
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
 
   // Function to fetch initial messages (only once)
@@ -40,27 +41,69 @@ export default function Dashboard() {
     }
   };
 
+  // Function to fetch chat history when receiver is selected
+  const fetchChatHistory = async (receiverId: string) => {
+    try {
+      const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
+      setChatMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+    }
+  };
+
+  // Initialize WebSocket connection and handle messages
   useEffect(() => {
-    fetchMessages(); // Fetch messages only once at the start
+    const websocket = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
-
-    ws.onmessage = (event) => {
+    websocket.onmessage = (event) => {
       const newMessage: Message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, newMessage]); // Append new messages
+      
+      // Only update inbox messages for incoming messages (not sent by the warden)
+      if (newMessage.sender_id !== userId) {
+        setMessages((prevMessages) => {
+          const existingMessageIndex = prevMessages.findIndex(
+            msg => msg.sender_id === newMessage.sender_id
+          );
+          
+          if (existingMessageIndex >= 0) {
+            const updatedMessages = [...prevMessages];
+            updatedMessages[existingMessageIndex] = newMessage;
+            return updatedMessages;
+          } else {
+            return [...prevMessages, newMessage];
+          }
+        });
+      }
+
+      // Update chat messages if the message belongs to the current chat
+      if (receiverId && (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)) {
+        setChatMessages(prev => [...prev, newMessage]);
+      }
     };
 
-    ws.onerror = (error) => {
+    websocket.onerror = (error) => {
       console.error("WebSocket Error:", error);
     };
 
-    ws.onclose = () => {
+    websocket.onclose = () => {
       console.log("WebSocket Disconnected");
     };
 
     return () => {
-      ws.close();
+      websocket.close();
     };
+  }, [receiverId]);
+
+  // Fetch initial messages
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  // Fetch chat history when receiver changes
+  useEffect(() => {
+    if (receiverId) {
+      fetchChatHistory(receiverId);
+    }
   }, [receiverId]);
 
   const handleMessageClick = (message: Message) => {
@@ -81,13 +124,25 @@ export default function Dashboard() {
         </div>
         <div className="col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8">
           {messages.map((message, index) => (
-            <button key={index} onClick={() => handleMessageClick(message)}>
+            <button 
+              key={index} 
+              onClick={() => handleMessageClick(message)}
+              className="w-full"
+            >
               <Inbox message={message} />
             </button>
           ))}
         </div>
         <div className="flex col-span-6 justify-center items-start bg-white">
-          <Chat userId={userId} receiverId={receiverId} />
+          <Chat 
+            userId={userId} 
+            receiverId={receiverId} 
+            initialMessages={chatMessages}
+            onNewMessage={(message) => {
+              // Only update chat messages, don't update inbox for sent messages
+              setChatMessages(prev => [...prev, message]);
+            }}
+          />
         </div>
       </div>
     </div>

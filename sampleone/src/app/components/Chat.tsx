@@ -11,16 +11,17 @@ interface Message {
   receiver_id: string;
 }
 
-
 interface ChatProps {
   userId: string;
   receiverId: string;
+  initialMessages?: Message[];
+  onNewMessage?: (message: Message) => void;
 }
 
-export default function Chat({ userId, receiverId }: ChatProps) {
+export default function Chat({ userId, receiverId, initialMessages = [], onNewMessage }: ChatProps) {
   const [message, setMessage] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   // Function to fetch old messages
@@ -37,11 +38,15 @@ export default function Chat({ userId, receiverId }: ChatProps) {
   // Handle incoming WebSocket messages
   const handleMessage = useCallback((event: MessageEvent) => {
     const newMessage: Message = JSON.parse(event.data);
+    console.log("New message received:", newMessage);
+    
     setMessages((prev) => {
+      // Check if this message belongs to the current chat
       if (
         (newMessage.sender_id === userId && newMessage.receiver_id === receiverId) ||
         (newMessage.sender_id === receiverId && newMessage.receiver_id === userId)
       ) {
+        console.log("Adding message to chat:", newMessage);
         return [...prev, newMessage];
       }
       return prev;
@@ -56,7 +61,7 @@ export default function Chat({ userId, receiverId }: ChatProps) {
 
     const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-    ws.onopen = () => console.log("Connected to WebSocket");
+    ws.onopen = () => console.log("Connected to WebSocket"); 
     ws.onmessage = handleMessage;
     ws.onclose = () => console.warn("WebSocket disconnected.");
     ws.onerror = (error) => console.error("WebSocket error:", error);
@@ -67,6 +72,11 @@ export default function Chat({ userId, receiverId }: ChatProps) {
       ws.close();
     };
   }, [userId, receiverId, handleMessage]);
+
+  // Update messages when initialMessages changes
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
   // Auto-scroll to the latest message
   useEffect(() => {
@@ -82,7 +92,6 @@ export default function Chat({ userId, receiverId }: ChatProps) {
 
     const timestamp = new Date().toISOString();
 
-
     const newMessage: Message = {
       sender_name : userId,
       sender_id: userId,
@@ -90,10 +99,13 @@ export default function Chat({ userId, receiverId }: ChatProps) {
       message,
       timestamp,
     };
-    
 
+    console.log("Sending message:", newMessage);
     socket.send(JSON.stringify(newMessage));
     setMessages((prev) => [...prev, newMessage]);
+    if (onNewMessage) {
+      onNewMessage(newMessage);
+    }
     setMessage("");
   };
 

@@ -3,15 +3,20 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Chatbubble from "../components/user/Chatbubble";
 
+interface User {
+    details: {
+        email: string;
+    };
+}
+
 export default function Page() {
     const router = useRouter();
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [message, setMessage] = useState("");
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [senderId, setSenderId] = useState("");
-    const [messages, setMessages] = useState<{ message: string; timestamp: string; sender_id: string }[]>([]);
+    const [messages, setMessages] = useState<{ message: string; timestamp: string; sender_id: string; sender_name: string }[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
 
     const receiverId = "saharawardenofficial@gmail.com";
     
@@ -26,6 +31,23 @@ export default function Page() {
             router.replace("/");
         }
     }, [router]);
+
+    // Fetch initial messages
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/messages/${senderId}/${receiverId}`);
+                const data = await response.json();
+                setMessages(data);
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        };
+
+        if (senderId) {
+            fetchMessages();
+        }
+    }, [senderId]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,7 +69,7 @@ export default function Page() {
         };
     
         return () => ws.close();
-    }, [senderId, receiverId]);
+    }, [senderId]);
 
     if (!user) return null;
 
@@ -55,13 +77,17 @@ export default function Page() {
         e.preventDefault();
         if (!message.trim() || !socket) return;
 
-        const timestamp = new Date().toLocaleDateString("en-GB", {
-            day: "2-digit", month: "short", year: "numeric"
-        });
+        const timestamp = new Date().toISOString();
 
-        const newMessage = { sender_id: senderId, receiver_id: receiverId, message, timestamp };
+        const newMessage = { 
+            sender_id: senderId, 
+            receiver_id: receiverId, 
+            message, 
+            timestamp,
+            sender_name: user.details.email
+        };
         socket.send(JSON.stringify(newMessage));
-        setMessages([...messages, newMessage]);
+        setMessages((prev) => [...prev, newMessage]);
         setMessage("");
     };
 
