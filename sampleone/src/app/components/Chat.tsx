@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import Chatbubble from "./user/Chatbubble";
+import { SERVER_URL, WS_URL } from "../../config";
 
 interface Message {
   sender_name : string;
@@ -28,7 +29,7 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
   const fetchOldMessages = async () => {
     if (!receiverId) return;
     try {
-      const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
+      const response = await axios.get<Message[]>(`${SERVER_URL}/messages/${userId}/${receiverId}`);
       setMessages(response.data);
     } catch (error) {
       console.error("Error fetching old messages:", error);
@@ -59,7 +60,7 @@ export default function Chat({ userId, receiverId, initialMessages = [], onNewMe
 
     fetchOldMessages(); // Load previous messages
 
-    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+    const ws = new WebSocket(`${WS_URL}/ws/${userId}`);
 
     ws.onopen = () => console.log("Connected to WebSocket"); 
     ws.onmessage = handleMessage;

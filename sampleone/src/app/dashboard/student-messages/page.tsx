@@ -5,6 +5,7 @@ import axios from "axios";
 import SideBar from "../../components/sidebar";
 import Chat from "../../components/Chat";
 import Inbox from "../../components/Inbox";
+import { SERVER_URL, WS_URL } from "../../config";
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const today = new Date();
@@ -34,7 +35,7 @@ export default function Dashboard() {
   // Function to fetch initial messages (only once)
   const fetchMessages = async () => {
     try {
-      const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
+      const response = await axios.get<Message[]>(`${SERVER_URL}/inbox/${userId}`);
       setMessages(response.data);
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -44,7 +45,7 @@ export default function Dashboard() {
   // Function to fetch chat history when receiver is selected
   const fetchChatHistory = async (receiverId: string) => {
     try {
-      const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
+      const response = await axios.get<Message[]>(`${SERVER_URL}/messages/${userId}/${receiverId}`);
       setChatMessages(response.data);
     } catch (error) {
       console.error("Error fetching chat history:", error);
@@ -53,7 +54,7 @@ export default function Dashboard() {
 
   // Initialize WebSocket connection and handle messages
   useEffect(() => {
-    const websocket = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+    const websocket = new WebSocket(`${WS_URL}/ws/${userId}`);
 
     websocket.onmessage = (event) => {
       const newMessage: Message = JSON.parse(event.data);
