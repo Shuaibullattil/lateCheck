@@ -233,7 +233,7 @@ async def insert_memory(request: HistoryRequest):
 @app.get("/students/today")
 async def get_students_with_today_entries():
     # Use UTC for consistent timing (adjust if your DB uses local time)
-    now_utc = datetime.now(timezone.utc)
+    now_utc = datetime.now()
     today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = now_utc.replace(hour=23, minute=59, second=59, microsecond=999999)
 

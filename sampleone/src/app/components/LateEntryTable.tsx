@@ -15,24 +15,29 @@ interface Student {
 const LateEntryTable = () => {
   const [students, setStudents] = useState<Student[]>([]);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/students/today'); // Change to your backend URL
-        setStudents(response.data);
-      } catch (error) {
-        console.error('Error fetching students:', error);
-      }
-    };
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/students/today');
+      setStudents(response.data);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
 
-    fetchStudents();
+  useEffect(() => {
+    fetchStudents(); // Fetch initially
+
+    const interval = setInterval(() => {
+      fetchStudents(); // Fetch every 10 seconds
+    }, 2000);
+
+    return () => clearInterval(interval); // Clean up on unmount
   }, []);
 
   return (
     <div>
       <div className="overflow-x-auto">
         <table className="table">
-          {/* head */}
           <thead>
             <tr className="bg-neutral-900">
               <th>
@@ -47,7 +52,6 @@ const LateEntryTable = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Loop through the students and render a row for each */}
             {students.map((student) => (
               <TableEntry key={student.id} student={student} />
             ))}
