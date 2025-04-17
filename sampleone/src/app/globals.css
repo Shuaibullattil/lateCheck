@@ -50,3 +50,28 @@
     color: rgb(10, 166, 218);
 }
 
+/* Remove default scrollbar arrows */
+::-webkit-scrollbar {
+    width: 8px;  /* Set the width of the scrollbar */
+    height: 8px; /* Optional: if you want to customize horizontal scrollbar too */
+  }
+  
+  /* Scrollbar Track */
+  ::-webkit-scrollbar-track {
+    background-color: #f1fdf3; /* Light green background */
+    border-radius: 10px; /* Rounded corners for the track */
+  }
+  
+  /* Scrollbar Thumb */
+  ::-webkit-scrollbar-thumb {
+    background-color: #38a169; /* Green color */
+    border-radius: 10px; /* Rounded corners for the thumb */
+    border: 2px solid #f1fdf3; /* A border to make it look neat */
+  }
+  
+  /* Hover effect for the scrollbar thumb */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #2f855a; /* Darker green on hover */
+  }
+  
+

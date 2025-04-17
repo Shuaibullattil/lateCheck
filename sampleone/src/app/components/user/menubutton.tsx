@@ -1,49 +1,45 @@
 "use client";
-import React from 'react';
+import React from "react";
+import { usePathname } from "next/navigation";
+import {
+  Home,
+  Bell,
+  QrCode,
+  MessageCircle,
+  User as UserIcon,
+} from "lucide-react";
+
+const navItems = [
+  { href: "/home", label: "Home", icon: <Home className="h-5 w-5" /> },
+  { href: "/notify", label: "Notices", icon: <Bell className="h-5 w-5" /> },
+  { href: "/qrscanner", label: "Scan", icon: <QrCode className="h-5 w-5" /> },
+  { href: "/chat", label: "Chat", icon: <MessageCircle className="h-5 w-5" /> },
+  { href: "/profile", label: "Profile", icon: <UserIcon className="h-5 w-5" /> },
+];
 
 const MenuButton = () => {
+  const pathname = usePathname();
+
   return (
-    <div className="flex justify-center items-center w-full">
-      <ul className="menu menu-horizontal bg-base-200 rounded-box">
-        <li>
-          <a href='/home'>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+    <div className="w-full fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="bg-white border border-green-200 shadow-xl rounded-full px-4 py-2 flex justify-around max-w-md mx-auto">
+        {navItems.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className={`flex flex-col items-center justify-center px-3 py-1 rounded-lg transition-all ${
+              pathname === item.href
+                ? "bg-[#f1fdf3] text-green-800 font-semibold"
+                : "text-gray-500 hover:text-green-700"
+            }`}
+          >
+            {item.icon}
+            <span className="text-[10px] mt-1">{item.label}</span>
           </a>
-        </li>
-        <li>
-          <a href='/notify'>
-            <img src="/notification.svg" alt="" className='h-6 w-6' />
-          </a>
-        </li>
-        <li>
-          <a href='/qrscanner'>
-            <img src="/scan.svg" alt="" className='h-6 w-6' />
-          </a>
-        </li>
-        <li>
-          <a href='/chat'>
-            <img src="/black send-icon.svg" alt="" className='h-6 w-6' />
-          </a>
-        </li>
-        <li>
-          <a href='/profile'>
-            <img src="/profile.svg" alt="" className='h-6 w-6' />
-          </a>
-        </li>
-      </ul>
+        ))}
+      </div>
     </div>
   );
-}
+};
 
 export default MenuButton;
