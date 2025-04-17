@@ -457,10 +457,12 @@ async def login(user: User):
     access_token = create_access_token({"sub": user.username})
 
     if (usertype == "warden"):
-        user_detail = warden_collection.find_one({"email" : user_data["username"]}) 
+        user_detail = warden_collection.find_one({"email" : user_data["username"]})
+        
     else:
         user_detail = collection.find_one({"details.email": user_data["username"]})
     
+    user_detail["usertype"] = usertype
 
     if user_detail:
         user_detail["_id"] = str(user_detail["_id"])

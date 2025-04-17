@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Bell, ArrowLeft } from "lucide-react";
 import MenuButton from "../components/user/menubutton";
+import { formatDateToDdMmYyyy } from "@/utils/formattime";
 
 export default function Notify() {
     const router = useRouter();
@@ -77,7 +78,7 @@ export default function Notify() {
                     className="bg-[#f1fdf3] border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all"
                   >
                     <p className="text-sm text-gray-700 mt-1">{note.message}</p>
-                    <p className="text-xs text-gray-400 mt-2 italic">{note.timestamp}</p>
+                    <p className="text-xs text-gray-400 mt-2 italic text-right">{formatDateToDdMmYyyy(note.timestamp)}</p>
                   </div>
                 ))}
               </div>
