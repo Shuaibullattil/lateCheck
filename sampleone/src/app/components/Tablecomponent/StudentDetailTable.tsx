@@ -15,7 +15,7 @@ type Student = {
   email: string;
 };
 
-const StudentDetailTable = () => {
+const StudentDetailTable = ({hostel,status}:{hostel:string,status:string}) => {
   const [students, setStudents] = useState<Student[]>([]);
 
   const [nameFilter, setNameFilter] = useState("");
@@ -26,7 +26,9 @@ const StudentDetailTable = () => {
 
   useEffect(() => {
     axios
-      .get<Student[]>("http://localhost:8000/students")
+      .get<Student[]>("http://localhost:8000/studentstable",{
+        params: { hostel: hostel, status:status },
+      })
       .then((response) => {
         setStudents(response.data);
       })
