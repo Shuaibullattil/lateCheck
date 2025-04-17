@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
+import { ArrowLeft } from "lucide-react";
 import QrReader from "../components/Qrreader";
 
 export default function Myscanner() {
@@ -24,10 +25,16 @@ export default function Myscanner() {
         <div className="flex flex-col min-h-screen bg-[#f1fdf3]">
             {/* Header */}
             <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-                <div className="max-w-6xl mx-auto px-6 py-4 flex items-center">
-                    <div className="text-green-700 font-bold text-xl">LateCheck Scanner</div>
-                </div>
-            </header>
+            <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-10">
+              <button
+                onClick={() => router.push("/home")}
+                className="flex items-center gap-2 text-green-600 hover:text-green-800"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
+              <div className="text-green-700 font-bold text-xl">QR Scanner</div>
+            </div>
+          </header>
 
             {/* Spacer for header */}
             <div className="h-20" />
@@ -40,10 +47,10 @@ export default function Myscanner() {
             </main>
 
             {/* Footer */}
-            <footer className="fixed bottom-0 left-0 w-full bg-white shadow-inner p-3 z-50">
-                <div className="flex justify-center">
-                    <MenuButton />
-                </div>
+            <footer className=" fixed bottom-0 left-0 w-full p-3 z-50">
+              <div className="flex justify-center">
+                <MenuButton />
+              </div>
             </footer>
         </div>
     );

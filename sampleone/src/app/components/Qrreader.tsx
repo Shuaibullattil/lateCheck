@@ -10,9 +10,9 @@ const QrReader = () => {
     useEffect(() => {
         const scannerContainer = document.getElementById("qr-reader");
 
-        
+        // 🔥 Clear any previously rendered scanner UI
         if (scannerContainer) {
-            scannerContainer.innerHTML = "";
+            scannerContainer.innerHTML = ""; // Clear any leftover elements
         }
 
         const scanner = new Html5QrcodeScanner(
@@ -34,6 +34,7 @@ const QrReader = () => {
             }
         );
 
+        // Cleanup on unmount
         return () => {
             scanner.clear().catch((error) =>
                 console.error("Failed to clear scanner on unmount", error)
