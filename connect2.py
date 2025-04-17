@@ -43,7 +43,8 @@ except Exception as e:
 
 
 db = client["sample"]  
-collection = db["first"]  
+collection = db["first"]
+warden_collection = db["wardens"]  
 users_collection = db["users"]
 message_collection = db["messages"]
 notification_collection = db["notifications"]
@@ -393,10 +394,16 @@ async def login(user: User):
     user_data["_id"] = str(user_data["_id"])
     user_data = convert_datetime(user_data)
 
+    usertype = user_data["usertype"]
+
     # Generate JWT Token
     access_token = create_access_token({"sub": user.username})
 
-    user_detail = collection.find_one({"details.email": user_data["username"]})
+    if (usertype == "warden"):
+        user_detail = warden_collection.find_one({"email" : user_data["username"]}) 
+    else:
+        user_detail = collection.find_one({"details.email": user_data["username"]})
+    
 
     if user_detail:
         user_detail["_id"] = str(user_detail["_id"])

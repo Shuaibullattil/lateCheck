@@ -17,8 +17,14 @@ export default function Home() {
 
       if (res.status === 200 && res.data.token) {
         localStorage.setItem("user", JSON.stringify(res.data.detail));
-        localStorage.setItem("token", res.data.token); // Store JWT token
-        router.push("/home"); // Redirect after successful login
+        localStorage.setItem("token", res.data.token);
+        if (res.data.user.usertype === "warden"){
+          router.push("/dashboard"); // Redirect after successful login
+        }
+        else{
+          router.push("/home"); // Redirect after successful login
+        } // Store JWT token
+        
       } else {
         alert("Invalid login credentials!");
       }
