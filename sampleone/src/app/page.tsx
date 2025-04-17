@@ -16,8 +16,15 @@ export default function Home() {
       const res = await axios.post("http://127.0.0.1:8000/login", { username, password });
 
       if (res.status === 200 && res.data.token) {
-        localStorage.setItem("user", JSON.stringify(res.data.detail));
-        localStorage.setItem("token", res.data.token);
+        if (res.data.detail.usertype === "warden"){
+          localStorage.setItem("warden", JSON.stringify(res.data.detail));
+          localStorage.setItem("token", res.data.token);
+        }
+        else{
+          localStorage.setItem("user", JSON.stringify(res.data.detail));
+          localStorage.setItem("token", res.data.token);
+        }
+        
         if (res.data.user.usertype === "warden"){
           router.push("/dashboard"); // Redirect after successful login
         }
