@@ -23,7 +23,7 @@ const SideBar = () => {
                         <ul className="menu p-4  bg-base-300 text-base-content text-lg ">
                             <li><a href='/dashboard'>Dashboard</a></li>
                             <li><a href='/studentdetail'>Student Detail</a></li>
-                            <li><a>Responses</a></li>
+                            <li><a href='/dashboard/student-request'>Request</a></li>
                             <li><a href='/dashboard/analytics'>Analytics</a></li>
                             <li><a href='/dashboard/student-messages'>Student Messages<div className="badge bg-blue-950 text-white">8</div></a></li>
                             <li><a href='/notifications'>Student Notifications<div className="badge bg-blue-950 text-white">3</div></a></li>

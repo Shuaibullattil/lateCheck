@@ -811,6 +811,26 @@ def get_students():
     students = collection.find()
     return [student_serializer(student) for student in students]
 
+@app.get("/studentstable", response_model=List[dict])
+def get_students_for_table(hostel: str, status: str,):
+    # Step 1: Get users based on status and usertype
+    filtered_users = list(users_collection.find({
+        "status": status,
+        "usertype": "student"
+    }))
+
+    # Step 2: Extract emails
+    emails = [user["username"] for user in filtered_users]
+
+    # Step 3: Get user details that match both email and hostel
+    student_details = collection.find({
+        "details.email": {"$in": emails},
+        "details.hostel": hostel
+    })
+
+    # Step 4: Serialize the student data
+    return [student_serializer(student) for student in student_details]
+
 @app.post("/add/user")
 async def add_user(
     name: str,

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 type Student = {
   id: string;
   hostel_id: string;
@@ -13,7 +14,7 @@ type Student = {
   email: string;
 };
 
-const StudentDetailTable = ({hostel,status}:{hostel:string,status:string}) => {
+const StudentRequestTable = ({hostel,status}:{hostel:string,status:string}) => {
   const [students, setStudents] = useState<Student[]>([]);
 
   const [nameFilter, setNameFilter] = useState("");
@@ -111,12 +112,13 @@ const StudentDetailTable = ({hostel,status}:{hostel:string,status:string}) => {
             <th className="px-4 py-2 hidden sm:table-cell">Room no</th>
             <th className="px-4 py-2 hidden sm:table-cell">Phone no</th>
             <th className="px-4 py-2 hidden sm:table-cell">Email</th>
+            <th className="px-4 py-2 hidden sm:table-cell">Verify</th>
           </tr>
         </thead>
         <tbody>
           {filteredStudents.length > 0 ? (
             filteredStudents.map((student) => (
-              <tr className='text-left font-normal hover:bg-blue-300' key={student.id}>
+              <tr className='text-left font-normal hover:bg-green-200' key={student.id}>
                 <td className='w-32'>{student.hostel_id}</td>
                 <td>{student.name}</td>
                 <td className='hidden sm:table-cell w-16'>{student.branch}</td>
@@ -125,6 +127,7 @@ const StudentDetailTable = ({hostel,status}:{hostel:string,status:string}) => {
                 <td className='hidden sm:table-cell w-16'>{student.room_no}</td>
                 <td className='hidden sm:table-cell w-32'>{student.phone_no}</td>
                 <td className='hidden sm:table-cell'>{student.email}</td>
+                <td><button className="px-2 py-2 mx-2 bg-green-500 rounded-md hover:bg-green-300">Accept</button><button className="px-2 py-2 bg-red-500 rounded-md hover:bg-red-300">Reject</button></td>
               </tr>
             ))
           ) : (
@@ -140,4 +143,4 @@ const StudentDetailTable = ({hostel,status}:{hostel:string,status:string}) => {
   );
 };
 
-export default StudentDetailTable;
+export default StudentRequestTable;
