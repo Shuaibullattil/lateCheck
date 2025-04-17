@@ -130,3 +130,5 @@ export default function Chat({ userId, receiverId, initialMessages = [] }: ChatP
     </div>
   );
 }
+
+

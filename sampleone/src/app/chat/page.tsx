@@ -2,6 +2,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Chatbubble from "../components/user/Chatbubble";
+import { ArrowLeft } from "lucide-react";
+import MenuButton from "../components/user/menubutton";
 
 interface User {
     details: {
@@ -92,44 +94,66 @@ export default function Page() {
     };
 
     return (
-        <div className="h-screen flex flex-col">
-            <header className="fixed top-0 left-0 w-full bg-green-600 shadow-xl p-4 z-50">
-                <h1 className="text-left text-xl text-white font-bold">LateCheck</h1>
-            </header>
-            <main className="flex-1 overflow-y-auto pt-16 pb-16 px-4">
-                <div className="flex justify-center items-center">
-                    <h1 className="text-gray-400 font-black text-3xl py-4">Messages to </h1>
-                </div>
-                <div className="flex flex-col gap-2">
-                    {messages.map((msg, index) => (
-                        <Chatbubble 
-                            key={index} 
-                            message={msg.message} 
-                            timestamp={msg.timestamp} 
-                            isSender={msg.sender_id === senderId}
-                        />
-                    ))}
-                    <div ref={messagesEndRef} />
-                </div>
-            </main>
-            <footer className="fixed bottom-0 left-0 w-full shadow-md p-2 z-50 bg-white">
-                <div className="flex justify-center items-center gap-2 p-2 bg-gray-200 rounded-xl w-full max-w-md mx-auto">
-                    <form onSubmit={handleSubmit} className="flex w-full">
-                        <input
-                            type="text"
-                            placeholder="Type a message..."
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                        <div className="px-2">
-                            <button type="submit" className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700">
-                                <img src="/send-icon.svg" alt="Send" className="h-6 w-6" />
-                            </button>
-                        </div>
-                    </form>
-                </div>
+        <div className="flex flex-col min-h-screen bg-[#f1fdf3]">
+          {/* Header */}
+          <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+            <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-10">
+              <button
+                onClick={() => router.push("/home")}
+                className="flex items-center gap-2 text-green-600 hover:text-green-800"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
+              <div className="text-green-700 font-bold text-xl">Talk to the Warden</div>
+            </div>
+          </header>
+    
+          {/* Spacer */}
+          <div className="h-20" />
+    
+          {/* Chat container */}
+          <main className="flex flex-col flex-1 px-4 sm:px-8 max-w-3xl w-full mx-auto pb-24">
+            <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-green-300 flex-1 overflow-hidden">
+              {/* Messages list */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-260px)] pr-4">
+                {messages.map((msg, index) => (
+                  <div key={index} className={`flex ${msg.sender_id === senderId ? "justify-end" : "justify-start"}`}>
+                    <Chatbubble
+                      message={msg.message}
+                      timestamp={msg.timestamp}
+                      isSender={msg.sender_id === senderId}
+                    />
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              {/* Input form */}
+              <form
+                onSubmit={handleSubmit}
+                className="flex items-center p-4 border-t border-green-200 bg-white"
+              >
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSubmit(e)}
+                  className="flex-1 p-3 rounded-lg bg-[#f1fdf3] border border-green-200 focus:outline-none text-sm text-green-800"
+                  placeholder="Type your message..."
+                />
+                <button
+                  type="submit"
+                  className="ml-3 p-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+                >
+                  <img src="/send-icon.svg" alt="Send" className="h-5 w-5" />
+                </button>
+              </form>
+            </div>
+          </main>
+          <footer className=" left-0 w-fullp-3 z-50">
+              <div className="flex justify-center">
+                <MenuButton />
+              </div>
             </footer>
         </div>
-    );
+      );
 }

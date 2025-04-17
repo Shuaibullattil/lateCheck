@@ -1,49 +1,49 @@
-"use client"
-import { useEffect,useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 import QrReader from "../components/Qrreader";
 
-export default function Myscanner(){
-
+export default function Myscanner() {
     const router = useRouter();
-    const [user, setUser] = useState<unknown>(null); // Initially null to avoid hydration issues
+    const [user, setUser] = useState<unknown>(null);
 
     useEffect(() => {
-        // Ensure localStorage access happens only on the client
         if (typeof window === "undefined") return;
-
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         } else {
-            router.replace("/"); // ✅ Use `replace` instead of `push` for instant redirection
+            router.replace("/");
         }
     }, [router]);
 
-    // Prevent rendering until user state is determined
-    if (!user) return null; 
+    if (!user) return null;
 
-    return(
-        <div className="h-screen">
-            {/* Fixed Header */}
-            <header className="fixed top-0 left-0 w-full bg-green-600 shadow-xl p-4 z-50">
-                <h1 className="text-left text-xl text-white font-bold">LateCheck</h1>
+    return (
+        <div className="flex flex-col min-h-screen bg-[#f1fdf3]">
+            {/* Header */}
+            <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+                <div className="max-w-6xl mx-auto px-6 py-4 flex items-center">
+                    <div className="text-green-700 font-bold text-xl">LateCheck Scanner</div>
+                </div>
             </header>
 
-            {/* Main Content (Scrollable) */}
-            <main className="grid grid-cols-6 flex-1 overflow-y-auto pt-16 pb-16 px-4">
-                {/* Page content goes here */}
-                <div className="flex py-10 col-span-6 justify-center items-center">
+            {/* Spacer for header */}
+            <div className="h-20" />
+
+            {/* Main Content */}
+            <main className="flex flex-col flex-1 px-4 sm:px-8 max-w-3xl w-full mx-auto pb-24">
+                <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-green-300 p-6 items-center justify-center">
                     <QrReader />
                 </div>
             </main>
 
-            {/* Fixed Footer Navigation */}
-            <footer className="fixed bottom-0 left-0 w-full shadow-md p-2 z-50">
-                <nav className="flex justify-around">
-                <MenuButton />
-                </nav>
+            {/* Footer */}
+            <footer className="fixed bottom-0 left-0 w-full bg-white shadow-inner p-3 z-50">
+                <div className="flex justify-center">
+                    <MenuButton />
+                </div>
             </footer>
         </div>
     );
