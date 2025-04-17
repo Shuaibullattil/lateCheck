@@ -1,0 +1,1002 @@
+[
+  {
+    "_id": {
+      "$oid": "9a16bd42-1950-4273-b76a-62a61264ebd6"
+    },
+    "name": "Karan Singh",
+    "details": {
+      "address": "N/A",
+      "email": "karan.singh@example.com",
+      "hostel": "sahara",
+      "sem": {
+        "$numberInt": "5"
+      },
+      "branch": "IT",
+      "hostel_id": "220220",
+      "phone_no": "57276",
+      "room_no": {
+        "$numberInt": "208"
+      },
+      "id": "87000"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745211698468"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747564898468"
+          }
+        },
+        "purpose": "attending event"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747081898468"
+          }
+        },
+        "purpose": "camera fixing"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747400858468"
+          }
+        },
+        "purpose": "missed bus"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021700"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "d4ebcc39-13cc-4466-b7d5-5565a0e879b5"
+    },
+    "name": "Pooja Kumar",
+    "details": {
+      "address": "N/A",
+      "email": "pooja.kumar@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "1"
+      },
+      "branch": "IT",
+      "hostel_id": "220221",
+      "phone_no": "60910",
+      "room_no": {
+        "$numberInt": "111"
+      },
+      "id": "87001"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747422218469"
+          }
+        },
+        "purpose": "late arrival"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745645258469"
+          }
+        },
+        "purpose": "late arrival"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747077698469"
+          }
+        },
+        "purpose": "late arrival"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021701"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "fbfb6bed-8b24-4bf5-a96b-7b0cc792204c"
+    },
+    "name": "Isha Mehta",
+    "details": {
+      "address": "N/A",
+      "email": "isha.mehta@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "7"
+      },
+      "branch": "ECE",
+      "hostel_id": "220222",
+      "phone_no": "96559",
+      "room_no": {
+        "$numberInt": "199"
+      },
+      "id": "87002"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745024378469"
+          }
+        },
+        "purpose": "missed bus"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745002718469"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745526998469"
+          }
+        },
+        "purpose": "missed bus"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021702"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "44b96fc1-10ff-428a-8061-2003410fdfe5"
+    },
+    "name": "Nikita Mehta",
+    "details": {
+      "address": "N/A",
+      "email": "nikita.mehta@example.com",
+      "hostel": "sagar",
+      "sem": {
+        "$numberInt": "5"
+      },
+      "branch": "ECE",
+      "hostel_id": "220223",
+      "phone_no": "11476",
+      "room_no": {
+        "$numberInt": "171"
+      },
+      "id": "87003"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745707838470"
+          }
+        },
+        "purpose": "attending event"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745732018470"
+          }
+        },
+        "purpose": "train delay"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745554598470"
+          }
+        },
+        "purpose": "missed bus"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746056558470"
+          }
+        },
+        "purpose": "camera fixing"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021703"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "0578ec6e-1223-4c83-8ba7-4e3c628b62c3"
+    },
+    "name": "Diya Verma",
+    "details": {
+      "address": "N/A",
+      "email": "diya.verma@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "6"
+      },
+      "branch": "ECE",
+      "hostel_id": "220224",
+      "phone_no": "93005",
+      "room_no": {
+        "$numberInt": "257"
+      },
+      "id": "87004"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746234758470"
+          }
+        },
+        "purpose": "train delay"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747028258470"
+          }
+        },
+        "purpose": "project submission"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745289818470"
+          }
+        },
+        "purpose": "class overtime"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021704"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "e915fab0-526c-4e67-b6e6-6425ba5617e1"
+    },
+    "name": "Diya Singh",
+    "details": {
+      "address": "N/A",
+      "email": "diya.singh@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "5"
+      },
+      "branch": "EE",
+      "hostel_id": "220225",
+      "phone_no": "39820",
+      "room_no": {
+        "$numberInt": "287"
+      },
+      "id": "87005"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745594738470"
+          }
+        },
+        "purpose": "camera fixing"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747192898470"
+          }
+        },
+        "purpose": "volunteering"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021705"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "a17738ea-7f2a-4795-b5ab-e025ebde9aa5"
+    },
+    "name": "Vivek Joshi",
+    "details": {
+      "address": "N/A",
+      "email": "vivek.joshi@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "8"
+      },
+      "branch": "CS",
+      "hostel_id": "220226",
+      "phone_no": "71782",
+      "room_no": {
+        "$numberInt": "268"
+      },
+      "id": "87006"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1744979738470"
+          }
+        },
+        "purpose": "missed bus"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746672338470"
+          }
+        },
+        "purpose": "forgot keys"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021706"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "32007e8d-5a9d-4d2c-84b7-ca01483f4b34"
+    },
+    "name": "Diya Verma",
+    "details": {
+      "address": "N/A",
+      "email": "diya.verma@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "8"
+      },
+      "branch": "IT",
+      "hostel_id": "220227",
+      "phone_no": "21415",
+      "room_no": {
+        "$numberInt": "296"
+      },
+      "id": "87007"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745450978470"
+          }
+        },
+        "purpose": "camera fixing"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746502118470"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747057418470"
+          }
+        },
+        "purpose": "project submission"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021707"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6b6cd8e8-59df-4fc5-ba05-cef739e7ba37"
+    },
+    "name": "Aditya Sharma",
+    "details": {
+      "address": "N/A",
+      "email": "aditya.sharma@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "8"
+      },
+      "branch": "ME",
+      "hostel_id": "220228",
+      "phone_no": "90398",
+      "room_no": {
+        "$numberInt": "180"
+      },
+      "id": "87008"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747023578470"
+          }
+        },
+        "purpose": "attending event"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746981638470"
+          }
+        },
+        "purpose": "attending event"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747404158470"
+          }
+        },
+        "purpose": "attending event"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021708"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "1135dce1-7bd1-4949-af36-e1178a2e4192"
+    },
+    "name": "Aarav Verma",
+    "details": {
+      "address": "N/A",
+      "email": "aarav.verma@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "5"
+      },
+      "branch": "ME",
+      "hostel_id": "220229",
+      "phone_no": "73715",
+      "room_no": {
+        "$numberInt": "228"
+      },
+      "id": "87009"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745291978471"
+          }
+        },
+        "purpose": "late arrival"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746213518471"
+          }
+        },
+        "purpose": "attending event"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021709"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "1d3a5007-1395-4104-a44e-f1e1d17aad91"
+    },
+    "name": "Vivek Joshi",
+    "details": {
+      "address": "N/A",
+      "email": "vivek.joshi@example.com",
+      "hostel": "sahara",
+      "sem": {
+        "$numberInt": "6"
+      },
+      "branch": "IT",
+      "hostel_id": "220230",
+      "phone_no": "16457",
+      "room_no": {
+        "$numberInt": "223"
+      },
+      "id": "87010"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747567058471"
+          }
+        },
+        "purpose": "train delay"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745076278471"
+          }
+        },
+        "purpose": "class overtime"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021710"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5e2ce7f8-a232-4da2-a51e-f3405ba2aa6d"
+    },
+    "name": "Sneha Kumar",
+    "details": {
+      "address": "N/A",
+      "email": "sneha.kumar@example.com",
+      "hostel": "sagar",
+      "sem": {
+        "$numberInt": "2"
+      },
+      "branch": "CS",
+      "hostel_id": "220231",
+      "phone_no": "23458",
+      "room_no": {
+        "$numberInt": "308"
+      },
+      "id": "87011"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746676058471"
+          }
+        },
+        "purpose": "train delay"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746060638471"
+          }
+        },
+        "purpose": "volunteering"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747537838471"
+          }
+        },
+        "purpose": "project submission"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021711"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "d26176fb-09e2-4a9e-b392-f1540ba6f09b"
+    },
+    "name": "Ananya Joshi",
+    "details": {
+      "address": "N/A",
+      "email": "ananya.joshi@example.com",
+      "hostel": "sahara",
+      "sem": {
+        "$numberInt": "8"
+      },
+      "branch": "ME",
+      "hostel_id": "220232",
+      "phone_no": "62707",
+      "room_no": {
+        "$numberInt": "190"
+      },
+      "id": "87012"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745065058471"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745083838471"
+          }
+        },
+        "purpose": "volunteering"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745800958471"
+          }
+        },
+        "purpose": "class overtime"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745358338471"
+          }
+        },
+        "purpose": "emergency trip"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021712"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "f08ee7c3-b26f-47ac-b14d-7b222d52fd02"
+    },
+    "name": "Ananya Singh",
+    "details": {
+      "address": "N/A",
+      "email": "ananya.singh@example.com",
+      "hostel": "sagar",
+      "sem": {
+        "$numberInt": "2"
+      },
+      "branch": "CS",
+      "hostel_id": "220233",
+      "phone_no": "82271",
+      "room_no": {
+        "$numberInt": "370"
+      },
+      "id": "87013"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746519878471"
+          }
+        },
+        "purpose": "volunteering"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747582478471"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746690998471"
+          }
+        },
+        "purpose": "train delay"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021713"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "aa7f0c24-8574-4467-a2ae-8f19d60e6af1"
+    },
+    "name": "Simran Kumar",
+    "details": {
+      "address": "N/A",
+      "email": "simran.kumar@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "3"
+      },
+      "branch": "IT",
+      "hostel_id": "220234",
+      "phone_no": "56579",
+      "room_no": {
+        "$numberInt": "325"
+      },
+      "id": "87014"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745695538471"
+          }
+        },
+        "purpose": "forgot keys"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746849638471"
+          }
+        },
+        "purpose": "volunteering"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746911978471"
+          }
+        },
+        "purpose": "project submission"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745058878471"
+          }
+        },
+        "purpose": "attending event"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021714"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "8466a08f-aea8-4813-8375-705621df8e62"
+    },
+    "name": "Nikita Singh",
+    "details": {
+      "address": "N/A",
+      "email": "nikita.singh@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "2"
+      },
+      "branch": "ME",
+      "hostel_id": "220235",
+      "phone_no": "77350",
+      "room_no": {
+        "$numberInt": "372"
+      },
+      "id": "87015"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746932618471"
+          }
+        },
+        "purpose": "class overtime"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745615858471"
+          }
+        },
+        "purpose": "class overtime"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1744916378471"
+          }
+        },
+        "purpose": "train delay"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746583058471"
+          }
+        },
+        "purpose": "late arrival"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021715"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "5a8f70f7-d1ce-48d8-a0ea-3b4db8916dd3"
+    },
+    "name": "Aarav Gupta",
+    "details": {
+      "address": "N/A",
+      "email": "aarav.gupta@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "1"
+      },
+      "branch": "ECE",
+      "hostel_id": "220236",
+      "phone_no": "33950",
+      "room_no": {
+        "$numberInt": "158"
+      },
+      "id": "87016"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745428598471"
+          }
+        },
+        "purpose": "late arrival"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1746271658471"
+          }
+        },
+        "purpose": "forgot keys"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021716"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "7fdba23a-4ede-428a-9f22-e821a66731c3"
+    },
+    "name": "Vivek Verma",
+    "details": {
+      "address": "N/A",
+      "email": "vivek.verma@example.com",
+      "hostel": "sagar",
+      "sem": {
+        "$numberInt": "5"
+      },
+      "branch": "CS",
+      "hostel_id": "220237",
+      "phone_no": "92804",
+      "room_no": {
+        "$numberInt": "323"
+      },
+      "id": "87017"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747083458471"
+          }
+        },
+        "purpose": "attending event"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745227418471"
+          }
+        },
+        "purpose": "missed bus"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021717"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6eba0455-58ec-4590-a7e4-d9dcb86e6269"
+    },
+    "name": "Aarav Gupta",
+    "details": {
+      "address": "N/A",
+      "email": "aarav.gupta@example.com",
+      "hostel": "swaraj",
+      "sem": {
+        "$numberInt": "4"
+      },
+      "branch": "ME",
+      "hostel_id": "220238",
+      "phone_no": "66111",
+      "room_no": {
+        "$numberInt": "162"
+      },
+      "id": "87018"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747576598471"
+          }
+        },
+        "purpose": "project submission"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745374838471"
+          }
+        },
+        "purpose": "emergency trip"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745036978471"
+          }
+        },
+        "purpose": "project submission"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021718"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "baa80dd5-529e-4b7f-bb64-895ff37abe8e"
+    },
+    "name": "Meera Reddy",
+    "details": {
+      "address": "N/A",
+      "email": "meera.reddy@example.com",
+      "hostel": "sarover",
+      "sem": {
+        "$numberInt": "8"
+      },
+      "branch": "CS",
+      "hostel_id": "220239",
+      "phone_no": "93862",
+      "room_no": {
+        "$numberInt": "257"
+      },
+      "id": "87019"
+    },
+    "history": [
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1745044718471"
+          }
+        },
+        "purpose": "project submission"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747363718471"
+          }
+        },
+        "purpose": "missed bus"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747065518471"
+          }
+        },
+        "purpose": "emergency trip"
+      },
+      {
+        "timing": {
+          "$date": {
+            "$numberLong": "1747319498471"
+          }
+        },
+        "purpose": "forgot keys"
+      }
+    ],
+    "student_id": {
+      "$numberLong": "22021719"
+    }
+  }
+]
