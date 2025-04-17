@@ -1,5 +1,8 @@
 // pages/dashboard.tsx
+"use client"
 import React from 'react';
+import { useEffect,useState } from 'react';
+import { useRouter } from "next/navigation";
 import SideBar from '../components/sidebar';
 import LateEntryTable from '../components/LateEntryTable';
 import PendingTable from '../components/PendingTable';
@@ -24,12 +27,34 @@ const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString()
 
 
 export default function Dashboard() {
+
+    const router = useRouter();
+        const [user, setUser] = useState<any>(null); // Initially null to avoid hydration issues
+    
+        useEffect(() => {
+            // Ensure localStorage access happens only on the client
+            if (typeof window === "undefined") return;
+    
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            } else {
+                router.replace("/"); // ✅ Use `replace` instead of `push` for instant redirection
+            }
+        }, [router]);
+    
+        // Prevent rendering until user state is determined
+        if (!user) return null;
+
     return (
         <div>
             <div className='grid grid-cols-12 bg-slate-400 '>
-                <div className=' prose items-center col-span-12 ml-8 mt-4 mb-4'>
+                <div className=' prose items-center col-span-6 ml-8 mt-4 mb-4'>
                     <h1 className='m-0 text-white'>DashBoard</h1>
                     <h5 className='m-0 text-white'>{weekDay} | {formattedTime}</h5>
+                </div>
+                <div className='flex col-span-6 justify-end items-center'>
+                    <h2 className='text-white px-4 text-xl font-black'>{user.name}</h2>
                 </div>
             </div>
             <div className='grid grid-cols-12'>
