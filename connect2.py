@@ -1,7 +1,7 @@
 import os
 import random
 import cv2
-from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect, Header, APIRouter
+from fastapi import BackgroundTasks, FastAPI, HTTPException, File, UploadFile, Form,WebSocket,WebSocketDisconnect, Header, APIRouter, Request
 from pymongo import MongoClient
 from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
@@ -20,11 +20,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict
 import asyncio
 from bson import ObjectId
-import jwt  # For JWT authentication
+import jwt, smtplib, ssl  
 import hashlib  # For password hashing
 from dotenv import load_dotenv
 from pytz import timezone as tz
 from pytz import UTC
+from email.message import EmailMessage
 
 IST = tz("Asia/Kolkata")
 
@@ -370,6 +371,62 @@ async def filter_date_get_student(start_date: str, end_date: str):
 
     return filtered_students
 
+otp_store = {}
+class EmailRequest(BaseModel):
+    email: str
+
+class OTPVerify(BaseModel):
+    email: str
+    otp: str
+
+@app.post("/send-otp")
+def send_otp(request: EmailRequest):
+    existing = otp_store.get(request.email)
+    if existing and datetime.now() < existing["expires"]:
+        return {"message": "OTP already sent. Try again later."}  # Don't resend
+    otp = str(random.randint(100000, 999999))
+    expiry = datetime.now() + timedelta(minutes=3)
+    otp_store[request.email] = {"otp": otp, "expires": expiry}
+
+    # Send Email
+    port = 465
+    smtp_server = "smtp.gmail.com"
+    sender_email = "latecheckofficial@gmail.com"
+    password = "rfzx jboz xmue yuqr"  # Use Gmail app password
+    subject = "Your OTP for LateCheck Verification"
+    body = f"Hello,\n\nYour OTP is: {otp}\nIt will expire in 3 minutes.\n\nThank you,\nLateCheck Team"
+
+    # Use EmailMessage for proper formatting
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = sender_email
+    msg["To"] = request.email
+    msg.set_content(body)
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(sender_email, password)
+        server.send_message(msg)
+
+    return {"message": "OTP sent"}
+
+@app.post("/verify-otp")
+def verify_otp(data: OTPVerify):
+    if data.email not in otp_store:
+        raise HTTPException(status_code=400, detail="OTP not found")
+
+    entry = otp_store[data.email]
+    if datetime.now() > entry["expires"]:
+        del otp_store[data.email]
+        raise HTTPException(status_code=400, detail="OTP expired")
+
+    if entry["otp"] != data.otp:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+
+    del otp_store[data.email]
+    return {"message": "OTP verified"}
+
+
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -400,10 +457,12 @@ async def login(user: User):
     access_token = create_access_token({"sub": user.username})
 
     if (usertype == "warden"):
-        user_detail = warden_collection.find_one({"email" : user_data["username"]}) 
+        user_detail = warden_collection.find_one({"email" : user_data["username"]})
+        
     else:
         user_detail = collection.find_one({"details.email": user_data["username"]})
     
+    user_detail["usertype"] = usertype
 
     if user_detail:
         user_detail["_id"] = str(user_detail["_id"])

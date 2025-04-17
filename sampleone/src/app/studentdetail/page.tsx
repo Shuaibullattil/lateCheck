@@ -1,9 +1,37 @@
-import React from 'react';
+"use client"
+import React, { useEffect, useState } from 'react';
+import { useRouter } from "next/navigation";
 import SideBar from '../components/sidebar';
 import Dashboardheader from '../components/dashboardheader';
 import StudentDetailTable from '../components/Tablecomponent/StudentDetailTable';
 
+
 export default function studendetail(){
+        const [user, setUser] = useState<any>(null);
+        const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+        
+        const router = useRouter();
+    
+        // Auth check
+            useEffect(() => {
+            if (typeof window === "undefined") return;
+        
+            const storedUser = localStorage.getItem("warden");
+            if (storedUser) {
+                const parsedUser = JSON.parse(storedUser);
+                if (parsedUser.usertype !== "warden") {
+                router.replace("/");
+                } else {
+                setUser(parsedUser);
+                }
+            } else {
+                router.replace("/");
+            }
+        
+            setIsCheckingAuth(false);
+            }, [router]);
+        
+
     return(
             <div>
                 <div className='grid grid-cols-12 bg-slate-400' >

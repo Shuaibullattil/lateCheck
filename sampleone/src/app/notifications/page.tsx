@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { useState, useEffect } from 'react';
 import SideBar from '../components/sidebar';
 import { formatDateToDdMmYyyy } from "@/utils/formattime";
+import { useRouter } from "next/navigation";
 
 const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const today = new Date();
@@ -16,6 +17,32 @@ hours = hours % 12 || 12;
 const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 
 export default function Dashboard() {
+
+    const [user, setUser] = useState<any>(null);
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+    const router = useRouter();
+
+    // Auth check
+      useEffect(() => {
+        if (typeof window === "undefined") return;
+    
+        const storedUser = localStorage.getItem("warden");
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser.usertype !== "warden") {
+            router.replace("/");
+          } else {
+            setUser(parsedUser);
+          }
+        } else {
+          router.replace("/");
+        }
+    
+        setIsCheckingAuth(false);
+      }, [router]);
+
+
     // ✅ messages now stores full message objects
     const [messages, setMessages] = useState<{ message: string; timestamp: string }[]>([]);
     const [input, setInput] = useState('');
@@ -70,10 +97,13 @@ export default function Dashboard() {
                     <h1 className='text-white'>Student Notification</h1>
                     <h5 className='text-white'>{weekDay} | {formattedTime}</h5>
                 </div>
+                <div className='flex col-span-6 justify-end items-center'>
+                    <h2 className='text-white px-4 text-xl font-black'>{user?.name}</h2>
+                </div>
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-1 grid grid-cols-12 overflow-hidden">
+            <div className="flex-1 grid grid-cols-12 overflow-hidden">
                 <div className='sm:col-span-2 hidden md:block bg-base-300'>
                     <SideBar />
                 </div>

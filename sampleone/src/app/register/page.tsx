@@ -42,7 +42,7 @@ export default function Home() {
 
       alert("User registered successfully!");
       console.log(response.data);
-      router.push(`/password-setup?email=${formData.email}`);
+      router.push(`/verify-otp?email=${formData.email}`);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("Error registering user:", error.response?.data || error);

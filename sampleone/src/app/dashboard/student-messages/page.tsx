@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import SideBar from "../../components/sidebar";
 import Chat from "../../components/Chat";
@@ -29,64 +30,86 @@ export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [receiverId, setReceiverId] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
+  const router = useRouter();
 
-  // Function to fetch initial messages (only once)
-  const fetchMessages = async () => {
-    try {
-      const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
-      setMessages(response.data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
-  // Function to fetch chat history when receiver is selected
-  const fetchChatHistory = async (receiverId: string) => {
-    try {
-      const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
-      setChatMessages(response.data);
-    } catch (error) {
-      console.error("Error fetching chat history:", error);
-    }
-  };
-
+  // Auth check
   useEffect(() => {
-    fetchMessages(); // Fetch messages only once at the start
-  }, []);
+    if (typeof window === "undefined") return;
 
+    const storedUser = localStorage.getItem("warden");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.usertype !== "warden") {
+        router.replace("/");
+      } else {
+        setUser(parsedUser);
+      }
+    } else {
+      router.replace("/");
+    }
+
+    setIsCheckingAuth(false);
+  }, [router]);
+
+  // Fetch messages on mount
   useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [userId]);
+
+  // Fetch chat history when a receiver is selected
+  useEffect(() => {
+    const fetchChatHistory = async (receiverId: string) => {
+      try {
+        const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
+        setChatMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    };
+
     if (receiverId) {
       fetchChatHistory(receiverId);
     }
-  }, [receiverId]);
+  }, [receiverId, userId]);
 
+  // WebSocket setup
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
     ws.onmessage = (event) => {
       const newMessage: Message = JSON.parse(event.data);
-      
-      // Update inbox messages
+
       setMessages((prevMessages) => {
-        // Check if we already have a message from this sender
         const existingMessageIndex = prevMessages.findIndex(
-          msg => msg.sender_id === newMessage.sender_id
+          (msg) => msg.sender_id === newMessage.sender_id
         );
-        
+
         if (existingMessageIndex >= 0) {
-          // Update existing message
           const updatedMessages = [...prevMessages];
           updatedMessages[existingMessageIndex] = newMessage;
           return updatedMessages;
         } else {
-          // Add new message
           return [...prevMessages, newMessage];
         }
       });
 
-      // If the message is for the current chat, update chat messages
-      if (receiverId && (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)) {
+      if (
+        receiverId &&
+        (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)
+      ) {
         setChatMessages((prev) => [...prev, newMessage]);
       }
     };
@@ -102,18 +125,26 @@ export default function Dashboard() {
     return () => {
       ws.close();
     };
-  }, [receiverId]);
+  }, [receiverId, userId]);
 
   const handleMessageClick = (message: Message) => {
     setReceiverId(message.sender_id);
   };
 
+  // ⛔ Important: return early ONLY AFTER hooks
+  if (isCheckingAuth) return null;
+
   return (
     <div>
       <div className="grid grid-cols-12 bg-slate-400">
-        <div className="prose items-center col-span-12 ml-8 mt-4 mb-4">
+        <div className="prose items-center col-span-6 ml-8 mt-4 mb-4">
           <h1 className="m-0 text-white">Student Messages</h1>
-          <h5 className="m-0 text-white">{weekDay} | {formattedTime}</h5>
+          <h5 className="m-0 text-white">
+            {weekDay} | {formattedTime}
+          </h5>
+        </div>
+        <div className='flex col-span-6 justify-end items-center'>
+            <h2 className='text-white px-4 text-xl font-black'>{user.name}</h2>
         </div>
       </div>
       <div className="grid grid-cols-12">

@@ -1,7 +1,6 @@
-// pages/dashboard.tsx
-"use client"
-import React from 'react';
-import { useEffect,useState } from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import SideBar from '../components/sidebar';
 import LateEntryTable from '../components/LateEntryTable';
@@ -12,39 +11,34 @@ const today = new Date();
 const weekDay = daysOfWeek[today.getDay()];
 
 const now = new Date();
-let hours = now.getHours(); // Get the hour (0-23)
-const minutes = now.getMinutes(); // Get the minutes (0-59)
-
-// Determine AM/PM
+let hours = now.getHours();
+const minutes = now.getMinutes();
 const ampm = hours >= 12 ? 'PM' : 'AM';
-
-// Convert to 12-hour format
-hours = hours % 12;
-hours = hours ? hours : 12; // Handle the case when hours == 0 (midnight)
-
-// Format minutes to always show two digits
+hours = hours % 12 || 12;
 const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
 
-
 export default function Dashboard() {
-
     const router = useRouter();
-        const [user, setUser] = useState<any>(null); // Initially null to avoid hydration issues
-    
-        useEffect(() => {
-            // Ensure localStorage access happens only on the client
-            if (typeof window === "undefined") return;
-    
-            const storedUser = localStorage.getItem("user");
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-            } else {
-                router.replace("/"); // ✅ Use `replace` instead of `push` for instant redirection
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const storedUser = localStorage.getItem("warden");
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+
+            // Redirect if not a warden
+            if (parsedUser.usertype !== "warden") {
+                router.replace("/");
             }
-        }, [router]);
-    
-        // Prevent rendering until user state is determined
-        if (!user) return null;
+        } else {
+            router.replace("/");
+        }
+    }, [router]);
+
+    if (!user || user.usertype !== "warden") return null;
 
     return (
         <div>
@@ -61,18 +55,15 @@ export default function Dashboard() {
                 <div className='sm:col-span-2 hidden md:block bg-base-300 h-100vw'>
                     <SideBar />
                 </div>
-                <div className='sm:col-span-1 hidden'>
-
-                </div>
+                <div className='sm:col-span-1 hidden'></div>
                 <div className='sm:col-span-10 col-span-12 bg-white mt-16 ml-10'>
                     <div className='grid grid-cols-9 gap-4 justify-start pr-8'>
                         <div className='col-span-9 sm:col-span-4 border shadow-xl '>
                             <LateEntryTable />
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>
-        
     );
 }
