@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import SideBar from "../../components/sidebar";
 import Dashboardheader from "../../components/dashboardheader";
-import StudentDetailTable from "../../components/Tablecomponent/StudentDetailTable";
+import StudentRequestTable from "../../components/Tablecomponent/StudentRequestTable";
 
 export default function StudentDetail() {
   const [user, setUser] = useState<any>(null);
@@ -44,7 +44,7 @@ export default function StudentDetail() {
           <SideBar />
         </div>
         <div className="md:col-span-9 lg:col-span-10 col-span-12 bg-white ml-10 mt-4 p-8">
-          <StudentDetailTable hostel={user.hostel} status="unverified" />
+          <StudentRequestTable hostel={user.hostel} status="unverified" />
           <div className="h-32"></div>
         </div>
       </div>
