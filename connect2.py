@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from passlib.context import CryptContext
-from datetime import datetime
+from datetime import datetime, time
 from typing import Dict,List
 from datetime import datetime, timedelta, timezone
 from typing import Dict
@@ -24,8 +24,8 @@ import jwt  # For JWT authentication
 import hashlib  # For password hashing
 from dotenv import load_dotenv
 from pytz import timezone as tz
+from pytz import UTC
 
-UTC = timezone.utc
 IST = tz("Asia/Kolkata")
 
 
@@ -299,49 +299,76 @@ async def get_students_with_today_entries():
 
     return flat_result
 
-@app.get("/stream/qr-detection")
-async def stream_qr_detection():
-    async def generate_frames():
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
-            raise HTTPException(status_code=500, detail="Webcam could not be opened")
-        qr_detector = cv2.QRCodeDetector()
-        detected_qr_data = set()
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            data, points, _ = qr_detector.detectAndDecode(frame)
-            if points is not None:
-                points = points[0]
-                for i in range(len(points)):
-                    pt1 = tuple(map(int, points[i]))
-                    pt2 = tuple(map(int, points[(i + 1) % len(points)]))
-                    cv2.line(frame, pt1, pt2, (0, 255, 0), 2)
+@app.get("/filter/date")
+async def filter_date_get_student(start_date: str, end_date: str):
+    try:
+        # Parse the date strings to date objects
+        start_date_obj = datetime.strptime(start_date.strip(), "%Y-%m-%d")
+        end_date_obj = datetime.strptime(end_date.strip(), "%Y-%m-%d")
 
-                if data:
-                    if data not in detected_qr_data:
-                        print(f"{data}")
-                        detected_qr_data.add(data)
-                        if data == "sahara":
-                            name = "Jane Doe"
-                            student_id = 12341111
-                            timing = "2025-01-21 12:00:00"
-                            purpose = "Going to a friend's room"
-                            await insert_memory(name, student_id, timing, purpose)
-                        else:
-                            print("Illegal entry is not allowed!")
-                    cv2.putText(frame, f"{data}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.7, (0, 255, 0), 2, cv2.LINE_AA)
+        # Set to full-day range with UTC timezone
+        start_utc = UTC.localize(datetime.combine(start_date_obj, time.min))
+        end_utc = UTC.localize(datetime.combine(end_date_obj, time.max))
+    except Exception as e:
+        return {"error": f"Invalid date format: {e}"}
 
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame_bytes = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+    # MongoDB pipeline
+    pipeline = [
+        {
+            "$match": {
+                "history": {
+                    "$elemMatch": {
+                        "timing": {
+                            "$gte": start_utc,
+                            "$lte": end_utc
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "name": 1,
+                "details": 1,
+                "history": {
+                    "$filter": {
+                        "input": "$history",
+                        "as": "entry",
+                        "cond": {
+                            "$and": [
+                                {"$gte": ["$$entry.timing", start_utc]},
+                                {"$lte": ["$$entry.timing", end_utc]}
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
 
-        cap.release()
+    results = list(collection.aggregate(pipeline))
+    filtered_students = []
 
-    return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
+    for student in results:
+        if student["history"]:
+            # Sort and take earliest entry within the range
+            student["history"].sort(key=lambda x: x["timing"])
+            first_entry = student["history"][0]
+
+            ist_time = first_entry["timing"].astimezone(IST)
+            formatted_time = ist_time.strftime("%Y-%m-%d %I:%M %p")
+
+            filtered_students.append({
+                "name": student["name"],
+                "batch": f'S{student["details"]["sem"]} | {student["details"]["branch"]}',
+                "hostel": student["details"]["hostel"],
+                "room_no": student["details"]["room_no"],
+                "entry_time": formatted_time,
+                "reason": first_entry["purpose"]
+            })
+
+    return filtered_students
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
