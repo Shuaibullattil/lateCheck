@@ -15,6 +15,7 @@ import {
   Bell,
   LogOut,
 } from "lucide-react";
+import Inbox from "../../components/Inbox";
 
 // Updated to include actual paths
 const sidebarItems = [
@@ -103,8 +104,18 @@ export default function Dashboard() {
         </header>
 
         <main className="p-3 sm:p-4 md:p-6 flex-1 overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            hello
+        <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-12">
+        <div className="col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8">
+          {messages.map((message, index) => (
+            <button key={index} onClick={() => handleMessageClick(message)}>
+              <Inbox message={message} />
+            </button>
+          ))}
+        </div>
+        <div className="flex col-span-6 justify-center items-start bg-white">
+          <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
+        </div>
           </div>
         </main>
       </div>
