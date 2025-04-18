@@ -5,7 +5,7 @@ import { Search, Users, GraduationCap, Building, Book, DoorClosed, Phone, Mail, 
 
 type Student = {
   id: string;
-  hostel_id: string;
+student_id: string;
   name: string;
   branch: string;
   sem: string;
@@ -31,9 +31,11 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
     axios
       .get<Student[]>("http://localhost:8000/studentstable", {
         params: { hostel: hostel, status: status },
+        
       })
       .then((response) => {
         setStudents(response.data);
+        console.log(response.data)
         setLoading(false);
       })
       .catch((error) => {
@@ -45,7 +47,7 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
   const filteredStudents = students.filter((student) =>
     String(student.name).toLowerCase().includes(nameFilter.toLowerCase()) &&
     (branchFilter === "" || student.branch === branchFilter) &&
-    String(student.hostel_id).toLowerCase().includes(hostelIdFilter.toLowerCase()) &&
+    String(student.student_id).toLowerCase().includes(hostelIdFilter.toLowerCase()) &&
     String(student.room_no).toLowerCase().includes(roomFilter.toLowerCase()) &&
     (semFilter === "" || student.sem.toString() === semFilter)
   );
@@ -245,7 +247,7 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium text-green-800">{student.name}</h3>
-                        <p className="text-xs text-gray-500">{student.hostel_id}</p>
+                        <p className="text-xs text-gray-500">{student.student_id}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">
@@ -311,7 +313,8 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
                         index % 2 === 0 ? "bg-white" : "bg-green-50/30"
                       }`}
                     >
-                      <td className="px-3 py-1.5 text-xs">{student.hostel_id}</td>
+                      <td className="px-3 py-1.5 text-xs">{student.student_id
+}</td>
                       <td className="px-3 py-1.5 text-sm font-medium text-green-800">{student.name}</td>
                       <td className="px-3 py-1.5 text-xs">
                         <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">

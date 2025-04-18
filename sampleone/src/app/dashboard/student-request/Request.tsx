@@ -8,7 +8,7 @@ import {
 
 type Student = {
   id: string;
-  hostel_id: string;
+student_id: string;
   name: string;
   branch: string;
   sem: string;
@@ -380,7 +380,7 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium text-green-800">{student.name}</h3>
-                        <p className="text-xs text-gray-500">{student.hostel_id}</p>
+                        <p className="text-xs text-gray-500">{student.student_id}</p>
                       </div>
                       <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded flex items-center">
                         <GraduationCap className="h-3 w-3 mr-1" />
@@ -461,7 +461,7 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                         index % 2 === 0 ? "bg-white" : "bg-green-50/30"
                       }`}
                     >
-                      <td className="px-3 py-1.5 text-xs">{student.hostel_id}</td>
+                      <td className="px-3 py-1.5 text-xs">{student.student_id}</td>
                       <td className="px-3 py-1.5 text-sm font-medium text-green-800">{student.name}</td>
                       <td className="px-3 py-1.5 text-xs">
                         <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">
@@ -515,7 +515,7 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                 </div>
                 <div>
                   <span className="font-medium text-green-800">ID: </span>
-                  <span className="text-gray-700">{selectedStudent.hostel_id}</span>
+                  <span className="text-gray-700">{selectedStudent.student_id}</span>
                 </div>
                 <div>
                   <span className="font-medium text-green-800">Branch: </span>
@@ -530,7 +530,7 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                   <span className="text-gray-700">{selectedStudent.room_no}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-green-800">Hostel: </span>
+                  <span className="font-medium text-green-800">Student ID: </span>
                   <span className="text-gray-700">{selectedStudent.hostel}</span>
                 </div>
               </div>
