@@ -30,6 +30,14 @@ import {
   Download,
   Clock,
 } from "lucide-react";
+import axios from "axios";
+
+
+interface LateEntryStats {
+  lateEntriesToday: number;
+  mostFrequentReason: string;
+  reasonCount?: number; // Count of the most frequent reason
+}
 
 
 const mockData = {
@@ -202,6 +210,87 @@ export default function Dashboard() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [stats, setStats] = useState<LateEntryStats>({
+    lateEntriesToday: 0,
+    mostFrequentReason: 'Loading...',
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+ 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetch late entries count (assuming you have this endpoint)
+        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today');
+        
+        // Fetch most common reason using your endpoint
+        const reasonResponse = await axios.get<{most_common_reason: string; count: number}>('http://localhost:8000/most-common-late-reason/');
+        
+        setStats({
+          lateEntriesToday: lateEntriesResponse.data.count || 0,
+          mostFrequentReason: reasonResponse.data.most_common_reason,
+          reasonCount: reasonResponse.data.count
+        });
+        
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch late entry statistics:', err);
+        setError('Failed to load data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+      
+      // Call the report generation endpoint
+      const response = await axios({
+        url: 'http://localhost:8000/generate-report-from-file/',
+        method: 'GET',
+        responseType: 'blob', // Important for downloading files
+      });
+      
+      // Create a blob from the response data
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from Content-Disposition header or use default
+      const contentDisposition = response.headers['content-disposition'];
+      const filename = contentDisposition
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+        : 'late-entry-report.pdf';
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Failed to download report:', err);
+      alert('Failed to download report. Please try again later.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+
     
         useEffect(() => {
             if (typeof window === "undefined") return;
@@ -227,6 +316,7 @@ export default function Dashboard() {
     setModalOpen(true);
   };
 
+  
   return (
     <div className="h-screen flex bg-[#f1fdf3] text-gray-800 overflow-hidden">
       {/* Sidebar - fixed */}
@@ -283,22 +373,49 @@ export default function Dashboard() {
                 <div className="bg-white border border-green-300 shadow-md rounded-xl p-7">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-lg font-semibold text-green-800 flex items-center">
-                      <Clock className="w-5 h-5 mr-2" /> 
+                      <Clock className="w-5 h-5 mr-2" />
                       Late Entries Today
                     </h3>
-                    <button className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
-                      <Download className="w-4 h-4" />
-                    </button>
+                  <button 
+                  className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors relative"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-t-2 border-green-700 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                </button>
                   </div>
                   
-                  <div className="mb-3">
-                    <p className="text-3xl font-bold text-gray-700">{mockData.lateEntriesToday}</p>
-                  </div>
-                  
-                  <div className="pt-2 border-t border-gray-100">
-                    <p className="text-sm text-gray-600">Most Common Reason:</p>
-                    <p className="text-sm font-medium text-gray-800">{mockData.mostFrequentReason}</p>
-                  </div>
+                  {isLoading ? (
+                    <div className="text-center py-4">
+                      <p className="text-gray-500">Loading data...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-4">
+                      <p className="text-red-500">{error}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mb-3">
+                        <p className="text-3xl font-bold text-gray-700">{stats.lateEntriesToday}</p>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-gray-100">
+                        <p className="text-sm text-gray-600">Most Common Reason:</p>
+                        <p className="text-sm font-medium text-gray-800">
+                          {stats.mostFrequentReason}
+                          {stats.reasonCount && (
+                            <span className="ml-1 text-gray-500">({stats.reasonCount} occurrences)</span>
+                          )}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Student Profiles Component */}
