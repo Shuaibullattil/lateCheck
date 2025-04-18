@@ -875,7 +875,7 @@ async def add_user(
 @app.get("/get/history")
 async def get_person(name: str, student_id: int):
     query_result = collection.find_one(
-        {"name": name, "student_id": student_id},
+        {"name": name, "details.id": student_id},
         {"history": 1, "_id": 0}
     )
     if query_result:
@@ -886,7 +886,7 @@ async def get_person(name: str, student_id: int):
 @app.get("/get/student")
 async def get_student_details(name: str, student_id: int):
     query_result = collection.find_one(
-        {"name": name, "student_id": student_id},
+        {"name": name, "details.id": student_id},
         {"name": 1, "id": 1, "details": 1, "_id": 0}  
     )
     if query_result:
@@ -1126,6 +1126,11 @@ def verify_otp(data: OTPVerify):
 
     del otp_store[data.email]
     return {"message": "OTP verified"}
+
+@app.delete("/delete/user")
+async def delete_user(email: str):
+    collection.delete_one({"details.email":email})
+    users_collection.delete_one({"username":email})
 
 
 load_dotenv()
