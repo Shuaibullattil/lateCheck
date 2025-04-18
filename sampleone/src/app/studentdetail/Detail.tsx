@@ -206,7 +206,7 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
       )}
 
       {/* Main content container - This is where we'll fix the scrolling */}
-      <div className="h-[390px] overflow-y-auto p-2 relative">
+      <div className="h-[400px] overflow-y-auto p-2 relative">
         {/* Loading State */}
         {loading ? (
           <div className="flex flex-col space-y-2 pt-2">

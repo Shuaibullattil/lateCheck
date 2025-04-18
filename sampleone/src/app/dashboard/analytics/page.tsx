@@ -372,10 +372,10 @@ export default function Dashboard() {
                 </div>
 
                 {/* Student Profiles Component */}
-                <div className="bg-white border border-green-300 shadow-md rounded-xl px-4 py-6">
+                <div className="bg-white h-[350px] border border-green-300 shadow-md rounded-xl px-4 py-6 overflow-y-auto">
                   <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
                     <Users className="w-5 h-5 mr-2" /> 
-                    Recent Late Students
+                    Today's Late Students
                   </h3>
                   <div className="space-y-1">
                     {mystudents.map((student) => (

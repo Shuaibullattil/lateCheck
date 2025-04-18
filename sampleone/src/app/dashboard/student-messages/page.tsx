@@ -43,6 +43,7 @@ type Message = {
 
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [receiverId, setReceiverId] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
@@ -91,6 +92,7 @@ export default function Dashboard() {
       try {
         const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
         setMessages(response.data);
+        setFilteredMessages(response.data); // Initialize filtered messages with all messages
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -127,13 +129,30 @@ export default function Dashboard() {
           (msg) => msg.sender_id === newMessage.sender_id
         );
 
+        let updatedMessages;
         if (existingMessageIndex >= 0) {
-          const updatedMessages = [...prevMessages];
+          updatedMessages = [...prevMessages];
           updatedMessages[existingMessageIndex] = newMessage;
-          return updatedMessages;
         } else {
-          return [...prevMessages, newMessage];
+          updatedMessages = [...prevMessages, newMessage];
         }
+        
+        // Update filtered messages accordingly
+        setFilteredMessages((prevFiltered) => {
+          // If we're not filtering, just update with all messages
+          if (prevFiltered.length === prevMessages.length) {
+            return updatedMessages;
+          }
+          // Otherwise, reapply the current filter logic
+          const input = document.querySelector('input[placeholder="Search messages..."]') as HTMLInputElement;
+          const searchTerm = input?.value.toLowerCase() || '';
+          
+          return updatedMessages.filter(message => 
+            message.sender_name.toLowerCase().includes(searchTerm)
+          );
+        });
+        
+        return updatedMessages;
       });
 
       if (
@@ -162,6 +181,20 @@ export default function Dashboard() {
     // On mobile, show chat view when a message is selected
     if (window.innerWidth < 768) {
       setShowChat(true);
+    }
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value.toLowerCase();
+    if (searchTerm === '') {
+      // If search is empty, show all messages
+      setFilteredMessages(messages);
+    } else {
+      // Filter messages by sender name
+      const filtered = messages.filter(message => 
+        message.sender_name.toLowerCase().includes(searchTerm)
+      );
+      setFilteredMessages(filtered);
     }
   };
 
@@ -218,11 +251,25 @@ export default function Dashboard() {
             <div className="w-full flex flex-col md:flex-row gap-4">
               {/* Inbox Container - Hidden on mobile when chat is shown */}
               <div className={`bg-white rounded-xl border border-green-400 shadow-xl px-4 py-4 md:px-6 md:py-6 w-full md:w-1/3 max-h-[80vh] overflow-y-auto transition-all duration-300 ${showChat ? 'hidden md:block' : 'block'}`}>
-                <h3 className="text-lg font-bold text-green-800 mb-4">Messages</h3>
-                {messages.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">No messages yet</p>
+                {/* Search bar replacing the "Messages" header */}
+                <div className="relative mb-4">
+                  <input
+                    type="text"
+                    placeholder="Search messages..."
+                    className="w-full py-2 px-4 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    onChange={handleSearch}
+                  />
+                  <div className="absolute right-3 top-2.5 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                </div>
+                
+                {filteredMessages.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">No messages found</p>
                 ) : (
-                  messages.map((message, index) => (
+                  filteredMessages.map((message, index) => (
                     <button 
                       key={index} 
                       onClick={() => handleMessageClick(message)}
