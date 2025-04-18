@@ -35,6 +35,7 @@ export default function Notify() {
     const [notifications, setNotifications] = useState<{ message: string; timestamp: string }[]>([]);
 
     useEffect(() => {
+        console.log("Mounted");
         if (typeof window === "undefined") return;
 
         const storedUser = localStorage.getItem("user");

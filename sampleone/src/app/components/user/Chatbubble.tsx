@@ -15,7 +15,7 @@ const Chatbubble: React.FC<ChatbubbleProps> = ({ message, timestamp, isSender })
       {/* Message Bubble */}
       <div className="flex flex-col items-start">
         <div
-          className={`max-w-4/5 p-3 rounded-lg text-sm ${
+          className={`max-w-4/5 p-3 rounded-lg text-sm border border-green-400 border-1 ${
             isSender ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
           }`}
           style={{ wordWrap: "break-word" }}
