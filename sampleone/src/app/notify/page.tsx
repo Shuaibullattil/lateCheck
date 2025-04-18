@@ -95,7 +95,7 @@ export default function Notify() {
               </div>
     
               {/* Notifications list */}
-              <div className="max-h-[500px] overflow-y-auto p-4 space-y-4">
+              <div className="max-h-[450px] overflow-y-auto p-4 space-y-4">
                 {notifications.map((note, index) => (
                   <div
                     key={index}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 import {
@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Bell,
   LogOut,
+  ArrowLeft
 } from "lucide-react";
 import Inbox from "../../components/Inbox";
 import Chat from "../../components/Chat";
@@ -30,7 +31,6 @@ const sidebarItems = [
   { name: "Logout", icon: LogOut, href: "/logout" },
 ];
 
-
 type Message = {
   sender_name: string;
   sender_id: string;
@@ -39,7 +39,6 @@ type Message = {
   timestamp: string;
 };
 
-
 export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [receiverId, setReceiverId] = useState("");
@@ -47,6 +46,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const pathname = usePathname();
 
   const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
@@ -70,6 +70,18 @@ export default function Dashboard() {
 
     setIsCheckingAuth(false);
   }, [router]);
+
+  // Handle screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setShowChat(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch messages on mount
   useEffect(() => {
@@ -145,9 +157,12 @@ export default function Dashboard() {
 
   const handleMessageClick = (message: Message) => {
     setReceiverId(message.sender_id);
+    // On mobile, show chat view when a message is selected
+    if (window.innerWidth < 768) {
+      setShowChat(true);
+    }
   };
 
- 
   if (isCheckingAuth) return null;
 
   return (
@@ -196,19 +211,49 @@ export default function Dashboard() {
         </header>
 
         <main className="p-3 sm:p-4 md:p-6 flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-        <div className="w-full flex gap-2">
-        <div className=" max-h-[80vh] overflow-y-auto  bg-white rounded-xl border-1 border border-green-400 shadow-xl px-8 py-8 w-1/3">
-          {messages.map((message, index) => (
-            <button key={index} onClick={() => handleMessageClick(message)}>
-              <Inbox message={message} />
-            </button>
-          ))}
-        </div>
-        <div className="flex  justify-center items-start w-2/3">
-          <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
-        </div>
-          </div>
+          <div className="max-w-7xl mx-auto">
+            <div className="w-full flex flex-col md:flex-row gap-4">
+              {/* Inbox Container - Hidden on mobile when chat is shown */}
+              <div className={`bg-white rounded-xl border border-green-400 shadow-xl px-4 py-4 md:px-6 md:py-6 w-full md:w-1/3 max-h-[80vh] overflow-y-auto transition-all duration-300 ${showChat ? 'hidden md:block' : 'block'}`}>
+                <h3 className="text-lg font-bold text-green-800 mb-4">Messages</h3>
+                {messages.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">No messages yet</p>
+                ) : (
+                  messages.map((message, index) => (
+                    <button 
+                      key={index} 
+                      onClick={() => handleMessageClick(message)}
+                      className="w-full"
+                    >
+                      <Inbox message={message} />
+                    </button>
+                  ))
+                )}
+              </div>
+              
+              {/* Chat Container */}
+              <div className={`flex justify-center items-start w-full md:w-2/3 transition-all duration-300 ${!showChat && receiverId === "" ? 'hidden md:block' : (showChat ? 'flex' : 'hidden md:flex')}`}>
+                {/* Back button for mobile - moved to top of chat with better positioning */}
+                {showChat && (
+                  <div className="w-full relative">
+                    <button 
+                      onClick={() => setShowChat(false)}
+                      className="absolute top-4 left-4 bg-green-100 p-2 rounded-full md:hidden z-10"
+                      aria-label="Back to inbox"
+                    >
+                      <ArrowLeft className="h-5 w-5 text-green-800" />
+                    </button>
+                    <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
+                  </div>
+                )}
+                
+                {!showChat && (
+                  <div className="w-full">
+                    <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </main>
       </div>
