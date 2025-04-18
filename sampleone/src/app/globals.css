@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 #qr-reader{
     border: none;
     font-size :15px;

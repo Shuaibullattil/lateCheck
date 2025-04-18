@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import {
   BarChart,
   Bar,
@@ -15,7 +19,7 @@ import {
 import {
   Menu,
   X,
-  Home,
+  Home, 
   Users,
   FileText,
   BarChart3,
@@ -26,6 +30,7 @@ import {
   Download,
   Clock,
 } from "lucide-react";
+
 
 const mockData = {
   lateEntriesToday: 12,
@@ -42,7 +47,7 @@ const mockData = {
   lateEntriesWeek: [
     { day: "Mon", entries: 5 },
     { day: "Tue", entries: 7 },
-    { day: "Wed", entries: 4 },
+    { day: "Wed", entries: 14 },
     { day: "Thu", entries: 6 },
     { day: "Fri", entries: 10 },
     { day: "Sat", entries: 8 },
@@ -110,14 +115,14 @@ const students = [
 ];
 
 const sidebarItems = [
-  { name: "Dashboard", icon: Home },
-  { name: "Student Details", icon: Users },
-  { name: "Responses", icon: FileText },
-  { name: "Analytics", icon: BarChart3 },
-  { name: "Messages", icon: MessageSquare },
-  { name: "Notifications", icon: Bell },
-  { name: "Logout", icon: LogOut },
-];
+    { name: "Dashboard", icon: Home, href: "/dashboard" },
+    { name: "Student Details", icon: Users, href: "/studentdetail" },
+    { name: "Responses", icon: FileText, href: "/dashboard/student-request" },
+    { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
+    { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
+    { name: "Notifications", icon: Bell, href: "/notifications" },
+    { name: "Logout", icon: LogOut, href: "/logout" },
+  ];
 
 // Modal Component
 const ProfileModal = ({ isOpen, onClose, student }) => {
@@ -193,7 +198,29 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const pathname = usePathname();
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+    
+        useEffect(() => {
+            if (typeof window === "undefined") return;
+    
+            const storedUser = localStorage.getItem("warden");
+            if (storedUser) {
+                const parsedUser = JSON.parse(storedUser);
+                setUser(parsedUser);
+    
+                // Redirect if not a warden
+                if (parsedUser.usertype !== "warden") {
+                    router.replace("/");
+                }
+            } else {
+                router.replace("/");
+            }
+        }, [router]);
+    
+        if (!user || user.usertype !== "warden") return null;
 
   const openStudentProfile = (student) => {
     setSelectedStudent(student);
@@ -213,18 +240,23 @@ export default function Dashboard() {
         </button>
         <h1 className="text-xl font-bold text-green-800 mb-4">LateCheck</h1>
         <nav className="flex flex-col gap-1">
-          {sidebarItems.map(({ name, icon: Icon }) => (
-            <a
-              key={name}
-              href="#"
-              className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 hover:bg-green-100 text-left ${
-                name === "Analytics" ? "bg-green-200 text-green-800" : "text-gray-700"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {name}
-            </a>
-          ))}
+          {sidebarItems.map(({ name, icon: Icon, href }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={name}
+                href={href}
+                className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
+                  isActive
+                    ? "bg-green-200 text-green-800"
+                    : "text-gray-700 hover:bg-green-100"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {name}
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
@@ -236,7 +268,7 @@ export default function Dashboard() {
             <button className="md:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="text-green-700" />
             </button>
-            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Dashboard</h2>
+            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user.name}</h2>
           </div>
         </header>
 
