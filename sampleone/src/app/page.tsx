@@ -41,7 +41,7 @@ export default function Home() {
         // Delay redirect to show success animation
         setTimeout(() => {
           if (res.data.user && res.data.user.usertype === "warden") {
-            router.push("/dashboard");
+            router.push("/dashboard/analytics");
           } else {
             router.push("/home");
           }
