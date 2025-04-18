@@ -763,7 +763,7 @@ def get_most_common_late_reason():
                 "content": (
                     "You are an expert at structured data extraction. "
                     "You will be given structured JSON data from a database and should convert it into the given structure, "
-                    "finding the most common reason and its count."
+                    "create a description on the most common reason and its count."
                 ),
             },
             {
