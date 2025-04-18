@@ -131,7 +131,7 @@ export default function Dashboard() {
     setReceiverId(message.sender_id);
   };
 
-  // ⛔ Important: return early ONLY AFTER hooks
+ 
   if (isCheckingAuth) return null;
 
   return (

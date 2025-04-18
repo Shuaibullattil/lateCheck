@@ -993,7 +993,11 @@ async def get_students_with_today_entries():
                 "reason": entry["purpose"]
             })
 
-    return flat_result
+    return {
+        "count": count,
+        "entries": flat_result
+    }
+
 
 @app.get("/filter/date")
 async def filter_date_get_student(start_date: str, end_date: str):

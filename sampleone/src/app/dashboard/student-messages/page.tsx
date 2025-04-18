@@ -32,6 +32,8 @@ export default function Dashboard() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+
+  
   
       useEffect(() => {
           if (typeof window === "undefined") return;
@@ -52,6 +54,8 @@ export default function Dashboard() {
   
       if (!user || user.usertype !== "warden") return null;
    // to detect the current path
+
+   
 
   return (
     <div className="h-screen flex bg-[#f1fdf3] text-gray-800 overflow-hidden">
