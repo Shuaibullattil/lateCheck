@@ -1,13 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Phone, Mail, User } from "lucide-react";
+import { ArrowLeft, Phone, Mail, User, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MenuButton from "../components/user/menubutton";
 
 const ProfilePage = () => {
   const router = useRouter();
   const [user, setUser] = useState<any>(null); // Null initially
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    router.push("/"); // or "/"
+  };
+  
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -49,8 +56,8 @@ const ProfilePage = () => {
               alt="Profile"
               className="w-24 h-24 rounded-full border-4 border-green-600 shadow object-cover"
             />
-            <h2 className="text-2xl font-semibold text-green-900">{user.name}</h2>
-            <p className="text-sm text-gray-600">{user.details.id}</p>
+            <h2 className="text-2xl font-semibold text-green-900">{user.name} • {user.details.id}</h2>
+            <button onClick={handleLogout} className="bg-red-200 px-3 py-2 rounded-lg border border-red-300 text-md flex gap-2 mb-1 text-red-700 font-semibold">Logout <LogOut className="text-red-700 h-4 w-4 mt-1 font-bold"/></button>
           </div>
 
           {/* Info Grid */}
