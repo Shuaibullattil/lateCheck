@@ -20,15 +20,17 @@ import Inbox from "../../components/Inbox";
 import Chat from "../../components/Chat";
 import axios from "axios";
 
+const handleLogout = () =>{
+  localStorage.removeItem("warden")
+};
 // Updated to include actual paths
 const sidebarItems = [
-  { name: "Dashboard", icon: Home, href: "/dashboard" },
+  { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
   { name: "Student Details", icon: Users, href: "/studentdetail" },
   { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
-  { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
   { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
   { name: "Notifications", icon: Bell, href: "/notifications" },
-  { name: "Logout", icon: LogOut, href: "/logout" },
+  { name: "Logout", icon: LogOut, href: "/" },
 ];
 
 type Message = {
@@ -185,6 +187,7 @@ export default function Dashboard() {
               <Link
                 key={name}
                 href={href}
+                onClick={name === "Logout" ? handleLogout : undefined}
                 className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
                   isActive
                     ? "bg-green-200 text-green-800"

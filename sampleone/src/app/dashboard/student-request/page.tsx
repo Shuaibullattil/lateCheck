@@ -17,15 +17,18 @@ import {
 } from "lucide-react";
 import LateEntryRequestManager from "./Request";
 
+const handleLogout = () =>{
+  localStorage.removeItem("warden")
+};
 // Updated to include actual paths
 const sidebarItems = [
   { name: "Dashboard", icon: Home, href: "/dashboard" },
   { name: "Student Details", icon: Users, href: "/studentdetail" },
   { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
-  { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
+  { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
   { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
   { name: "Notifications", icon: Bell, href: "/notifications" },
-  { name: "Logout", icon: LogOut, href: "/logout" },
+  { name: "Logout", icon: LogOut, href: "/" },
 ];
 
 export default function Dashboard() {

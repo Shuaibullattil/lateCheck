@@ -31,6 +31,7 @@ import {
   Clock,
 } from "lucide-react";
 import axios from "axios";
+import router from "next/router";
 
 
 interface LateEntryStats {
@@ -63,73 +64,17 @@ const mockData = {
   ],
 };
 
-// Mock student data
-const students = [
-  {
-    id: 1,
-    name: "Emma Wilson",
-    grade: "10th Grade",
-    lateCount: 3,
-    avatar: "EW",
-    reasons: ["Missed the bus", "Traffic", "Doctor's appointment"],
-    attendance: 92,
-    contactInfo: "emma.w@email.com | (555) 123-4567",
-    notes: "Has permission slip for late arrival on Thursdays due to therapy."
-  },
-  {
-    id: 2,
-    name: "James Garcia",
-    grade: "11th Grade",
-    lateCount: 5,
-    avatar: "JG",
-    reasons: ["Overslept", "Missed the bus", "Traffic", "Family emergency", "Car trouble"],
-    attendance: 88,
-    contactInfo: "james.g@email.com | (555) 234-5678",
-    notes: "Parents have been notified about frequent tardiness."
-  },
-  {
-    id: 3,
-    name: "Ava Johnson",
-    grade: "9th Grade",
-    lateCount: 1,
-    avatar: "AJ",
-    reasons: ["Traffic"],
-    attendance: 98,
-    contactInfo: "ava.j@email.com | (555) 345-6789",
-    notes: "Excellent attendance record overall."
-  },
-  {
-    id: 4,
-    name: "Liam Chen",
-    grade: "12th Grade",
-    lateCount: 4,
-    avatar: "LC",
-    reasons: ["Car trouble", "Traffic", "Overslept", "Medical appointment"],
-    attendance: 90,
-    contactInfo: "liam.c@email.com | (555) 456-7890",
-    notes: "Working on improving punctuality for college preparation."
-  },
-  {
-    id: 5,
-    name: "Sophia Patel",
-    grade: "10th Grade",
-    lateCount: 2,
-    avatar: "SP",
-    reasons: ["Traffic", "Family emergency"],
-    attendance: 95,
-    contactInfo: "sophia.p@email.com | (555) 567-8901",
-    notes: "Recent family situation has affected attendance."
-  }
-];
+const handleLogout = () =>{
+  localStorage.removeItem("warden")
+};
 
 const sidebarItems = [
-    { name: "Dashboard", icon: Home, href: "/dashboard" },
+    { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
     { name: "Student Details", icon: Users, href: "/studentdetail" },
     { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
-    { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
     { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
     { name: "Notifications", icon: Bell, href: "/notifications" },
-    { name: "Logout", icon: LogOut, href: "/logout" },
+    { name: "Logout", icon: LogOut, href: "/" },
   ];
 
 // Modal Component
@@ -337,6 +282,8 @@ export default function Dashboard() {
               <Link
                 key={name}
                 href={href}
+                onClick={name === "Logout" ? handleLogout : undefined}
+                
                 className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
                   isActive
                     ? "bg-green-200 text-green-800"
