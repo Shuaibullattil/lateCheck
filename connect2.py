@@ -1184,6 +1184,7 @@ async def login(user: User):
     user_data = convert_datetime(user_data)
 
     usertype = user_data["usertype"]
+    status = user_data["status"]
 
     # Generate JWT Token
     access_token = create_access_token({"sub": user.username})
@@ -1195,6 +1196,7 @@ async def login(user: User):
         user_detail = collection.find_one({"details.email": user_data["username"]})
     
     user_detail["usertype"] = usertype
+    user_detail["status"] = status
 
     if user_detail:
         user_detail["_id"] = str(user_detail["_id"])

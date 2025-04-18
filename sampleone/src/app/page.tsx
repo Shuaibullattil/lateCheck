@@ -20,16 +20,27 @@ export default function Home() {
     setIsActive(true);
   }, []);
 
-  const handleLogin = async (event) => {
+  
+
+  const handleLogin = async (event:any) => {
     event.preventDefault();
     setIsLoading(true);
-
+  
     try {
       const res = await axios.post("http://127.0.0.1:8000/login", { username, password });
-
+  
       if (res.status === 200 && res.data.token) {
+        // If user is unverified, show alert and redirect
+        if (res.data.user && res.data.user.status === "unverified") {
+          showToast("Your account verification is in progress. Please wait for approval.","info");
+          setIsLoading(false);
+          router.replace("/");
+          return;
+        }
+  
+        // Set token and user info
         setShowSuccess(true);
-        
+  
         if (res.data.detail.usertype === "warden") {
           localStorage.setItem("warden", JSON.stringify(res.data.detail));
           localStorage.setItem("token", res.data.token);
@@ -37,8 +48,8 @@ export default function Home() {
           localStorage.setItem("user", JSON.stringify(res.data.detail));
           localStorage.setItem("token", res.data.token);
         }
-
-        // Delay redirect to show success animation
+  
+        // Redirect after showing success animation
         setTimeout(() => {
           if (res.data.user && res.data.user.usertype === "warden") {
             router.push("/dashboard/analytics");
@@ -48,15 +59,16 @@ export default function Home() {
         }, 1200);
       } else {
         setIsLoading(false);
-        showErrorMessage("Invalid login credentials");
+        showToast("Invalid login credentials");
       }
     } catch (error) {
       setIsLoading(false);
-      showErrorMessage("Invalid username or password");
+      showToast("Invalid username or password");
     }
   };
+  
 
-  const handleFieldFocus = (field) => {
+  const handleFieldFocus = (field:any) => {
     setActiveField(field);
   };
 
@@ -64,13 +76,21 @@ export default function Home() {
     setActiveField("");
   };
 
-  const showErrorMessage = (message) => {
+  const showToast = (message:string, type = "error") => {
     const toast = document.createElement("div");
-    toast.className = "fixed top-4 right-4 bg-white text-red-600 p-4 rounded-lg shadow-lg z-50 flex items-center";
-    toast.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-    </svg>${message}`;
+    const bgColor = type === "success" ? "bg-emerald-100 text-emerald-700" : type === "info" ? "bg-red-200 text-red-600" : "bg-white text-red-600";
+    toast.className = `fixed top-4 right-4 ${bgColor} p-4 rounded-lg shadow-lg z-50 flex items-center transition-all`;
+  
+    toast.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path d="${type === "error"
+          ? `M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z`
+          : `M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z`}" />
+      </svg>
+      ${message}`;
+  
     document.body.appendChild(toast);
+  
     setTimeout(() => {
       toast.style.opacity = "0";
       toast.style.transform = "translateX(20px)";
@@ -78,6 +98,7 @@ export default function Home() {
       setTimeout(() => document.body.removeChild(toast), 300);
     }, 3000);
   };
+  
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-gray-50">
