@@ -1148,7 +1148,17 @@ async def delete_user(email: str):
     collection.delete_one({"details.email":email})
     users_collection.delete_one({"username":email})
 
-
+@app.post("/approve/student")
+async def approve_user(email: str):
+    result = users_collection.update_one(
+        {"username": email},
+        {"$set": {"status": "verified"}}
+    )
+    if result.modified_count == 1:
+        return {"message": f"{email} approved successfully."}
+    else:
+        return {"message": f"No user found with email {email} or already verified."}
+    
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
