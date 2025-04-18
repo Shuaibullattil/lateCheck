@@ -230,7 +230,7 @@ export default function Home() {
                 <span className="text-gray-600">
                   Don't have an account?{" "}
                 </span>
-                <a href="#" className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors">
+                <a href="/register" className="font-medium text-emerald-600 hover:text-emerald-500 transition-colors">
                   Create one now
                 </a>
               </div>
