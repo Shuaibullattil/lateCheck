@@ -929,6 +929,15 @@ async def insert_memory(request: HistoryRequest):
 
     return {"message": "History data inserted successfully"}
 
+def get_initials(name: str) -> str:
+    parts = name.strip().split()
+    if len(parts) == 0:
+        return ""
+    elif len(parts) == 1:
+        return parts[0][0].upper()
+    else:
+        return (parts[0][0] + parts[-1][0]).upper()
+
 @app.get("/students/today")
 async def get_students_with_today_entries():
     # Use UTC for consistent timing (adjust if your DB uses local time)
@@ -990,7 +999,7 @@ async def get_students_with_today_entries():
                 "id": count,
                 "name": name,
                 "batch": batch,
-                "avatar": "https://i.pinimg.com/736x/c4/ea/8b/c4ea8bf28dd46e81339c825ff8248533.jpg",
+                "avatar": get_initials(name),
                 "time": formatted_time,
                 "reason": entry["purpose"]
             })
@@ -1314,6 +1323,7 @@ async def get_chat_history(user_id: str, receiver_id: str):
 
 # Model for notification data
 class NotificationCreate(BaseModel):
+    id: int
     message: str
     sender_id: str
     timestamp: str
@@ -1325,6 +1335,7 @@ async def create_notification(notification: NotificationCreate):
     try:
         # Create notification document
         notification_doc = {
+            "id": notification.id,
             "message": notification.message,
             "sender_id": notification.sender_id,
             "timestamp": notification.timestamp,
@@ -1342,6 +1353,15 @@ async def create_notification(notification: NotificationCreate):
     except Exception as e:
         print(f"Error creating notification: {e}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    
+@app.delete("/notifications/{id}")
+def delete_notification(id: int):
+    result = notification_collection.delete_one({"id": id})
+    
+    if result.deleted_count == 1:
+        return {"success": True, "message": "Notification deleted from database."}
+    
+    raise HTTPException(status_code=404, detail="Notification not found")
     
 @app.get("/notifications/all")
 async def get_all_notifications():

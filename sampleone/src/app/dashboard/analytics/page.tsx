@@ -156,37 +156,35 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
         
         <div className="mt-2 space-y-2">
           <div className="flex justify-between">
-            <span className="text-gray-600">Grade:</span>
-            <span className="font-medium">{student.grade}</span>
+            <span className="text-gray-600">Sem & Branch:</span>
+            <span className="font-medium">{student?.batch}</span>
           </div>
           
           <div className="flex justify-between">
-            <span className="text-gray-600">Attendance:</span>
-            <span className="font-medium">{student.attendance}%</span>
+            <span className="text-gray-600">Room No:</span>
+            <span className="font-medium">{student?.attendance}%</span>
           </div>
           
           <div className="flex justify-between">
             <span className="text-gray-600">Late Count:</span>
-            <span className="font-medium">{student.lateCount}</span>
+            <span className="font-medium">{student?.lateCount}</span>
           </div>
           
           <div>
             <span className="text-gray-600 block mb-1">Late Reasons:</span>
             <ul className="list-disc pl-5 text-sm">
-              {student.reasons.map((reason, index) => (
-                <li key={index}>{reason}</li>
-              ))}
+              {student?.reason}
             </ul>
           </div>
           
           <div>
             <span className="text-gray-600 block mb-1">Contact:</span>
-            <p className="text-sm">{student.contactInfo}</p>
+            <p className="text-sm">{student?.contactInfo}</p>
           </div>
           
           <div>
             <span className="text-gray-600 block mb-1">Notes:</span>
-            <p className="text-sm italic bg-gray-50 p-2 rounded">{student.notes}</p>
+            <p className="text-sm italic bg-gray-50 p-2 rounded">{student?.notes}</p>
           </div>
         </div>
         
@@ -204,6 +202,7 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
 };
 
 export default function Dashboard() {
+  const [mystudents,setMYStudents] = useState([])
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const pathname = usePathname();
@@ -235,6 +234,8 @@ export default function Dashboard() {
           mostFrequentReason: reasonResponse.data.most_common_reason,
           reasonCount: reasonResponse.data.count
         });
+
+        setMYStudents(lateEntriesResponse.data.entries);
         
         setError(null);
       } catch (err) {
@@ -425,7 +426,7 @@ export default function Dashboard() {
                     Recent Late Students
                   </h3>
                   <div className="space-y-1">
-                    {students.map((student) => (
+                    {mystudents.map((student) => (
                       <button
                         key={student.id}
                         onClick={() => openStudentProfile(student)}

@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 
 type Notifications = {
-  id: string;
+  id: number;
   message: string;
   sender_id: string;
   timestamp: string;
@@ -80,8 +80,19 @@ export default function NotificationCenter() {
     }
   };
 
-  const deleteNotification = (id) => {
-    setNotifications(notifications.filter((notification) => notification.id !== id));
+  const deleteNotification = async (id) => {
+    try {
+      // Call FastAPI backend to delete from DB
+      await axios.delete(`http://localhost:8000/notifications/${id}`);
+  
+      // If successful, remove it from frontend state
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notification) => notification.id !== id)
+      );
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      // Optional: show error to user (e.g., toast)
+    }
   };
 
   const toggleExpand = (id) => {
@@ -101,6 +112,7 @@ export default function NotificationCenter() {
   
     try {
       const response = await axios.post("http://localhost:8000/notifications/create", {
+        id:newNotificationObj.id,
         message: newNotificationObj.message,
         sender_id: "saharawardenofficial@gmail.com",
         timestamp: newNotificationObj.timestamp,
