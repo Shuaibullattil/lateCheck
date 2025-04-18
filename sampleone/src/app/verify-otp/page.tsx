@@ -97,7 +97,7 @@ const VerifyOtp = () => {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
                     maxLength={6}
-                    className="block w-full p-4 text-center text-2xl tracking-widest font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900"
+                    className="block w-full p-4 text-center text-2xl tracking-widest font-mono border border-gray-300 rounded-lg  bg-white text-gray-900"
                     placeholder="● ● ● ● ● ●"
                   />
                 </div>

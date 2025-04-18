@@ -161,7 +161,7 @@ export default function Register() {
                     onFocus={() => handleFieldFocus("name")}
                     onBlur={handleFieldBlur}
                     required
-                    className="block w-full pl-10 pr-3 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900"
+                    className="block w-full pl-10 pr-3 py-3 focus:border-none focus:outline-none text-base border border-gray-200 rounded-lg  bg-white text-gray-900"
                     placeholder="Full name"
                   />
                   <motion.div 
@@ -190,7 +190,7 @@ export default function Register() {
                     onFocus={() => handleFieldFocus("student_id")}
                     onBlur={handleFieldBlur}
                     required
-                    className="block w-full pl-10 pr-3 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900"
+                    className="block w-full pl-10 pr-3 py-3 text-base border focus:border-none focus:outline-none border-gray-200 rounded-lg  bg-white text-gray-900"
                     placeholder="Student ID"
                   />
                   <motion.div 
@@ -219,7 +219,7 @@ export default function Register() {
                     onFocus={() => handleFieldFocus("phoneno")}
                     onBlur={handleFieldBlur}
                     required
-                    className="block w-full pl-10 pr-3 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900"
+                    className="block w-full pl-10 pr-3 py-3 text-base focus:border-none focus:outline-none border border-gray-200 rounded-lg  bg-white text-gray-900"
                     placeholder="Phone number"
                   />
                   <motion.div 
@@ -248,7 +248,7 @@ export default function Register() {
                     onFocus={() => handleFieldFocus("email")}
                     onBlur={handleFieldBlur}
                     required
-                    className="block w-full pl-10 pr-3 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900"
+                    className="block w-full pl-10 pr-3 py-3 text-base focus:border-none focus:outline-none border border-gray-200 rounded-lg  bg-white text-gray-900"
                     placeholder="Email address"
                   />
                   <motion.div 
@@ -277,7 +277,7 @@ export default function Register() {
                       onFocus={() => handleFieldFocus("branch")}
                       onBlur={handleFieldBlur}
                       required
-                      className="block w-full pl-10 pr-8 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900 appearance-none"
+                      className="block w-full pl-10 pr-8 py-3 focus:border-none focus:outline-none text-base border border-gray-200 rounded-lg  bg-white text-gray-900 appearance-none"
                     >
                       <option value="">Branch</option>
                       <option value="CS">CS</option>
@@ -318,7 +318,7 @@ export default function Register() {
                       onFocus={() => handleFieldFocus("semester")}
                       onBlur={handleFieldBlur}
                       required
-                      className="block w-full pl-10 pr-8 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900 appearance-none"
+                      className="block w-full pl-10 pr-8 py-3 focus:border-none focus:outline-none text-base border border-gray-200 rounded-lg  bg-white text-gray-900 appearance-none"
                     >
                       <option value="">Semester</option>
                       <option value="1">1</option>
@@ -360,7 +360,7 @@ export default function Register() {
                       onFocus={() => handleFieldFocus("hostel")}
                       onBlur={handleFieldBlur}
                       required
-                      className="block w-full pl-10 pr-8 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 bg-white text-gray-900 appearance-none"
+                      className="block w-full pl-10 pr-8 py-3 focus:border-none focus:outline-none text-base border border-gray-200 rounded-lg  bg-white text-gray-900 appearance-none"
                     >
                       <option value="">Hostel</option>
                       <option value="swaraj">Swaraj</option>
