@@ -2,9 +2,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
 import Chatbubble from "./user/Chatbubble";
+import { SendIcon } from "lucide-react";
 
 interface Message {
-  sender_name : string;
+  sender_name: string;
   message: string;
   timestamp: string;
   sender_id: string;
@@ -56,7 +57,7 @@ export default function Chat({ userId, receiverId, initialMessages = [] }: ChatP
 
     const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-    ws.onopen = () => console.log("Connected to WebSocket"); 
+    ws.onopen = () => console.log("Connected to WebSocket");
     ws.onmessage = handleMessage;
     ws.onclose = () => console.warn("WebSocket disconnected.");
     ws.onerror = (error) => console.error("WebSocket error:", error);
@@ -83,7 +84,7 @@ export default function Chat({ userId, receiverId, initialMessages = [] }: ChatP
     const timestamp = new Date().toISOString();
 
     const newMessage: Message = {
-      sender_name : userId,
+      sender_name: userId,
       sender_id: userId,
       receiver_id: receiverId,
       message,
@@ -96,33 +97,41 @@ export default function Chat({ userId, receiverId, initialMessages = [] }: ChatP
   };
 
   return (
-    <div className="p-4 rounded shadow-md w-full bottom-0">
-      <h2 className="text-lg font-bold mb-2">Inbox: {receiverId || "Select a user"}</h2>
-      <div className="h-96 overflow-y-auto border p-2">
-        <div className="flex flex-col gap-2">
+    <div className="bg-white shadow-xl rounded-2xl border border-green-400 p-6 w-full">
+      <h2 className="text-xl font-bold text-green-800 mb-4">
+        {receiverId ? `Chatting with: ${receiverId}` : "Select a user to chat"}
+      </h2>
+      
+      <div className="h-96 overflow-y-auto bg-[#f1fdf3] rounded-xl p-4 border border-green-200">
+        <div className="flex flex-col gap-3">
           {messages.map((msg, index) => (
-            <Chatbubble 
-              key={index} 
-              message={msg.message} 
-              timestamp={msg.timestamp} 
-              isSender={msg.sender_id === userId} 
+            <Chatbubble
+              key={index}
+              message={msg.message}
+              timestamp={msg.timestamp}
+              isSender={msg.sender_id === userId}
             />
           ))}
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <div className="mt-2 flex">
+      
+      <div className="mt-4">
         <form onSubmit={handleSubmit} className="flex w-full">
           <input
             type="text"
             placeholder="Type a message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="flex-1 px-4 py-3 rounded-xl border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
           />
-          <div className="px-2">
-            <button type="submit" className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
-              <img src="/send-icon.svg" alt="Send" className="h-6 w-6" />
+          <div className="pl-3">
+            <button 
+              type="submit" 
+              className="p-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors duration-200"
+              aria-label="Send message"
+            >
+              <SendIcon className="h-6 w-6" />
             </button>
           </div>
         </form>
@@ -130,5 +139,3 @@ export default function Chat({ userId, receiverId, initialMessages = [] }: ChatP
     </div>
   );
 }
-
-

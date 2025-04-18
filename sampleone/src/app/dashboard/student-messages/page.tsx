@@ -16,6 +16,8 @@ import {
   LogOut,
 } from "lucide-react";
 import Inbox from "../../components/Inbox";
+import Chat from "../../components/Chat";
+import axios from "axios";
 
 // Updated to include actual paths
 const sidebarItems = [
@@ -28,35 +30,125 @@ const sidebarItems = [
   { name: "Logout", icon: LogOut, href: "/logout" },
 ];
 
+
+type Message = {
+  sender_name: string;
+  sender_id: string;
+  receiver_id: string;
+  message: string;
+  timestamp: string;
+};
+
+
 export default function Dashboard() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [receiverId, setReceiverId] = useState("");
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+
+  const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
 
-  
-  
-      useEffect(() => {
-          if (typeof window === "undefined") return;
-  
-          const storedUser = localStorage.getItem("warden");
-          if (storedUser) {
-              const parsedUser = JSON.parse(storedUser);
-              setUser(parsedUser);
-  
-              // Redirect if not a warden
-              if (parsedUser.usertype !== "warden") {
-                  router.replace("/");
-              }
-          } else {
-              router.replace("/");
-          }
-      }, [router]);
-  
-      if (!user || user.usertype !== "warden") return null;
-   // to detect the current path
+  // Auth check
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-   
+    const storedUser = localStorage.getItem("warden");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.usertype !== "warden") {
+        router.replace("/");
+      } else {
+        setUser(parsedUser);
+      }
+    } else {
+      router.replace("/");
+    }
+
+    setIsCheckingAuth(false);
+  }, [router]);
+
+  // Fetch messages on mount
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
+        setMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [userId]);
+
+  // Fetch chat history when a receiver is selected
+  useEffect(() => {
+    const fetchChatHistory = async (receiverId: string) => {
+      try {
+        const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
+        setChatMessages(response.data);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
+    };
+
+    if (receiverId) {
+      fetchChatHistory(receiverId);
+    }
+  }, [receiverId, userId]);
+
+  // WebSocket setup
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+
+    ws.onmessage = (event) => {
+      const newMessage: Message = JSON.parse(event.data);
+
+      setMessages((prevMessages) => {
+        const existingMessageIndex = prevMessages.findIndex(
+          (msg) => msg.sender_id === newMessage.sender_id
+        );
+
+        if (existingMessageIndex >= 0) {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[existingMessageIndex] = newMessage;
+          return updatedMessages;
+        } else {
+          return [...prevMessages, newMessage];
+        }
+      });
+
+      if (
+        receiverId &&
+        (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)
+      ) {
+        setChatMessages((prev) => [...prev, newMessage]);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket Disconnected");
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, [receiverId, userId]);
+
+  const handleMessageClick = (message: Message) => {
+    setReceiverId(message.sender_id);
+  };
+
+ 
+  if (isCheckingAuth) return null;
 
   return (
     <div className="h-screen flex bg-[#f1fdf3] text-gray-800 overflow-hidden">
@@ -105,17 +197,18 @@ export default function Dashboard() {
 
         <main className="p-3 sm:p-4 md:p-6 flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-12">
-        <div className="col-span-6 sm:col-span-4 h-100vw bg-neutral-200 px-8 py-8">
+        <div className="w-full flex gap-2">
+        <div className=" h-200vh bg-white rounded-xl border-1 border-green-400 px-8 py-8 w-1/2">
           {messages.map((message, index) => (
             <button key={index} onClick={() => handleMessageClick(message)}>
               <Inbox message={message} />
             </button>
           ))}
         </div>
-        <div className="flex col-span-6 justify-center items-start bg-white">
+        <div className="flex  justify-center items-start w-full">
           <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
         </div>
+          </div>
           </div>
         </main>
       </div>
