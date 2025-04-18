@@ -8,7 +8,7 @@ import {
 
 type Student = {
   id: string;
-student_id: string;
+  student_id: string;
   name: string;
   branch: string;
   sem: string;
@@ -70,67 +70,59 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
     return count;
   };
 
-  const handleAction = (studentId: string, action: "accept" | "reject") => {
-    const student = students.find(std => std.id === studentId);
+  const handleAction = (email: string, action: "accept" | "reject") => {
+    const student = students.find(std => std.email === email);
     if (student) {
       setSelectedStudent(student);
       setActionType(action);
       setShowConfirmation(true);
     }
   };
-
-  const confirmAction = () => {
+  
+  const confirmAction = async () => {
     if (!selectedStudent || !actionType) return;
-    
+  
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      // Remove the student from the list
-      const updatedStudents = students.filter(std => std.id !== selectedStudent.id);
+  
+    try {
+      if (actionType === "accept") {
+        // Approve student
+        await axios.post("http://localhost:8000/approve/student", null, {
+          params: { email: selectedStudent.email }
+        });
+      } else if (actionType === "reject") {
+        // Reject (delete) student
+        await axios.delete("http://localhost:8000/delete/user", {
+          params: { email: selectedStudent.email }
+        });
+      }
+  
+      // Update student list in UI
+      const updatedStudents = students.filter(std => std.email !== selectedStudent.email);
       setStudents(updatedStudents);
-      
+  
       // Show success message
       setResponseMessage({
         text: `Student ${actionType === "accept" ? "approved" : "rejected"} successfully!`,
         type: actionType === "accept" ? "success" : "error"
       });
-      
-      // Clear message after 3 seconds
-      setTimeout(() => setResponseMessage({ text: "", type: "" }), 3000);
-      
-      setShowConfirmation(false);
-      setSelectedStudent(null);
-      setActionType(null);
-      setLoading(false);
-    }, 600);
-    
-    // For real implementation
-    /*
-    axios.post(`http://localhost:8000/studentstable/${selectedStudent.id}/${actionType}`)
-      .then(() => {
-        const updatedStudents = students.filter(std => std.id !== selectedStudent.id);
-        setStudents(updatedStudents);
-        setResponseMessage({
-          text: `Student ${actionType === "accept" ? "approved" : "rejected"} successfully!`,
-          type: actionType === "accept" ? "success" : "error"
-        });
-        setTimeout(() => setResponseMessage({ text: "", type: "" }), 3000);
-        setShowConfirmation(false);
-        setSelectedStudent(null);
-        setActionType(null);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setResponseMessage({
-          text: "An error occurred. Please try again.",
-          type: "error"
-        });
-        setTimeout(() => setResponseMessage({ text: "", type: "" }), 3000);
-        setLoading(false);
+  
+    } catch (error) {
+      console.error("Error:", error);
+      setResponseMessage({
+        text: "An error occurred. Please try again.",
+        type: "error"
       });
-    */
+    }
+  
+    // Clear everything
+    setTimeout(() => setResponseMessage({ text: "", type: "" }), 3000);
+    setShowConfirmation(false);
+    setSelectedStudent(null);
+    setActionType(null);
+    setLoading(false);
   };
+  
 
   const refreshData = () => {
     setLoading(true);
@@ -153,7 +145,7 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
   const filteredStudents = students.filter((student) =>
     String(student.name).toLowerCase().includes(nameFilter.toLowerCase()) &&
     (branchFilter === "" || student.branch === branchFilter) &&
-    String(student.hostel_id).toLowerCase().includes(hostelIdFilter.toLowerCase()) &&
+    String(student.student_id).toLowerCase().includes(hostelIdFilter.toLowerCase()) &&
     String(student.room_no).toLowerCase().includes(roomFilter.toLowerCase()) &&
     (semFilter === "" || student.sem === semFilter)
   ).sort((a, b) => {
@@ -414,13 +406,13 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                     
                     <div className="flex justify-end items-center gap-2">
                       <button
-                        onClick={() => handleAction(student.id, "reject")}
+                        onClick={() => handleAction(student.email, "reject")}
                         className="px-2 py-1 bg-white border border-red-500 text-red-600 rounded text-xs hover:bg-red-50"
                       >
                         Reject
                       </button>
                       <button
-                        onClick={() => handleAction(student.id, "accept")}
+                        onClick={() => handleAction(student.email, "accept")}
                         className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
                       >
                         Approve
@@ -450,6 +442,8 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                     <th className="px-3 py-2 text-left text-xs font-medium">Branch</th>
                     <th className="px-3 py-2 text-left text-xs font-medium">Sem</th>
                     <th className="px-3 py-2 text-left text-xs font-medium">Room</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium">Email</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium">Phone </th>
                     <th className="px-3 py-2 text-center text-xs font-medium">Actions</th>
                   </tr>
                 </thead>
@@ -475,16 +469,18 @@ const StudentRequestTable = ({ hostel, status }: { hostel: string; status: strin
                           {student.room_no}
                         </div>
                       </td>
+                      <td className="px-3 py-1.5 text-xs">{student.email}</td>
+                      <td className="px-3 py-1.5 text-xs">{student.phone_no}</td>
                       <td className="px-3 py-1.5 text-center">
                         <div className="flex gap-2 justify-center">
                           <button
-                            onClick={() => handleAction(student.id, "reject")}
+                            onClick={() => handleAction(student.email, "reject")}
                             className="px-2 py-1 bg-white border border-red-500 text-red-600 rounded text-xs hover:bg-red-50"
                           >
                             Reject
                           </button>
                           <button
-                            onClick={() => handleAction(student.id, "accept")}
+                            onClick={() => handleAction(student.email, "accept")}
                             className="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
                           >
                             Approve
