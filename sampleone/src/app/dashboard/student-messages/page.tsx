@@ -198,14 +198,14 @@ export default function Dashboard() {
         <main className="p-3 sm:p-4 md:p-6 flex-1 overflow-hidden">
         <div className="max-w-7xl mx-auto">
         <div className="w-full flex gap-2">
-        <div className=" h-200vh bg-white rounded-xl border-1 border-green-400 px-8 py-8 w-1/2">
+        <div className=" max-h-[80vh] overflow-y-auto  bg-white rounded-xl border-1 border border-green-400 shadow-xl px-8 py-8 w-1/3">
           {messages.map((message, index) => (
             <button key={index} onClick={() => handleMessageClick(message)}>
               <Inbox message={message} />
             </button>
           ))}
         </div>
-        <div className="flex  justify-center items-start w-full">
+        <div className="flex  justify-center items-start w-2/3">
           <Chat userId={userId} receiverId={receiverId} initialMessages={chatMessages} />
         </div>
           </div>
