@@ -71,17 +71,17 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
   };
 
   // Function to handle student deletion
-  const handleDeleteStudent = (id: string) => {
-    // In a real application, you would make an API call here
-    // axios.delete(`http://localhost:8000/students/${id}`)
-    //   .then(() => {
-    //     // Remove from local state after successful deletion
-    //     setStudents(students.filter(student => student.id !== id));
-    //   })
-    //   .catch(error => console.error("Error deleting student:", error));
+  const handleDeleteStudent = async (email: string) => {
+    try{
+      await axios.delete('http://localhost:8000/delete/user',{
+        params: {email:email}
+      });
+      setStudents(students.filter(student => student.email !== email));
+    }catch(error){
+      console.error("Error Deleting.. user..",error);
+      alert("something went wrong...");
+    }
     
-    // For now, just remove from local state
-    setStudents(students.filter(student => student.id !== id));
   };
 
   const activeFiltersCount = getActiveFiltersCount();
@@ -254,7 +254,7 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
                           {student.branch}
                         </span>
                         <button 
-                          onClick={() => handleDeleteStudent(student.id)}
+                          onClick={() => handleDeleteStudent(student.email)}
                           className="text-red-500 hover:text-red-700 p-0.5 hover:bg-red-100 rounded-full"
                           title="Delete Student"
                         >
@@ -328,7 +328,7 @@ const StudentDetailTable = ({hostel, status}: {hostel: string, status: string}) 
                       <td className="px-3 py-1.5 text-xs truncate max-w-xs">{student.email}</td>
                       <td className="px-3 py-1.5 text-center">
                         <button 
-                          onClick={() => handleDeleteStudent(student.id)}
+                          onClick={() => handleDeleteStudent(student.email)}
                           className="text-red-500 hover:text-red-700 p-0.5 hover:bg-red-100 rounded-full"
                           title="Delete Student"
                         >

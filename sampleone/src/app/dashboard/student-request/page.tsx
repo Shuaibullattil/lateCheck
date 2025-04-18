@@ -22,10 +22,9 @@ const handleLogout = () =>{
 };
 // Updated to include actual paths
 const sidebarItems = [
-  { name: "Dashboard", icon: Home, href: "/dashboard" },
+  { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
   { name: "Student Details", icon: Users, href: "/studentdetail" },
   { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
-  { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
   { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
   { name: "Notifications", icon: Bell, href: "/notifications" },
   { name: "Logout", icon: LogOut, href: "/" },
