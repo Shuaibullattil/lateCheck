@@ -78,65 +78,70 @@ const sidebarItems = [
   ];
 
 // Modal Component
+// Modal Component
 const ProfileModal = ({ isOpen, onClose, student }) => {
   if (!isOpen || !student) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-xl p-4 w-full max-w-md mx-4">
-        <div className="flex justify-between items-center mb-2">
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 transform transition-all duration-300 scale-100">
+        {/* Header with student info */}
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg mr-2">
+            <div className="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg mr-3 shadow-md">
               {student.avatar}
             </div>
-            <h3 className="text-lg font-semibold text-gray-800">{student.name}</h3>
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">{student.name}</h3>
+              <p className="text-sm text-gray-500">{student?.batch}</p>
+            </div>
           </div>
           <button 
             onClick={onClose} 
-            className="text-gray-500 hover:text-gray-700"
+            className="bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
         
-        <div className="mt-2 space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Sem & Branch:</span>
-            <span className="font-medium">{student?.batch}</span>
+        {/* Divider */}
+        <div className="h-px bg-gradient-to-r from-green-100 via-green-500 to-green-100 my-4"></div>
+        
+        {/* Content */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-green-50 p-3 rounded-xl">
+              <p className="text-xs text-green-700 font-medium mb-1">Room Number</p>
+              <p className="font-semibold text-gray-800">{student?.attendance}%</p>
+            </div>
+            
+            <div className="bg-amber-50 p-3 rounded-xl">
+              <p className="text-xs text-amber-700 font-medium mb-1">Late Count</p>
+              <p className="font-semibold text-gray-800">{student?.lateCount}</p>
+            </div>
           </div>
           
-          <div className="flex justify-between">
-            <span className="text-gray-600">Room No:</span>
-            <span className="font-medium">{student?.attendance}%</span>
+          <div className="bg-gray-50 p-4 rounded-xl space-y-1">
+            <p className="text-sm font-medium text-gray-700">Late Reasons:</p>
+            <p className="text-sm text-gray-600">{student?.reason}</p>
           </div>
           
-          <div className="flex justify-between">
-            <span className="text-gray-600">Late Count:</span>
-            <span className="font-medium">{student?.lateCount}</span>
+          <div className="bg-gray-50 p-4 rounded-xl space-y-1">
+            <p className="text-sm font-medium text-gray-700">Contact:</p>
+            <p className="text-sm text-gray-600">{student?.contactInfo}</p>
           </div>
           
-          <div>
-            <span className="text-gray-600 block mb-1">Late Reasons:</span>
-            <ul className="list-disc pl-5 text-sm">
-              {student?.reason}
-            </ul>
-          </div>
-          
-          <div>
-            <span className="text-gray-600 block mb-1">Contact:</span>
-            <p className="text-sm">{student?.contactInfo}</p>
-          </div>
-          
-          <div>
-            <span className="text-gray-600 block mb-1">Notes:</span>
-            <p className="text-sm italic bg-gray-50 p-2 rounded">{student?.notes}</p>
+          <div className="bg-gray-50 p-4 rounded-xl space-y-1">
+            <p className="text-sm font-medium text-gray-700">Notes:</p>
+            <p className="text-sm italic text-gray-600">{student?.notes || "No additional notes"}</p>
           </div>
         </div>
         
-        <div className="mt-4 flex justify-end">
+        {/* Actions */}
+        <div className="mt-6 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors shadow-sm"
           >
             Close
           </button>
@@ -367,10 +372,10 @@ export default function Dashboard() {
                 </div>
 
                 {/* Student Profiles Component */}
-                <div className="bg-white border border-green-300 shadow-md rounded-xl px-4 py-6">
+                <div className="bg-white h-[350px] border border-green-300 shadow-md rounded-xl px-4 py-6 overflow-y-auto">
                   <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
                     <Users className="w-5 h-5 mr-2" /> 
-                    Recent Late Students
+                    Today's Late Students
                   </h3>
                   <div className="space-y-1">
                     {mystudents.map((student) => (
