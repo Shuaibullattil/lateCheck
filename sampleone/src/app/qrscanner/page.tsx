@@ -1,109 +1,57 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { usePathname,useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import MenuButton from "../components/user/menubutton";
+import { ArrowLeft } from "lucide-react";
+import QrReader from "../components/Qrreader";
 
-import {
-  Menu,
-  X,
-  Home,
-  Users,
-  FileText,
-  BarChart3,
-  MessageSquare,
-  Bell,
-  LogOut,
-} from "lucide-react";
+export default function Myscanner() {
+    const router = useRouter();
+    const [user, setUser] = useState<unknown>(null);
 
-// Updated to include actual paths
-const sidebarItems = [
-  { name: "Dashboard", icon: Home, href: "/dashboard" },
-  { name: "Student Details", icon: Users, href: "/studentdetail" },
-  { name: "Responses", icon: FileText, href: "/dashboard/student-request" },
-  { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
-  { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
-  { name: "Notifications", icon: Bell, href: "/notifications" },
-  { name: "Logout", icon: LogOut, href: "/logout" },
-];
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            router.replace("/");
+        }
+    }, [router]);
 
-export default function Dashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  
-      useEffect(() => {
-          if (typeof window === "undefined") return;
-  
-          const storedUser = localStorage.getItem("warden");
-          if (storedUser) {
-              const parsedUser = JSON.parse(storedUser);
-              setUser(parsedUser);
-  
-              // Redirect if not a warden
-              if (parsedUser.usertype !== "warden") {
-                  router.replace("/");
-              }
-          } else {
-              router.replace("/");
-          }
-      }, [router]);
-  
-      if (!user || user.usertype !== "warden") return null;
-   // to detect the current path
+    if (!user) return null;
 
-  return (
-    <div className="h-screen flex bg-[#f1fdf3] text-gray-800 overflow-hidden">
-      {/* Sidebar */}
-      <div
-        className={`fixed top-0 bottom-0 left-0 bg-white border-r border-green-200 w-64 space-y-4 py-6 px-4 overflow-y-auto z-50 transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
-      >
-        <button className="absolute top-4 right-4 md:hidden" onClick={() => setSidebarOpen(false)}>
-          <X className="text-green-700" />
-        </button>
-        <h1 className="text-xl font-bold text-green-800 mb-4">LateCheck</h1>
-
-        <nav className="flex flex-col gap-1">
-          {sidebarItems.map(({ name, icon: Icon, href }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={name}
-                href={href}
-                className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
-                  isActive
-                    ? "bg-green-200 text-green-800"
-                    : "text-gray-700 hover:bg-green-100"
-                }`}
+    return (
+        <div className="flex flex-col min-h-screen bg-[#f1fdf3]">
+            {/* Header */}
+            <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+            <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-10">
+              <button
+                onClick={() => router.push("/home")}
+                className="flex items-center gap-2 text-green-600 hover:text-green-800"
               >
-                <Icon className="w-4 h-4" />
-                {name}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+                <ArrowLeft className="h-6 w-6" />
+              </button>
+              <div className="text-green-700 font-bold text-xl">QR Scanner</div>
+            </div>
+          </header>
 
-      {/* Main content */}
-      <div className="flex-1 md:ml-64">
-        <header className="bg-white shadow-md p-3 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center">
-            <button className="md:hidden" onClick={() => setSidebarOpen(true)}>
-              <Menu className="text-green-700" />
-            </button>
-            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user.name}!</h2>
-          </div>
-        </header>
+            {/* Spacer for header */}
+            <div className="h-20" />
 
-        <main className="p-3 sm:p-4 md:p-6 flex-1 overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            hello
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+            {/* Main Content */}
+            <main className="flex flex-col flex-1 px-4 sm:px-8 max-w-3xl w-full mx-auto pb-24">
+                <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-green-300 p-6 items-center justify-center">
+                    <QrReader />
+                </div>
+            </main>
+
+            {/* Footer */}
+            <footer className=" fixed bottom-0 left-0 w-full p-3 z-50">
+              <div className="flex justify-center">
+                <MenuButton />
+              </div>
+            </footer>
+        </div>
+    );
 }

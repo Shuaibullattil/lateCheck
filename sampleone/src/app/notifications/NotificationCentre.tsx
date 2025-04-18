@@ -6,9 +6,18 @@ import {
   ChevronDown, Search, Send, Plus, Users, 
   Calendar, Megaphone, Bookmark, ChevronRight
 } from "lucide-react";
+import axios from "axios";
+
+type Notifications = {
+  id: string;
+  message: string;
+  sender_id: string;
+  timestamp: string;
+  type: string;
+}
 
 export default function NotificationCenter() {
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,38 +33,26 @@ export default function NotificationCenter() {
   const [sendSuccess, setSendSuccess] = useState(false);
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
-  // Mock notifications data - would fetch from API in real app
-  useEffect(() => {
-    setTimeout(() => {
-      setNotifications([
-        {
-          id: 1,
-          message: "The system will undergo scheduled maintenance this weekend. Please complete any pending approvals before Saturday. During the maintenance window, all administrative functions will be temporarily unavailable. We apologize for any inconvenience this may cause and appreciate your understanding.",
-          timestamp: "2025-04-18T15:45:00",
-          type: "system",
-        },
-        {
-          id: 2,
-          message: "All students are reminded to update their contact information in their profiles before the end of this month. This information is crucial for emergency communications and administrative purposes.",
-          timestamp: "2025-04-17T10:20:00",
-          type: "announcement",
-        },
-        {
-          id: 3,
-          message: "The monthly report for student entries and requests is now available in Analytics. Please review the data and submit any corrections within the next 5 business days.",
-          timestamp: "2025-04-16T14:15:00",
-          type: "report",
-        },
-        {
-          id: 4,
-          message: "Hostel inspection will be conducted this Friday. Please ensure all students are informed and accommodations are prepared according to the standard protocols outlined in the housing guidelines.",
-          timestamp: "2025-04-15T09:30:00",
-          type: "announcement",
-        }
-      ]);
+  //my api
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/notifications/all");
+      if (res.data.success) {
+        setNotifications(res.data.data.reverse());
+        setLoading(false); // don't forget to turn off loading state
+      }
+    } catch (err) {
+      console.error("Failed to fetch notifications:", err);
       setLoading(false);
-    }, 800);
-  }, []);
+    }
+  };
+
+  useEffect(() => {
+          fetchNotifications();
+      }, []);
+
+  // Mock notifications data - would fetch from API in real app
+  
 
 
   const formatDate = (dateString) => {
@@ -91,23 +88,35 @@ export default function NotificationCenter() {
     setExpandedNotification(expandedNotification === id ? null : id);
   };
 
-  const handleSendNotification = (e) => {
+  const handleSendNotification = async (e) => {
     e.preventDefault();
-    
-    // Create new notification object
-    const now = new Date();
+  
+    const timestamp = new Date().toISOString();
     const newNotificationObj = {
       id: notifications.length + 1,
       message: newNotification.message,
-      timestamp: now.toISOString(),
+      timestamp: timestamp,
       type: newNotification.type,
     };
-    
-    // Add to notifications list (in a real app, this would be sent to an API)
-    setNotifications([newNotificationObj, ...notifications]);
-    
-    // Show success message and reset form
-    setSendSuccess(true);
+  
+    try {
+      const response = await axios.post("http://localhost:8000/notifications/create", {
+        message: newNotificationObj.message,
+        sender_id: "saharawardenofficial@gmail.com",
+        timestamp: newNotificationObj.timestamp,
+        type: newNotificationObj.type,
+      });
+  
+      if (response.data.success) {
+        setNotifications([newNotificationObj, ...notifications]);
+        setSendSuccess(true);
+      } else {
+        console.error("Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  
     setTimeout(() => {
       setIsSendModalOpen(false);
       setSendSuccess(false);
@@ -118,6 +127,7 @@ export default function NotificationCenter() {
       setSelectedStudents([]);
     }, 1500);
   };
+  
 
   const filteredNotifications = notifications.filter((notification) => {
     // Filter by type

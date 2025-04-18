@@ -1311,6 +1311,7 @@ class NotificationCreate(BaseModel):
     message: str
     sender_id: str
     timestamp: str
+    type:str
 
 # API endpoint to create a notification
 @app.post("/notifications/create")
@@ -1321,6 +1322,7 @@ async def create_notification(notification: NotificationCreate):
             "message": notification.message,
             "sender_id": notification.sender_id,
             "timestamp": notification.timestamp,
+            "type" : notification.type,
         }
         
         # Insert into MongoDB

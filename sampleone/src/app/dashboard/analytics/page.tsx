@@ -117,7 +117,7 @@ const students = [
 const sidebarItems = [
     { name: "Dashboard", icon: Home, href: "/dashboard" },
     { name: "Student Details", icon: Users, href: "/studentdetail" },
-    { name: "Responses", icon: FileText, href: "/dashboard/student-request" },
+    { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
     { name: "Analytics", icon: BarChart3, href: "/dashboard/analytics" },
     { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
     { name: "Notifications", icon: Bell, href: "/notifications" },
