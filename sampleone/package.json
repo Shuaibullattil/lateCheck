@@ -13,6 +13,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "axios": "^1.7.9",
     "chart.js": "^4.4.9",
+    "framer-motion": "^12.7.4",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^0.488.0",
     "next": "^15.3.0",

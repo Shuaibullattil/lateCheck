@@ -246,7 +246,7 @@ export default function NotificationCenter() {
       </div>
 
       {/* Notifications List */}
-      <div className="h-[460px] overflow-y-auto p-3 pb-6 space-y-3">
+      <div className="h-[450px] overflow-y-auto p-3 pb-6 space-y-3">
         {loading ? (
           <div className="flex flex-col space-y-3">
             {[1, 2, 3].map((i) => (
