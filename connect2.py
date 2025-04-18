@@ -7,6 +7,9 @@ from io import BytesIO
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo.server_api import ServerApi
 from openai import OpenAI
+import json
+from bson import ObjectId
+from datetime import datetime
 import base64
 from fastapi.responses import JSONResponse, StreamingResponse
 import requests
@@ -606,7 +609,18 @@ def remove_file(path: str):
     """Remove a file after it has been sent to the client."""
     if os.path.exists(path):
         os.unlink(path)
+        
+def custom_serializer(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    if isinstance(obj, datetime):
+        return obj.isoformat()  # Or any format you prefer
+    raise TypeError(f"Type {type(obj)} not serializable")
 
+def export_to_json():
+    data = list(collection.find())
+    json_bytes = json.dumps(data, default=custom_serializer)
+    return json_bytes
 # Modified FastAPI endpoint to use the JSON file
 @app.post("/generate-report/", response_class=FileResponse, summary="Generate a hostel late entry report from JSON file")
 async def generate_report(options: GenerateReportOptions = None, background_tasks: BackgroundTasks = None):
@@ -624,7 +638,7 @@ async def generate_report(options: GenerateReportOptions = None, background_task
             options = GenerateReportOptions()
         
         # Load data from the JSON file
-        input_data = load_json_data("late_entries_data_updated.json")
+        input_data = export_to_json()
         
         # Initialize OpenAI client
         client = OpenAI()
@@ -738,14 +752,7 @@ class MostLateReason(BaseModel):
 @app.get("/most-common-late-reason", response_model=MostLateReason)
 def get_most_common_late_reason():
     # Load JSON data from file
-    file_path = "late_entries_data_updated.json"
-    
-    if not os.path.exists(file_path):
-        return {"most_common_reason": "File not found", "count": 0}
-
-    with open(file_path, "r") as f:
-        json_data = json.load(f)
-        json_string = json.dumps(json_data)
+    json_string = export_to_json()
 
     # Call OpenAI to extract most common late reason
     completion = client.beta.chat.completions.parse(
