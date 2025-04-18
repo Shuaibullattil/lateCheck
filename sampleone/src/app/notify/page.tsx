@@ -2,9 +2,32 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { Bell, ArrowLeft } from "lucide-react";
 import MenuButton from "../components/user/menubutton";
 import { formatDateToDdMmYyyy } from "@/utils/formattime";
+import { 
+  CheckCircle, X, Filter, 
+  ChevronDown, Search, Send, Plus, Users, 
+  Calendar, Megaphone, Bookmark, ChevronRight,ArrowLeft,Bell
+} from "lucide-react";
+
+// Category options with nice labels and colors
+  const notificationTypes = [
+    { id: "all", label: "All Notifications", icon: Bell, color: "bg-blue-100 text-blue-800" },
+    { id: "announcement", label: "Announcements", icon: Megaphone, color: "bg-orange-100 text-orange-800" },
+    { id: "system", label: "System", icon: Bell, color: "bg-pink-100 text-pink-800" },
+    { id: "report", label: "Reports", icon: Bookmark, color: "bg-indigo-100 text-indigo-800" },
+  ];
+
+  const getTypeIcon = (type) => {
+    const found = notificationTypes.find(t => t.id === type);
+    const Icon = found?.icon || Bell;
+    return <Icon className="h-5 w-5" />;
+  };
+
+  const getTypeColor = (type) => {
+    const found = notificationTypes.find(t => t.id === type);
+    return found ? found.color : "bg-gray-100 text-gray-800";
+  };
 
 export default function Notify() {
     const router = useRouter();
@@ -76,9 +99,15 @@ export default function Notify() {
                   <div
                     key={index}
                     className="bg-[#f1fdf3] border border-green-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all"
-                  >
+                  ><div className="flex gap-2">
+                      <div className={`p-1.5 rounded-lg h-8 ${getTypeColor(note.type)}`}>
+                      {getTypeIcon(note.type)}
+                    </div>
                     <p className="text-sm text-gray-700 mt-1">{note.message}</p>
+                    
+                  </div>
                     <p className="text-xs text-gray-400 mt-2 italic text-right">{formatDateToDdMmYyyy(note.timestamp)}</p>
+                    
                   </div>
                 ))}
               </div>

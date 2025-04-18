@@ -793,18 +793,20 @@ def convert_datetime(data):
         data["timing"] = data["timing"].isoformat()  # Convert datetime to string
     return data
 
-def student_serializer(student):
+def student_serializer(student) -> dict:
+    details = student.get("details", {})
     return {
-        "id": str(student["_id"]),
-        "name": student["name"],
-        "hostel_id": student["details"]["hostel_id"],
-        "branch": student["details"]["branch"],
-        "sem": student["details"]["sem"],
-        "hostel": student["details"]["hostel"],
-        "room_no": student["details"]["room_no"],
-        "phone_no": student["details"]["phone_no"],
-        "email": student["details"]["email"],
+        "id": str(student.get("_id", "")),
+        "name": student.get("name", ""),
+        "student_id": details.get("id", ""),
+        "branch": details.get("branch", ""),
+        "sem": str(details.get("sem", "")),
+        "hostel": details.get("hostel", ""),
+        "room_no": str(details.get("room_no", "")),
+        "phone_no": details.get("phone_no", ""),
+        "email": details.get("email", "")
     }
+
 
 @app.get("/students")
 def get_students():
