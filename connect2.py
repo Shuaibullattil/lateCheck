@@ -971,6 +971,9 @@ async def get_students_with_today_entries():
                 "name": 1,
                 "details.sem": 1,
                 "details.branch": 1,
+                "details.phone_no": 1,
+                "details.room_no": 1,
+                "total_entries": {"$size": "$history"},  # ➕ Count all entries in history
                 "history": {
                     "$filter": {
                         "input": "$history",
@@ -988,33 +991,41 @@ async def get_students_with_today_entries():
     ]
 
     students = list(collection.aggregate(pipeline))
-    count=0
-    # Flatten results
+    count = 0
     flat_result = []
+
     for student in students:
         name = student["name"]
         sem = student["details"]["sem"]
+        phone_no = student["details"]["phone_no"]
+        room = student["details"]["room_no"]
         branch = student["details"]["branch"]
         batch = f"S{sem} | {branch}"
+        total_entries = student["total_entries"]
 
         for entry in student["history"]:
-            count=count+1
+            count += 1
             utc_time = entry["timing"]
             ist_time = utc_time.astimezone(IST)
             formatted_time = ist_time.strftime("%I:%M %p")
+
             flat_result.append({
                 "id": count,
                 "name": name,
                 "batch": batch,
+                "phone_no": phone_no,
+                "room_no": room,
                 "avatar": get_initials(name),
                 "time": formatted_time,
-                "reason": entry["purpose"]
+                "reason": entry["purpose"],
+                "total_late_entries": total_entries  # ➕ Added field
             })
 
     return {
         "count": count,
         "entries": flat_result
     }
+
 
 
 @app.get("/filter/date")
