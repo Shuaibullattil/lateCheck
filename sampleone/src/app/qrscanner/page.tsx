@@ -42,7 +42,7 @@ export default function Myscanner() {
             {/* Main Content */}
             <main className="flex flex-col flex-1 px-4 sm:px-8 max-w-3xl w-full mx-auto pb-24">
                 <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-green-300 p-6 items-center justify-center">
-                    <QrReader />
+                    <QrReader  hostel={user.details.hostel}/>
                 </div>
             </main>
 
