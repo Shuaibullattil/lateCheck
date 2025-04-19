@@ -152,6 +152,8 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
 };
 
 export default function Dashboard() {
+  const [avgLateTime,setAvgLateTime] = useState([]);
+  const [lateEntriesWeek,setLateEntriesWeek] = useState([]);
   const [mystudents,setMYStudents] = useState([])
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -175,6 +177,7 @@ export default function Dashboard() {
         
         // Fetch late entries count (assuming you have this endpoint)
         const lateEntriesResponse = await axios.get('http://localhost:8000/students/today');
+        const graphDatas = await axios.get('http://localhost:8000/avg/entry');
         
         // Fetch most common reason using your endpoint
         const reasonResponse = await axios.get<{most_common_reason: string; count: number}>('http://localhost:8000/most-common-late-reason/');
@@ -186,6 +189,8 @@ export default function Dashboard() {
         });
 
         setMYStudents(lateEntriesResponse.data.entries);
+        setAvgLateTime(graphDatas.data.avgLateTime);
+        setLateEntriesWeek(graphDatas.data.lateEntriesWeek);
         
         setError(null);
       } catch (err) {
@@ -411,7 +416,7 @@ export default function Dashboard() {
                 <div className="bg-white border border-green-300 shadow-md rounded-xl px-4 py-8">
                   <h3 className="text-base font-semibold text-green-800 mb-2">Average Late Entry Time (Past 7 Days)</h3>
                   <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={mockData.avgLateTime}>
+                    <LineChart data={avgLateTime}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="day" />
                       <YAxis />
@@ -425,7 +430,7 @@ export default function Dashboard() {
                 <div className="bg-white border border-green-300 shadow-md rounded-xl px-4 py-9">
                   <h3 className="text-base font-semibold text-green-800 mb-2">Late Entries (Past 7 Days)</h3>
                   <ResponsiveContainer width="100%" height={180}>
-                    <BarChart data={mockData.lateEntriesWeek}>
+                    <BarChart data={lateEntriesWeek}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="day" />
                       <YAxis />
