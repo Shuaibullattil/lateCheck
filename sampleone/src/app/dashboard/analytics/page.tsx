@@ -18,20 +18,22 @@ import {
 } from "recharts";
 import {
   Menu,
-  X,
-  Home, 
+  X, 
+  ChevronLeft,
+  ChevronRight,
   Users,
   FileText,
   BarChart3,
   MessageSquare,
   Bell,
   LogOut,
+  Calendar,
   User,
   Download,
   Clock,
 } from "lucide-react";
 import axios from "axios";
-import router from "next/router";
+
 
 
 interface LateEntryStats {
@@ -40,29 +42,6 @@ interface LateEntryStats {
   reasonCount?: number; // Count of the most frequent reason
 }
 
-
-const mockData = {
-  lateEntriesToday: 12,
-  mostFrequentReason: "Missed the bus",
-  avgLateTime: [
-    { day: "Mon", time: 8 },
-    { day: "Tue", time: 10 },
-    { day: "Wed", time: 6 },
-    { day: "Thu", time: 9 },
-    { day: "Fri", time: 11 },
-    { day: "Sat", time: 7 },
-    { day: "Sun", time: 5 },
-  ],
-  lateEntriesWeek: [
-    { day: "Mon", entries: 5 },
-    { day: "Tue", entries: 7 },
-    { day: "Wed", entries: 14 },
-    { day: "Thu", entries: 6 },
-    { day: "Fri", entries: 10 },
-    { day: "Sat", entries: 8 },
-    { day: "Sun", entries: 3 },
-  ],
-};
 
 const handleLogout = () =>{
   localStorage.removeItem("warden")
@@ -168,6 +147,13 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selecting, setSelecting] = useState(true); // true for selecting startDate, false for endDate
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [tempStartDate, setTempStartDate] = useState(null);
+  const [tempEndDate, setTempEndDate] = useState(null);
  
 
   useEffect(() => {
@@ -245,6 +231,111 @@ export default function Dashboard() {
       setIsDownloading(false);
     }
   };
+
+  const formatDate = (date) => {
+    if (!date) return "";
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+  
+  // Generate days for the current month view
+  const getDaysInMonth = (year, month) => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const days = [];
+    
+    // Add empty cells for days before the first of the month
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push({ day: null, date: null });
+    }
+    
+    // Add days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({ day: i, date: new Date(year, month, i) });
+    }
+    
+    return days;
+  };
+  
+  const openCalendar = () => {
+    setTempStartDate(startDate);
+    setTempEndDate(endDate);
+    setSelecting(true);
+    setShowCalendar(true);
+  };
+  
+  const handleDayClick = (date) => {
+    if (!date) return;
+    
+    if (selecting) {
+      // Setting start date
+      setTempStartDate(date);
+      setTempEndDate(null);
+      setSelecting(false);
+    } else {
+      // Setting end date
+      if (date < tempStartDate) {
+        // If selected date is before start date, swap them
+        setTempEndDate(tempStartDate);
+        setTempStartDate(date);
+      } else {
+        setTempEndDate(date);
+      }
+      setSelecting(true);
+    }
+  };
+  
+  const nextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+  };
+  
+  const prevMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+  };
+  
+  const isInRange = (date) => {
+    if (!tempStartDate || !date) return false;
+    if (!tempEndDate) return date.getTime() === tempStartDate.getTime();
+    return date >= tempStartDate && date <= tempEndDate;
+  };
+  
+  const isToday = (date) => {
+    if (!date) return false;
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
+  };
+  
+  const clearDateRange = () => {
+    setTempStartDate(null);
+    setTempEndDate(null);
+    setSelecting(true);
+  };
+  
+  const applyDateRange = () => {
+    // Save the temp dates to the actual state
+    setStartDate(tempStartDate);
+    setEndDate(tempEndDate);
+    setShowCalendar(false);
+    // Here you would fetch data for the selected range
+    console.log("Fetching data for range:", tempStartDate, tempEndDate);
+  };
+  
+  const cancelSelection = () => {
+    setShowCalendar(false);
+  };
+  
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const days = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+  
+  const monthYear = currentMonth.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  });
 
 
     
@@ -376,12 +467,50 @@ export default function Dashboard() {
                   )}
                 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 {/* Student Profiles Component */}
                 <div className="bg-white h-[350px] border border-green-300 shadow-md rounded-xl px-4 py-6 overflow-y-auto">
                   <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
                     <Users className="w-5 h-5 mr-2" /> 
-                    Today's Late Students
+                              {startDate && endDate 
+                      ? `Late Students (${formatDate(startDate)} - ${formatDate(endDate)})`
+                      : "Today's Late Students"
+                    }
                   </h3>
+                    <button 
+                    onClick={openCalendar}
+                    className="flex items-center space-x-1 bg-white border border-green-300 rounded-lg px-3 py-1.5 text-sm text-green-800 shadow-sm mb-4 mt-2 hover:bg-green-50 transition-colors"
+                  >
+                    <Calendar className="w-4 h-4 text-green-600" />
+                    <span className="hidden sm:inline">
+                      {startDate && endDate 
+                        ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+                        : "Select dates"
+                      }
+                    </span>
+                  </button>
                   <div className="space-y-1">
                     {mystudents.map((student) => (
                       <button
@@ -451,6 +580,100 @@ export default function Dashboard() {
         onClose={() => setModalOpen(false)} 
         student={selectedStudent} 
       />
+      {showCalendar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
+            {/* Header */}
+            <div className="bg-green-600 text-white px-6 py-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">Select Date Range</h2>
+                <button onClick={cancelSelection} className="p-1 rounded-full hover:bg-green-500">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="mt-2 text-sm">
+                {tempStartDate && tempEndDate 
+                  ? `${formatDate(tempStartDate)} - ${formatDate(tempEndDate)}`
+                  : tempStartDate 
+                    ? `${formatDate(tempStartDate)} - Select end date`
+                    : "Select start date"
+                }
+              </div>
+            </div>
+            
+            {/* Calendar body */}
+            <div className="p-4">
+              <div className="flex justify-between items-center mb-4">
+                <button onClick={prevMonth} className="p-2 rounded-full hover:bg-green-100">
+                  <ChevronLeft className="w-5 h-5 text-green-700" />
+                </button>
+                <h4 className="font-medium text-green-800 text-lg">{monthYear}</h4>
+                <button onClick={nextMonth} className="p-2 rounded-full hover:bg-green-100">
+                  <ChevronRight className="w-5 h-5 text-green-700" />
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {daysOfWeek.map(day => (
+                  <div key={day} className="text-xs font-medium text-gray-500 text-center py-1">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="grid grid-cols-7 gap-1">
+                {days.map((day, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleDayClick(day.date)}
+                    disabled={!day.day}
+                    className={`
+                      w-10 h-10 flex items-center justify-center text-sm rounded-full
+                      ${!day.day ? 'invisible' : 'hover:bg-green-100'}
+                      ${isToday(day.date) ? 'ring-1 ring-green-500' : ''}
+                      ${isInRange(day.date) ? 'bg-green-500 text-white hover:bg-green-600' : ''}
+                      ${day.date && tempStartDate && day.date.getTime() === tempStartDate.getTime() ? 'ring-2 ring-green-600' : ''}
+                      ${day.date && tempEndDate && day.date.getTime() === tempEndDate.getTime() ? 'ring-2 ring-green-600' : ''}
+                      transition-all duration-200
+                    `}
+                  >
+                    {day.day}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Footer with actions */}
+            <div className="border-t p-4 flex justify-between">
+              <button 
+                onClick={clearDateRange}
+                className="text-sm text-gray-600 hover:text-gray-800 flex items-center"
+              >
+                <X className="w-3.5 h-3.5 mr-1" /> Clear
+              </button>
+              
+              <div>
+                <button
+                  onClick={cancelSelection}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyDateRange}
+                  disabled={!tempStartDate || !tempEndDate}
+                  className={`
+                    px-4 py-2 text-sm rounded-md text-white transition-colors
+                    ${(!tempStartDate || !tempEndDate) ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}
+                  `}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )} 
     </div>
   );
 }
