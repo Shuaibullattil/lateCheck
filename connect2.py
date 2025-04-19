@@ -52,6 +52,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import matplotlib.pyplot as plt
 import io
+from collections import defaultdict
+import pytz
+from dateutil import parser
 
 load_dotenv()
 
@@ -1025,6 +1028,88 @@ async def get_students_with_today_entries():
         "count": count,
         "entries": flat_result
     }
+
+
+
+@app.get("/avg/entry")
+async def avg_entry_data():
+    # Pull all history arrays with only timing field
+    pipeline = [
+        {
+            "$project": {
+                "_id": 0,
+                "history": {
+                    "$map": {
+                        "input": "$history",
+                        "as": "h",
+                        "in": {
+                            "timing": "$$h.timing"
+                        }
+                    }
+                }
+            }
+        }
+    ]
+
+    result = list(collection.aggregate(pipeline))
+
+    # Prepare weekly buckets
+    day_map = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    entry_count_by_day = defaultdict(int)
+    time_sum_by_day = defaultdict(int)
+
+    total_entries_by_day = defaultdict(int)
+
+    for student in result:
+        for entry in student["history"]:
+            raw_timing = entry.get("timing")
+
+    # If it's a dict with $date (MongoDB extended JSON format)
+            if isinstance(raw_timing, dict) and "$date" in raw_timing:
+                timing = parser.isoparse(raw_timing["$date"])
+    # If it's a string (ISO format)
+            elif isinstance(raw_timing, str):
+                timing = parser.isoparse(raw_timing)
+    # If it's already a datetime object (unlikely but possible)
+            elif isinstance(raw_timing, datetime):
+                timing = raw_timing
+            else:
+                continue  # Skip if timing format is unknown or invalid
+
+            ist_time = timing.astimezone(IST)
+
+            day_idx = ist_time.weekday()
+            hour = ist_time.hour
+
+            entry_count_by_day[day_idx] += 1
+            time_sum_by_day[day_idx] += hour
+            total_entries_by_day[day_idx] += 1
+
+            late_entries_week = []
+            avg_late_time = []
+
+    for i in range(7):
+        day = day_map[i]
+        entries = entry_count_by_day[i]
+        total_time = time_sum_by_day[i]
+        count = total_entries_by_day[i]
+        avg_time = round(total_time / count) if count > 0 else 0
+
+        late_entries_week.append({
+            "day": day,
+            "entries": entries
+        })
+
+        avg_late_time.append({
+            "day": day,
+            "time": avg_time
+        })
+
+    return {
+        "lateEntriesWeek": late_entries_week,
+        "avgLateTime": avg_late_time
+    }
+
 
 
 
