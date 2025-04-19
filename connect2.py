@@ -1033,50 +1033,42 @@ async def get_students_with_today_entries():
 
 @app.get("/avg/entry")
 async def avg_entry_data():
-    # Pull all history arrays with only timing field
-    pipeline = [
-        {
-            "$project": {
-                "_id": 0,
-                "history": {
-                    "$map": {
-                        "input": "$history",
-                        "as": "h",
-                        "in": {
-                            "timing": "$$h.timing"
-                        }
-                    }
-                }
-            }
-        }
-    ]
+    today = datetime.now(IST)
 
-    result = list(collection.aggregate(pipeline))
+    # Start of current week (Monday 00:00 IST)
+    start_of_week = today - timedelta(days=today.weekday())
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Prepare weekly buckets
-    day_map = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    entry_count_by_day = defaultdict(int)
-    time_sum_by_day = defaultdict(int)
+    # End of week (next Monday 00:00 IST)
+    end_of_week = start_of_week + timedelta(days=7)
 
-    total_entries_by_day = defaultdict(int)
+    # Arrays for counts and time sums (index 0 = Monday, 6 = Sunday)
+    entry_count_by_day = [0] * 7
+    time_sum_by_day = [0] * 7
+    total_entries_by_day = [0] * 7
 
-    for student in result:
-        for entry in student["history"]:
-            raw_timing = entry.get("timing")
+    # Fetch all students
+    students = list(collection.find({}, {"history": 1}))
 
-    # If it's a dict with $date (MongoDB extended JSON format)
-            if isinstance(raw_timing, dict) and "$date" in raw_timing:
-                timing = parser.isoparse(raw_timing["$date"])
-    # If it's a string (ISO format)
-            elif isinstance(raw_timing, str):
-                timing = parser.isoparse(raw_timing)
-    # If it's already a datetime object (unlikely but possible)
-            elif isinstance(raw_timing, datetime):
-                timing = raw_timing
+    for student in students:
+        for entry in student.get("history", []):
+            raw_time = entry.get("timing")
+
+            # Robust parsing
+            if isinstance(raw_time, dict) and "$date" in raw_time:
+                timing = parser.isoparse(raw_time["$date"])
+            elif isinstance(raw_time, str):
+                timing = parser.isoparse(raw_time)
+            elif isinstance(raw_time, datetime):
+                timing = raw_time
             else:
-                continue  # Skip if timing format is unknown or invalid
+                continue
 
             ist_time = timing.astimezone(IST)
+
+            # Filter only current week entries
+            if not (start_of_week <= ist_time < end_of_week):
+                continue
 
             day_idx = ist_time.weekday()
             hour = ist_time.hour
@@ -1085,29 +1077,30 @@ async def avg_entry_data():
             time_sum_by_day[day_idx] += hour
             total_entries_by_day[day_idx] += 1
 
-            late_entries_week = []
-            avg_late_time = []
+    # Build final response
+    day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+    late_entries = []
+    avg_late_times = []
 
     for i in range(7):
-        day = day_map[i]
-        entries = entry_count_by_day[i]
-        total_time = time_sum_by_day[i]
-        count = total_entries_by_day[i]
-        avg_time = round(total_time / count) if count > 0 else 0
-
-        late_entries_week.append({
-            "day": day,
-            "entries": entries
+        late_entries.append({
+            "day": day_names[i],
+            "entries": entry_count_by_day[i]
         })
 
-        avg_late_time.append({
-            "day": day,
-            "time": avg_time
+        avg_hour = 0
+        if total_entries_by_day[i] > 0:
+            avg_hour = round(time_sum_by_day[i] / total_entries_by_day[i])
+
+        avg_late_times.append({
+            "day": day_names[i],
+            "time": avg_hour
         })
 
     return {
-        "lateEntriesWeek": late_entries_week,
-        "avgLateTime": avg_late_time
+        "lateEntriesWeek": late_entries,
+        "avgLateTime": avg_late_times
     }
 
 
