@@ -112,12 +112,12 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-green-50 p-3 rounded-xl">
               <p className="text-xs text-green-700 font-medium mb-1">Room Number</p>
-              <p className="font-semibold text-gray-800">{student?.attendance}%</p>
+              <p className="font-semibold text-gray-800">{student?.room_no}</p>
             </div>
             
             <div className="bg-amber-50 p-3 rounded-xl">
               <p className="text-xs text-amber-700 font-medium mb-1">Late Count</p>
-              <p className="font-semibold text-gray-800">{student?.lateCount}</p>
+              <p className="font-semibold text-gray-800">{student?.total_late_entries}</p>
             </div>
           </div>
           
@@ -128,7 +128,7 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
           
           <div className="bg-gray-50 p-4 rounded-xl space-y-1">
             <p className="text-sm font-medium text-gray-700">Contact:</p>
-            <p className="text-sm text-gray-600">{student?.contactInfo}</p>
+            <p className="text-sm text-gray-600">{student?.phone_no}</p>
           </div>
           
           <div className="bg-gray-50 p-4 rounded-xl space-y-1">
@@ -395,7 +395,7 @@ export default function Dashboard() {
                         </div>
                         <div className="flex items-center">
                           <span className="bg-amber-100 text-amber-800 text-xs py-0.5 px-2 rounded-full">
-                            {student.lateCount} late
+                            {student?.total_late_entries} late
                           </span>
                           <User className="w-3 h-3 ml-2 text-gray-400" />
                         </div>
