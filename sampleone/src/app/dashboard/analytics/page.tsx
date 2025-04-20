@@ -179,7 +179,11 @@ export default function Dashboard() {
         setIsLoading(true);
         
         // Fetch late entries count
-        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today');
+        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today'{
+          params :{
+            hostel : user.hostel,
+          }
+        });
         const graphDatas = await axios.get('http://localhost:8000/avg/entry');
         
         // Fetch most common reason using your endpoint
@@ -344,6 +348,7 @@ export default function Dashboard() {
         params: {
           start_date: tempStartDate.toISOString().split("T")[0],
           end_date: tempEndDate.toISOString().split("T")[0],
+          hostel: user.hostel,
         },
       });
       
