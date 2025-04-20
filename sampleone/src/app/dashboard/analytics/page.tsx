@@ -173,17 +173,40 @@ export default function Dashboard() {
   // Calculate days for the current month
   const days = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
 
+  // First, load the user data from local storage
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedUser = localStorage.getItem("warden");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // Redirect if not a warden
+      if (parsedUser.usertype !== "warden") {
+        router.replace("/");
+      }
+    } else {
+      router.replace("/");
+    }
+  }, [router]);
+
+  // Then, fetch data only when user is available
+  useEffect(() => {
+    // Only fetch data if user is loaded and has hostel property
+    if (!user || !user.hostel) return;
+    
     const fetchData = async () => {
       try {
         setIsLoading(true);
         
-        // Fetch late entries count
-        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today'{
-          params :{
-            hostel : user.hostel,
+        // Fetch late entries count with the hostel parameter
+        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today', {
+          params: {
+            hostel: user.hostel,
           }
         });
+        
         const graphDatas = await axios.get('http://localhost:8000/avg/entry');
         
         // Fetch most common reason using your endpoint
@@ -209,7 +232,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [user]); // This effect will run when user state changes
 
   const handleDownload = async () => {
     try {
@@ -341,6 +364,12 @@ export default function Dashboard() {
       return;
     }
     
+    // Check if user and hostel are available
+    if (!user || !user.hostel) {
+      setError("User information is missing. Please try again later.");
+      return;
+    }
+    
     try {
       setIsLoading(true);
       
@@ -360,23 +389,6 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const storedUser = localStorage.getItem("warden");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-
-      // Redirect if not a warden
-      if (parsedUser.usertype !== "warden") {
-        router.replace("/");
-      }
-    } else {
-      router.replace("/");
-    }
-  }, [router]);
 
   if (!user || user.usertype !== "warden") return null;
 
@@ -428,7 +440,9 @@ export default function Dashboard() {
             <button className="md:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="text-green-700" />
             </button>
-            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user.name}</h2>
+            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">
+              Welcome {user.name}{user.hostel ? ` (${user.hostel})` : ""}
+            </h2>
           </div>
         </header>
 
