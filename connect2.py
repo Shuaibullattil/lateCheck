@@ -1033,7 +1033,7 @@ async def get_students_with_today_entries(hostel: str):
 
 
 @app.get("/avg/entry")
-async def avg_entry_data():
+async def avg_entry_data(hostel: str):
     today = datetime.now(IST)
 
     # Start of current week (Monday 00:00 IST)
@@ -1049,7 +1049,7 @@ async def avg_entry_data():
     total_entries_by_day = [0] * 7
 
     # Fetch all students
-    students = list(collection.find({}, {"history": 1}))
+    students = list(collection.find({"details.hostel": hostel}, {"history": 1}))
 
     for student in students:
         for entry in student.get("history", []):
