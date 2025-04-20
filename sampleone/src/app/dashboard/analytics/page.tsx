@@ -106,9 +106,9 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
             <p className="text-sm text-gray-600">{student?.phone_no}</p>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-xl space-y-1">
-            <p className="text-sm font-medium text-gray-700">Notes:</p>
-            <p className="text-sm italic text-gray-600">{student?.notes || "No additional notes"}</p>
+          <div className="bg-blue-100 p-4 rounded-xl space-y-1">
+            <p className="text-sm font-medium text-blue-700">Time</p>
+            <p className="font-semibold text-sm text-gray-600">{student?.time}</p>
           </div>
         </div>
         
@@ -151,7 +151,7 @@ export default function Dashboard() {
   const [tempStartDate, setTempStartDate] = useState(null);
   const [tempEndDate, setTempEndDate] = useState(null);
 
-  // Generate days for the current month view
+  // Generate days for the current month view with proper keys
   const getDaysInMonth = (year, month) => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -159,12 +159,12 @@ export default function Dashboard() {
     
     // Add empty cells for days before the first of the month
     for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push({ day: null, date: null });
+      days.push({ day: null, date: null, id: `empty-${year}-${month}-${i}` });
     }
     
     // Add days of the month
     for (let i = 1; i <= daysInMonth; i++) {
-      days.push({ day: i, date: new Date(year, month, i) });
+      days.push({ day: i, date: new Date(year, month, i), id: `day-${year}-${month}-${i}` });
     }
     
     return days;
@@ -207,7 +207,11 @@ export default function Dashboard() {
           }
         });
         
-        const graphDatas = await axios.get('http://localhost:8000/avg/entry');
+        const graphDatas = await axios.get('http://localhost:8000/avg/entry',{
+          params : {
+            hostel : user.hostel,
+          }
+        });
         
         // Fetch most common reason using your endpoint
         const reasonResponse = await axios.get('http://localhost:8000/most-common-late-reason/');
@@ -381,6 +385,7 @@ export default function Dashboard() {
         },
       });
       
+      // Update the student list with filtered data
       setMYStudents(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -417,7 +422,6 @@ export default function Dashboard() {
                 key={name}
                 href={href}
                 onClick={name === "Logout" ? handleLogout : undefined}
-                
                 className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
                   isActive
                     ? "bg-green-200 text-green-800"
@@ -531,7 +535,7 @@ export default function Dashboard() {
                     ) : mystudents && mystudents.length > 0 ? (
                       mystudents.map((student) => (
                         <button
-                          key={student.id}
+                          key={student.id || `student-${student.name}-${Math.random()}`}
                           onClick={() => openStudentProfile(student)}
                           className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-green-50 transition-colors border border-gray-100"
                         >
@@ -638,17 +642,17 @@ export default function Dashboard() {
               </div>
               
               <div className="grid grid-cols-7 gap-1 mb-2">
-                {daysOfWeek.map(day => (
-                  <div key={day} className="text-xs font-medium text-gray-500 text-center py-1">
+                {daysOfWeek.map((day, idx) => (
+                  <div key={`day-header-${idx}`} className="text-xs font-medium text-gray-500 text-center py-1">
                     {day}
                   </div>
                 ))}
               </div>
               
               <div className="grid grid-cols-7 gap-1">
-                {days.map((day, index) => (
+                {days.map((day) => (
                   <button
-                    key={index}
+                    key={day.id}
                     onClick={() => handleDayClick(day.date)}
                     disabled={!day.day}
                     className={`
