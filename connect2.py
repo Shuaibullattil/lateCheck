@@ -1328,6 +1328,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     active_connections[user_id] = websocket
     print(active_connections)
     print(f"User {user_id} connected")
+    print(active_connections)
 
     try:
         while True:
@@ -1371,7 +1372,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     print(f"WebSocket send error: {e}")
             else:
                 print(f"Receiver {receiver_id} is NOT connected.")
-
+                message_collection.insert_one(message_data)
     except WebSocketDisconnect:
         print(f"User {user_id} disconnected")
     except asyncio.CancelledError:
