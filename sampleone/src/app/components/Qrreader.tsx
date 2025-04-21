@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import { useRouter } from "next/navigation";
 
-const QrReader = () => {
+const QrReader = ({hostel} :{hostel:string}) => {
     const router = useRouter();
     const scannerRef = useRef<Html5Qrcode | null>(null);
     const [cameras, setCameras] = useState<any[]>([]);
@@ -44,10 +44,10 @@ const QrReader = () => {
                 selectedCameraId,
                 { fps: 10, qrbox: 250 },
                 (decodedText) => {
-                    if (decodedText === "sahara") {
+                    if (decodedText === hostel) {
                         router.push("/late-entry-form");
                     } else {
-                        alert(decodedText);
+                        alert(decodedText+hostel);
                     }
                 },
                 (error) => {

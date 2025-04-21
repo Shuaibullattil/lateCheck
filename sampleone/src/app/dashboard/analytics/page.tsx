@@ -34,29 +34,25 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-
-
 interface LateEntryStats {
   lateEntriesToday: number;
   mostFrequentReason: string;
   reasonCount?: number; // Count of the most frequent reason
 }
 
-
-const handleLogout = () =>{
+const handleLogout = () => {
   localStorage.removeItem("warden")
 };
 
 const sidebarItems = [
-    { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
-    { name: "Student Details", icon: Users, href: "/studentdetail" },
-    { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
-    { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
-    { name: "Notifications", icon: Bell, href: "/notifications" },
-    { name: "Logout", icon: LogOut, href: "/" },
-  ];
+  { name: "Dashboard", icon: BarChart3, href: "/dashboard/analytics" },
+  { name: "Student Details", icon: Users, href: "/studentdetail" },
+  { name: "Requests", icon: FileText, href: "/dashboard/student-request" },
+  { name: "Messages", icon: MessageSquare, href: "/dashboard/student-messages" },
+  { name: "Notifications", icon: Bell, href: "/notifications" },
+  { name: "Logout", icon: LogOut, href: "/" },
+];
 
-// Modal Component
 // Modal Component
 const ProfileModal = ({ isOpen, onClose, student }) => {
   if (!isOpen || !student) return null;
@@ -110,9 +106,9 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
             <p className="text-sm text-gray-600">{student?.phone_no}</p>
           </div>
           
-          <div className="bg-gray-50 p-4 rounded-xl space-y-1">
-            <p className="text-sm font-medium text-gray-700">Notes:</p>
-            <p className="text-sm italic text-gray-600">{student?.notes || "No additional notes"}</p>
+          <div className="bg-blue-100 p-4 rounded-xl space-y-1">
+            <p className="text-sm font-medium text-blue-700">Time</p>
+            <p className="font-semibold text-sm text-gray-600">{student?.time}</p>
           </div>
         </div>
         
@@ -131,22 +127,22 @@ const ProfileModal = ({ isOpen, onClose, student }) => {
 };
 
 export default function Dashboard() {
-  const [avgLateTime,setAvgLateTime] = useState([]);
-  const [lateEntriesWeek,setLateEntriesWeek] = useState([]);
-  const [mystudents,setMYStudents] = useState([])
+  const [avgLateTime, setAvgLateTime] = useState([]);
+  const [lateEntriesWeek, setLateEntriesWeek] = useState([]);
+  const [mystudents, setMYStudents] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const pathname = usePathname();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [stats, setStats] = useState<LateEntryStats>({
+  const [user, setUser] = useState(null);
+  const [stats, setStats] = useState({
     lateEntriesToday: 0,
     mostFrequentReason: 'Loading...',
   });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -154,19 +150,71 @@ export default function Dashboard() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [tempStartDate, setTempStartDate] = useState(null);
   const [tempEndDate, setTempEndDate] = useState(null);
- 
 
+  // Generate days for the current month view with proper keys
+  const getDaysInMonth = (year, month) => {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const days = [];
+    
+    // Add empty cells for days before the first of the month
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push({ day: null, date: null, id: `empty-${year}-${month}-${i}` });
+    }
+    
+    // Add days of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({ day: i, date: new Date(year, month, i), id: `day-${year}-${month}-${i}` });
+    }
+    
+    return days;
+  };
+
+  // Calculate days for the current month
+  const days = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+
+  // First, load the user data from local storage
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const storedUser = localStorage.getItem("warden");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // Redirect if not a warden
+      if (parsedUser.usertype !== "warden") {
+        router.replace("/");
+      }
+    } else {
+      router.replace("/");
+    }
+  }, [router]);
+
+  // Then, fetch data only when user is available
+  useEffect(() => {
+    // Only fetch data if user is loaded and has hostel property
+    if (!user || !user.hostel) return;
+    
     const fetchData = async () => {
       try {
         setIsLoading(true);
         
-        // Fetch late entries count (assuming you have this endpoint)
-        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today');
-        const graphDatas = await axios.get('http://localhost:8000/avg/entry');
+        // Fetch late entries count with the hostel parameter
+        const lateEntriesResponse = await axios.get('http://localhost:8000/students/today', {
+          params: {
+            hostel: user.hostel,
+          }
+        });
+        
+        const graphDatas = await axios.get('http://localhost:8000/avg/entry',{
+          params : {
+            hostel : user.hostel,
+          }
+        });
         
         // Fetch most common reason using your endpoint
-        const reasonResponse = await axios.get<{most_common_reason: string; count: number}>('http://localhost:8000/most-common-late-reason/');
+        const reasonResponse = await axios.get('http://localhost:8000/most-common-late-reason/');
         
         setStats({
           lateEntriesToday: lateEntriesResponse.data.count || 0,
@@ -188,7 +236,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [user]); // This effect will run when user state changes
 
   const handleDownload = async () => {
     try {
@@ -241,25 +289,13 @@ export default function Dashboard() {
     });
   };
   
-  // Generate days for the current month view
-  const getDaysInMonth = (year, month) => {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = new Date(year, month, 1).getDay();
-    const days = [];
-    
-    // Add empty cells for days before the first of the month
-    for (let i = 0; i < firstDayOfMonth; i++) {
-      days.push({ day: null, date: null });
-    }
-    
-    // Add days of the month
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push({ day: i, date: new Date(year, month, i) });
-    }
-    
-    return days;
-  };
-  
+  const monthYear = currentMonth.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  });
+
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
   const openCalendar = () => {
     setTempStartDate(startDate);
     setTempEndDate(endDate);
@@ -315,55 +351,57 @@ export default function Dashboard() {
     setTempEndDate(null);
     setSelecting(true);
   };
-  
-  const applyDateRange = () => {
-    // Save the temp dates to the actual state
-    setStartDate(tempStartDate);
-    setEndDate(tempEndDate);
-    setShowCalendar(false);
-    // Here you would fetch data for the selected range
-    console.log("Fetching data for range:", tempStartDate, tempEndDate);
-  };
-  
+
   const cancelSelection = () => {
     setShowCalendar(false);
   };
   
-  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  const days = getDaysInMonth(currentMonth.getFullYear(), currentMonth.getMonth());
-  
-  const monthYear = currentMonth.toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric'
-  });
+  const applyDateRange = async () => {
+    // Save the temp dates to the actual state
+    setStartDate(tempStartDate);
+    setEndDate(tempEndDate);
+    
+    setShowCalendar(false);
+    
+    if (!tempStartDate || !tempEndDate) {
+      console.warn("Start or end date is missing.");
+      return;
+    }
+    
+    // Check if user and hostel are available
+    if (!user || !user.hostel) {
+      setError("User information is missing. Please try again later.");
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      
+      const response = await axios.get('http://localhost:8000/filter/date', {
+        params: {
+          start_date: tempStartDate.toISOString().split("T")[0],
+          end_date: tempEndDate.toISOString().split("T")[0],
+          hostel: user.hostel,
+        },
+      });
+      
+      // Update the student list with filtered data
+      setMYStudents(response.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching filtered data:", error);
+      setError("Failed to fetch filtered data");
+      setIsLoading(false);
+    }
+  };
 
-
-    
-        useEffect(() => {
-            if (typeof window === "undefined") return;
-    
-            const storedUser = localStorage.getItem("warden");
-            if (storedUser) {
-                const parsedUser = JSON.parse(storedUser);
-                setUser(parsedUser);
-    
-                // Redirect if not a warden
-                if (parsedUser.usertype !== "warden") {
-                    router.replace("/");
-                }
-            } else {
-                router.replace("/");
-            }
-        }, [router]);
-    
-        if (!user || user.usertype !== "warden") return null;
+  if (!user || user.usertype !== "warden") return null;
 
   const openStudentProfile = (student) => {
     setSelectedStudent(student);
     setModalOpen(true);
   };
 
-  
   return (
     <div className="h-screen flex bg-[#f1fdf3] text-gray-800 overflow-hidden">
       {/* Sidebar - fixed */}
@@ -384,7 +422,6 @@ export default function Dashboard() {
                 key={name}
                 href={href}
                 onClick={name === "Logout" ? handleLogout : undefined}
-                
                 className={`flex items-center gap-2 py-2 px-3 rounded-lg font-medium transition-all duration-200 text-left ${
                   isActive
                     ? "bg-green-200 text-green-800"
@@ -407,7 +444,9 @@ export default function Dashboard() {
             <button className="md:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="text-green-700" />
             </button>
-            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user.name}</h2>
+            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">
+              Welcome {user.name}{user.hostel ? ` (${user.hostel})` : ""}
+            </h2>
           </div>
         </header>
 
@@ -425,19 +464,19 @@ export default function Dashboard() {
                       <Clock className="w-5 h-5 mr-2" />
                       Late Entries Today
                     </h3>
-                  <button 
-                  className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors relative"
-                  onClick={handleDownload}
-                  disabled={isDownloading}
-                >
-                  {isDownloading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-t-2 border-green-700 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  ) : (
-                    <Download className="w-4 h-4" />
-                  )}
-                </button>
+                    <button 
+                      className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors relative"
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                    >
+                      {isDownloading ? (
+                        <div className="flex items-center justify-center">
+                          <div className="w-4 h-4 border-2 border-t-2 border-green-700 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                      ) : (
+                        <Download className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
                   
                   {isLoading ? (
@@ -466,16 +505,17 @@ export default function Dashboard() {
                     </>
                   )}
                 </div>
+
                 {/* Student Profiles Component */}
                 <div className="bg-white h-[350px] border border-green-300 shadow-md rounded-xl px-4 py-6 overflow-y-auto">
                   <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
                     <Users className="w-5 h-5 mr-2" /> 
-                              {startDate && endDate 
+                    {startDate && endDate 
                       ? `Late Students (${formatDate(startDate)} - ${formatDate(endDate)})`
                       : "Today's Late Students"
                     }
                   </h3>
-                    <button 
+                  <button 
                     onClick={openCalendar}
                     className="flex items-center space-x-1 bg-white border border-green-300 rounded-lg px-3 py-1.5 text-sm text-green-800 shadow-sm mb-4 mt-2 hover:bg-green-50 transition-colors"
                   >
@@ -488,29 +528,39 @@ export default function Dashboard() {
                     </span>
                   </button>
                   <div className="space-y-1">
-                    {mystudents.map((student) => (
-                      <button
-                        key={student.id}
-                        onClick={() => openStudentProfile(student)}
-                        className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-green-50 transition-colors border border-gray-100"
-                      >
-                        <div className="flex items-center">
-                          <div className="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center font-medium text-xs">
-                            {student.avatar}
+                    {isLoading ? (
+                      <div className="text-center py-4">
+                        <p className="text-gray-500">Loading students...</p>
+                      </div>
+                    ) : mystudents && mystudents.length > 0 ? (
+                      mystudents.map((student) => (
+                        <button
+                          key={student.id || `student-${student.name}-${Math.random()}`}
+                          onClick={() => openStudentProfile(student)}
+                          className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-green-50 transition-colors border border-gray-100"
+                        >
+                          <div className="flex items-center">
+                            <div className="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center font-medium text-xs">
+                              {student.avatar}
+                            </div>
+                            <div className="ml-2 text-left">
+                              <p className="font-medium text-sm">{student.name}</p>
+                              <p className="text-xs text-gray-500">{student.grade}</p>
+                            </div>
                           </div>
-                          <div className="ml-2 text-left">
-                            <p className="font-medium text-sm">{student.name}</p>
-                            <p className="text-xs text-gray-500">{student.grade}</p>
+                          <div className="flex items-center">
+                            <span className="bg-amber-100 text-amber-800 text-xs py-0.5 px-2 rounded-full">
+                              {student?.total_late_entries} late
+                            </span>
+                            <User className="w-3 h-3 ml-2 text-gray-400" />
                           </div>
-                        </div>
-                        <div className="flex items-center">
-                          <span className="bg-amber-100 text-amber-800 text-xs py-0.5 px-2 rounded-full">
-                            {student?.total_late_entries} late
-                          </span>
-                          <User className="w-3 h-3 ml-2 text-gray-400" />
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-gray-500">No late students found</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -556,6 +606,8 @@ export default function Dashboard() {
         onClose={() => setModalOpen(false)} 
         student={selectedStudent} 
       />
+      
+      {/* Calendar Modal */}
       {showCalendar && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden">
@@ -590,17 +642,17 @@ export default function Dashboard() {
               </div>
               
               <div className="grid grid-cols-7 gap-1 mb-2">
-                {daysOfWeek.map(day => (
-                  <div key={day} className="text-xs font-medium text-gray-500 text-center py-1">
+                {daysOfWeek.map((day, idx) => (
+                  <div key={`day-header-${idx}`} className="text-xs font-medium text-gray-500 text-center py-1">
                     {day}
                   </div>
                 ))}
               </div>
               
               <div className="grid grid-cols-7 gap-1">
-                {days.map((day, index) => (
+                {days.map((day) => (
                   <button
-                    key={index}
+                    key={day.id}
                     onClick={() => handleDayClick(day.date)}
                     disabled={!day.day}
                     className={`
@@ -649,7 +701,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      )} 
+      )}
     </div>
   );
 }

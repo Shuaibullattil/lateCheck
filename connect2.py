@@ -949,7 +949,7 @@ def get_initials(name: str) -> str:
         return (parts[0][0] + parts[-1][0]).upper()
 
 @app.get("/students/today")
-async def get_students_with_today_entries():
+async def get_students_with_today_entries(hostel: str):
     # Use UTC for consistent timing (adjust if your DB uses local time)
     now_utc = datetime.now()
     today_start = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -958,6 +958,7 @@ async def get_students_with_today_entries():
     pipeline = [
         {
             "$match": {
+                "details.hostel": hostel,
                 "history": {
                     "$elemMatch": {
                         "timing": {
@@ -1032,7 +1033,7 @@ async def get_students_with_today_entries():
 
 
 @app.get("/avg/entry")
-async def avg_entry_data():
+async def avg_entry_data(hostel: str):
     today = datetime.now(IST)
 
     # Start of current week (Monday 00:00 IST)
@@ -1048,7 +1049,7 @@ async def avg_entry_data():
     total_entries_by_day = [0] * 7
 
     # Fetch all students
-    students = list(collection.find({}, {"history": 1}))
+    students = list(collection.find({"details.hostel": hostel}, {"history": 1}))
 
     for student in students:
         for entry in student.get("history", []):
@@ -1107,7 +1108,7 @@ async def avg_entry_data():
 
 
 @app.get("/filter/date")
-async def filter_date_get_student(start_date: str, end_date: str):
+async def filter_date_get_student(start_date: str, end_date: str, hostel: str):
     try:
         # Parse the date strings to date objects
         start_date_obj = datetime.strptime(start_date.strip(), "%Y-%m-%d")
@@ -1123,6 +1124,7 @@ async def filter_date_get_student(start_date: str, end_date: str):
     pipeline = [
         {
             "$match": {
+                "details.hostel": hostel,  # <-- Added hostel filter
                 "history": {
                     "$elemMatch": {
                         "timing": {
