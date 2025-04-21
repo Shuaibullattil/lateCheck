@@ -122,79 +122,93 @@ export default function Dashboard() {
       }
     };
 
-    fetchChatHistory();
+    if (receiverId) {
+      fetchChatHistory();
+    }
   }, [receiverId, userId]);
 
   // WebSocket setup - only when userId is available
+  // Fixed to only depend on userId, not receiverId
   useEffect(() => {
     if (!userId) return; // Don't connect WebSocket if userId is not set
     
-    let ws: WebSocket;
-    
-    try {
-      ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+    console.log("Creating new WebSocket connection for:", userId);
+    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-      ws.onmessage = (event) => {
-        const newMessage: Message = JSON.parse(event.data);
+    ws.onopen = () => {
+      console.log("WebSocket connected successfully for:", userId);
+    };
 
-        setMessages((prevMessages) => {
-          const existingMessageIndex = prevMessages.findIndex(
-            (msg) => msg.sender_id === newMessage.sender_id
-          );
+    ws.onmessage = (event) => {
+      const newMessage: Message = JSON.parse(event.data);
+      console.log("Received message:", newMessage);
 
-          let updatedMessages;
-          if (existingMessageIndex >= 0) {
-            updatedMessages = [...prevMessages];
-            updatedMessages[existingMessageIndex] = newMessage;
-          } else {
-            updatedMessages = [...prevMessages, newMessage];
-          }
-          
-          // Update filtered messages accordingly
-          setFilteredMessages((prevFiltered) => {
-            // If we're not filtering, just update with all messages
-            if (prevFiltered.length === prevMessages.length) {
-              return updatedMessages;
-            }
-            // Otherwise, reapply the current filter logic
-            const input = document.querySelector('input[placeholder="Search messages..."]') as HTMLInputElement;
-            const searchTerm = input?.value.toLowerCase() || '';
-            
-            return updatedMessages.filter(message => 
-              message.sender_name.toLowerCase().includes(searchTerm)
-            );
-          });
-          
-          return updatedMessages;
-        });
+      // Update inbox messages
+      setMessages((prevMessages) => {
+        const existingMessageIndex = prevMessages.findIndex(
+          (msg) => msg.sender_id === newMessage.sender_id
+        );
 
-        if (
-          receiverId &&
-          (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)
-        ) {
-          setChatMessages((prev) => [...prev, newMessage]);
+        let updatedMessages;
+        if (existingMessageIndex >= 0) {
+          updatedMessages = [...prevMessages];
+          updatedMessages[existingMessageIndex] = newMessage;
+        } else {
+          updatedMessages = [...prevMessages, newMessage];
         }
-      };
+        
+        // Update filtered messages accordingly
+        setFilteredMessages((prevFiltered) => {
+          // If we're not filtering, just update with all messages
+          if (prevFiltered.length === prevMessages.length) {
+            return updatedMessages;
+          }
+          // Otherwise, reapply the current filter logic
+          const input = document.querySelector('input[placeholder="Search messages..."]') as HTMLInputElement;
+          const searchTerm = input?.value.toLowerCase() || '';
+          
+          return updatedMessages.filter(message => 
+            message.sender_name.toLowerCase().includes(searchTerm)
+          );
+        });
+        
+        return updatedMessages;
+      });
 
-      ws.onerror = (error) => {
-        console.error("WebSocket Error:", error);
-      };
+      // Check if this message belongs to the current active chat
+      if ((newMessage.sender_id === receiverId && newMessage.receiver_id === userId) ||
+          (newMessage.sender_id === userId && newMessage.receiver_id === receiverId)) {
+        console.log("Adding message to current chat");
+        setChatMessages((prev) => [...prev, newMessage]);
+      }
+    };
 
-      ws.onclose = () => {
-        console.log("WebSocket Disconnected");
-      };
-    } catch (error) {
-      console.error("WebSocket Connection Error:", error);
-    }
+    ws.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    ws.onclose = (event) => {
+      console.log(`WebSocket Disconnected with code: ${event.code}, reason: ${event.reason}`);
+    };
+
+    // Add a ping mechanism to keep the connection alive
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 30000); // Every 30 seconds
 
     return () => {
-      if (ws) {
+      console.log("Cleaning up WebSocket connection");
+      clearInterval(pingInterval);
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
         ws.close();
       }
     };
-  }, [userId, receiverId]);
+  }, [userId]); // Only depend on userId, not receiverId
 
   const handleMessageClick = (message: Message) => {
+    console.log("Selected message from:", message.sender_id);
     setReceiverId(message.sender_id);
     // On mobile, show chat view when a message is selected
     if (window.innerWidth < 768) {
