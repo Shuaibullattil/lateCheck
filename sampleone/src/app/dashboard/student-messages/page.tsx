@@ -20,7 +20,7 @@ import Inbox from "../../components/Inbox";
 import Chat from "../../components/Chat";
 import axios from "axios";
 
-const handleLogout = () =>{
+const handleLogout = () => {
   localStorage.removeItem("warden")
 };
 // Updated to include actual paths
@@ -45,6 +45,7 @@ export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [receiverId, setReceiverId] = useState("");
+  const [userId, setUserId] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [user, setUser] = useState<any>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -52,7 +53,6 @@ export default function Dashboard() {
   const [showChat, setShowChat] = useState(false);
   const pathname = usePathname();
 
-  const userId = "saharawardenofficial@gmail.com"; // Hardcoded for now
   const router = useRouter();
 
   // Auth check
@@ -61,11 +61,17 @@ export default function Dashboard() {
 
     const storedUser = localStorage.getItem("warden");
     if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser.usertype !== "warden") {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.usertype !== "warden") {
+          router.replace("/");
+        } else {
+          setUser(parsedUser);
+          setUserId(parsedUser.email);
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
         router.replace("/");
-      } else {
-        setUser(parsedUser);
       }
     } else {
       router.replace("/");
@@ -86,9 +92,11 @@ export default function Dashboard() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch messages on mount
+  // Fetch messages on mount - only when userId is available
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!userId) return; // Don't fetch if userId is not set
+      
       try {
         const response = await axios.get<Message[]>(`http://localhost:8000/inbox/${userId}`);
         setMessages(response.data);
@@ -103,7 +111,9 @@ export default function Dashboard() {
 
   // Fetch chat history when a receiver is selected
   useEffect(() => {
-    const fetchChatHistory = async (receiverId: string) => {
+    const fetchChatHistory = async () => {
+      if (!userId || !receiverId) return; // Don't fetch if either userId or receiverId is missing
+      
       try {
         const response = await axios.get<Message[]>(`http://localhost:8000/messages/${userId}/${receiverId}`);
         setChatMessages(response.data);
@@ -112,69 +122,77 @@ export default function Dashboard() {
       }
     };
 
-    if (receiverId) {
-      fetchChatHistory(receiverId);
-    }
+    fetchChatHistory();
   }, [receiverId, userId]);
 
-  // WebSocket setup
+  // WebSocket setup - only when userId is available
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
+    if (!userId) return; // Don't connect WebSocket if userId is not set
+    
+    let ws: WebSocket;
+    
+    try {
+      ws = new WebSocket(`ws://localhost:8000/ws/${userId}`);
 
-    ws.onmessage = (event) => {
-      const newMessage: Message = JSON.parse(event.data);
+      ws.onmessage = (event) => {
+        const newMessage: Message = JSON.parse(event.data);
 
-      setMessages((prevMessages) => {
-        const existingMessageIndex = prevMessages.findIndex(
-          (msg) => msg.sender_id === newMessage.sender_id
-        );
-
-        let updatedMessages;
-        if (existingMessageIndex >= 0) {
-          updatedMessages = [...prevMessages];
-          updatedMessages[existingMessageIndex] = newMessage;
-        } else {
-          updatedMessages = [...prevMessages, newMessage];
-        }
-        
-        // Update filtered messages accordingly
-        setFilteredMessages((prevFiltered) => {
-          // If we're not filtering, just update with all messages
-          if (prevFiltered.length === prevMessages.length) {
-            return updatedMessages;
-          }
-          // Otherwise, reapply the current filter logic
-          const input = document.querySelector('input[placeholder="Search messages..."]') as HTMLInputElement;
-          const searchTerm = input?.value.toLowerCase() || '';
-          
-          return updatedMessages.filter(message => 
-            message.sender_name.toLowerCase().includes(searchTerm)
+        setMessages((prevMessages) => {
+          const existingMessageIndex = prevMessages.findIndex(
+            (msg) => msg.sender_id === newMessage.sender_id
           );
+
+          let updatedMessages;
+          if (existingMessageIndex >= 0) {
+            updatedMessages = [...prevMessages];
+            updatedMessages[existingMessageIndex] = newMessage;
+          } else {
+            updatedMessages = [...prevMessages, newMessage];
+          }
+          
+          // Update filtered messages accordingly
+          setFilteredMessages((prevFiltered) => {
+            // If we're not filtering, just update with all messages
+            if (prevFiltered.length === prevMessages.length) {
+              return updatedMessages;
+            }
+            // Otherwise, reapply the current filter logic
+            const input = document.querySelector('input[placeholder="Search messages..."]') as HTMLInputElement;
+            const searchTerm = input?.value.toLowerCase() || '';
+            
+            return updatedMessages.filter(message => 
+              message.sender_name.toLowerCase().includes(searchTerm)
+            );
+          });
+          
+          return updatedMessages;
         });
-        
-        return updatedMessages;
-      });
 
-      if (
-        receiverId &&
-        (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)
-      ) {
-        setChatMessages((prev) => [...prev, newMessage]);
-      }
-    };
+        if (
+          receiverId &&
+          (newMessage.sender_id === receiverId || newMessage.receiver_id === receiverId)
+        ) {
+          setChatMessages((prev) => [...prev, newMessage]);
+        }
+      };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket Error:", error);
-    };
+      ws.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+      };
 
-    ws.onclose = () => {
-      console.log("WebSocket Disconnected");
-    };
+      ws.onclose = () => {
+        console.log("WebSocket Disconnected");
+      };
+    } catch (error) {
+      console.error("WebSocket Connection Error:", error);
+    }
 
     return () => {
-      ws.close();
+      if (ws) {
+        ws.close();
+      }
     };
-  }, [receiverId, userId]);
+  }, [userId, receiverId]);
 
   const handleMessageClick = (message: Message) => {
     setReceiverId(message.sender_id);
@@ -242,7 +260,7 @@ export default function Dashboard() {
             <button className="md:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="text-green-700" />
             </button>
-            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user.name}!</h2>
+            <h2 className="text-2xl font-bold text-green-800 ml-4 md:ml-2">Welcome {user?.name || ""}!</h2>
           </div>
         </header>
 

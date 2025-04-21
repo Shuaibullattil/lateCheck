@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Chatbubble from "../components/user/Chatbubble";
 import { ArrowLeft } from "lucide-react";
 import MenuButton from "../components/user/menubutton";
+import axios from "axios";
 
 interface User {
     details: {
@@ -17,39 +18,59 @@ export default function Page() {
     const [message, setMessage] = useState("");
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [senderId, setSenderId] = useState("");
+    const [receiverId,setReceiverId] = useState("")
     const [messages, setMessages] = useState<{ message: string; timestamp: string; sender_id: string; sender_name: string }[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const receiverId = "saharawardenofficial@gmail.com";
     
     useEffect(() => {
-        if (typeof window === "undefined") return;
+      if (typeof window === "undefined") return;
+    
+      const fetchData = async () => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser);
-            setSenderId(parsedUser?.details?.email);
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setSenderId(parsedUser?.details?.email);
+    
+          try {
+            const response = await axios.get("http://localhost:8000/get/wardenemail", {
+              params: {
+                hostel: parsedUser?.details?.hostel,
+              },
+            });
+            const wardenEmail = response.data.email;
+            setReceiverId(wardenEmail); // This sets the receiverId state
+            console.log("Warden Email:", wardenEmail);
+          } catch (error) {
+            console.error("Failed to fetch warden email:", error);
+          }
         } else {
-            router.replace("/");
+          router.replace("/");
         }
+      };
+    
+      fetchData();
     }, [router]);
 
     // Fetch initial messages
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(`http://localhost:8000/messages/${senderId}/${receiverId}`);
-                const data = await response.json();
-                setMessages(data);
-            } catch (error) {
-                console.error("Error fetching messages:", error);
-            }
-        };
-
-        if (senderId) {
-            fetchMessages();
-        }
-    }, [senderId]);
+      const fetchMessages = async () => {
+          try {
+              if (!senderId || !receiverId) return; // Don't fetch if either is empty
+              
+              const response = await fetch(`http://localhost:8000/messages/${senderId}/${receiverId}`);
+              const data = await response.json();
+              setMessages(data);
+          } catch (error) {
+              console.error("Error fetching messages:", error);
+          }
+      };
+  
+      if (senderId && receiverId) {
+          fetchMessages();
+      }
+  }, [senderId, receiverId]); // Add receiverId as dependency
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

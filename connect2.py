@@ -1444,6 +1444,16 @@ class NotificationCreate(BaseModel):
     timestamp: str
     type:str
 
+@app.get("/get/wardenemail")
+async def get_warden_email(hostel: str):
+    warden = warden_collection.find_one(
+        {"hostel": hostel},
+        {"_id": 0, "email": 1}  # return only the email field, exclude _id
+    )
+    if not warden:
+        raise HTTPException(status_code=404, detail="Warden not found for the given hostel")
+    return {"email": warden["email"]}
+
 # API endpoint to create a notification
 @app.post("/notifications/create")
 async def create_notification(notification: NotificationCreate):
