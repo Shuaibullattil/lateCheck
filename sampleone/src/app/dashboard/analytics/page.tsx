@@ -466,30 +466,6 @@ export default function Dashboard() {
                     </>
                   )}
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 {/* Student Profiles Component */}
                 <div className="bg-white h-[350px] border border-green-300 shadow-md rounded-xl px-4 py-6 overflow-y-auto">
                   <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
