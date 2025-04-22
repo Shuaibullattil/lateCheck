@@ -860,8 +860,17 @@ async def add_user(
     hostel_id = HOSTEL_IDS[hostel.lower()]
     room_no = get_available_room()
 
-    if collection.find_one({"name": name, "id": student_id}):
-        raise HTTPException(status_code=400, detail="User already exists")
+    # Check for duplicate student_id
+    if collection.find_one({"details.id": student_id}):
+        raise HTTPException(status_code=400, detail="Student ID already exists")
+
+    # Check for duplicate email
+    if collection.find_one({"details.email": email}):
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    # Check for duplicate phone number
+    if collection.find_one({"details.phone_no": phone_no}):
+        raise HTTPException(status_code=400, detail="Phone number already exists")
 
     user_data = {
         "name": name,
@@ -881,6 +890,7 @@ async def add_user(
 
     collection.insert_one(user_data)
     return {"message": "User added successfully"}
+
 
 @app.get("/get/history")
 async def get_person(name: str, student_id: int):
