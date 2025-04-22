@@ -1110,13 +1110,23 @@ async def avg_entry_data(hostel: str):
 @app.get("/filter/date")
 async def filter_date_get_student(start_date: str, end_date: str, hostel: str):
     try:
-        # Parse the date strings to date objects
-        start_date_obj = datetime.strptime(start_date.strip(), "%Y-%m-%d")
-        end_date_obj = datetime.strptime(end_date.strip(), "%Y-%m-%d")
-
-        # Set to full-day range with UTC timezone
-        start_utc = UTC.localize(datetime.combine(start_date_obj, time.min))
-        end_utc = UTC.localize(datetime.combine(end_date_obj, time.max))
+        # Log the incoming date strings
+        print(f"Received dates: start={start_date}, end={end_date}")
+        
+        # Parse the date strings to date objects (without timezone)
+        start_date_obj = datetime.strptime(start_date.strip(), "%Y-%m-%d").date()
+        end_date_obj = datetime.strptime(end_date.strip(), "%Y-%m-%d").date()
+        
+        # Explicitly set the time range for the dates
+        start_datetime = datetime.combine(start_date_obj, time.min)
+        end_datetime = datetime.combine(end_date_obj, time.max)
+        
+        # Then localize to UTC
+        start_utc = UTC.localize(start_datetime)
+        end_utc = UTC.localize(end_datetime)
+        
+        print(f"Start UTC: {start_utc.isoformat()}")
+        print(f"End UTC: {end_utc.isoformat()}")
     except Exception as e:
         return {"error": f"Invalid date format: {e}"}
 

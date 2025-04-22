@@ -377,10 +377,23 @@ export default function Dashboard() {
     try {
       setIsLoading(true);
       
+      // Format dates without timezone conversion
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      const startDateStr = formatDate(tempStartDate);
+      const endDateStr = formatDate(tempEndDate);
+      
+      console.log("Sending dates to backend:", startDateStr, endDateStr);
+      
       const response = await axios.get('http://localhost:8000/filter/date', {
         params: {
-          start_date: tempStartDate.toISOString().split("T")[0],
-          end_date: tempEndDate.toISOString().split("T")[0],
+          start_date: startDateStr,
+          end_date: endDateStr,
           hostel: user.hostel,
         },
       });
