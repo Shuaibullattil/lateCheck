@@ -47,7 +47,7 @@ const QrReader = ({hostel} :{hostel:string}) => {
                     if (decodedText === hostel) {
                         router.push("/late-entry-form");
                     } else {
-                        alert(decodedText+hostel);
+                        alert("Alert! Illegal Entry Detected");
                     }
                 },
                 (error) => {
