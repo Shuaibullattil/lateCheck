@@ -30,14 +30,10 @@ Wardens can manually trigger analysis on student late entry data using OpenAI’
 4. Add `.env` files in both frontend and backend folders with your MongoDB URI and API keys.
 
 **Our Team:**
-👨‍💻 Teammate1 – Frontend Developer
-👩‍💻 Teammate2 – Backend Developer
-🧑‍💻 Teammate3 – Database & Integration
-🧠 Teammate4 – AI and Documentation
-
+👨‍💻 Sheethal joshi Thomas - https://github.com/shetthaljoshi
+👩‍💻 Vivek Revi – https://github.com/sensei
+🧑‍💻 Shuaib Ullattil – https://github.com/shuaibullattil
+🧠 Noor Muhammed
 **License:**
 This project is developed for educational purposes only. All rights reserved © Team LateCheck 2025.
 
----
-
-Let me know if you'd like a project logo, demo video link, or GitHub badges added!
