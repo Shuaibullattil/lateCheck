@@ -30,8 +30,8 @@ Wardens can manually trigger analysis on student late entry data using OpenAI’
 4. Add `.env` files in both frontend and backend folders with your MongoDB URI and API keys.
 
 **Our Team:**
-👨‍💻 Sheethal joshi Thomas - https://github.com/shetthaljoshi
-👩‍💻 Vivek Revi – https://github.com/sensei
+👨‍💻 Sheethal joshi Thomas - https://github.com/Sheethaljoshi
+👩‍💻 Vivek Revi – https://github.com/Sensei3747
 🧑‍💻 Shuaib Ullattil – https://github.com/shuaibullattil
 🧠 Noor Muhammed
 **License:**
